@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Main App Wireframes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 25px;
+            z-index: 1000;
+        }
+
+        .screen-btn {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .screen-btn.active {
+            background: #007AFF;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 60px 24px 16px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            background: #007AFF;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .add-btn {
+            width: 32px;
+            height: 32px;
+            background: #007AFF;
+            border-radius: 16px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 8px 0 34px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #8E8E93;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #007AFF;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .trip-card {
+            border-left: 4px solid #007AFF;
+        }
+
+        .trip-card.upcoming {
+            border-left-color: #34C759;
+        }
+
+        .trip-card.completed {
+            border-left-color: #8E8E93;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+            flex: 1;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-bottom: 8px;
+        }
+
+        .card-details {
+            font-size: 14px;
+            color: #1D1D1F;
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            background: #E5F4FD;
+            color: #007AFF;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.upcoming {
+            background: #E8F5E8;
+            color: #34C759;
+        }
+
+        .status-badge.completed {
+            background: #F2F2F7;
+            color: #8E8E93;
+        }
+
+        /* Luggage Item */
+        .luggage-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .luggage-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .luggage-info {
+            flex: 1;
+        }
+
+        .luggage-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 4px;
+        }
+
+        .luggage-specs {
+            font-size: 14px;
+            color: #8E8E93;
+        }
+
+        /* Settings */
+        .settings-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 16px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-icon {
+            width: 32px;
+            height: 32px;
+            background: #F2F2F7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .settings-text {
+            flex: 1;
+        }
+
+        .settings-label {
+            font-size: 16px;
+            color: #1D1D1F;
+            margin-bottom: 2px;
+        }
+
+        .settings-description {
+            font-size: 14px;
+            color: #8E8E93;
+        }
+
+        .settings-arrow {
+            color: #8E8E93;
+            font-size: 16px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .quick-action-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            color: #8E8E93;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 8px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #007AFF;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8E8E93;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen Controls -->
+    <div class="screen-controls">
+        <button class="screen-btn active" onclick="showScreen(0)">Home</button>
+        <button class="screen-btn" onclick="showScreen(1)">My Trips</button>
+        <button class="screen-btn" onclick="showScreen(2)">My Luggage</button>
+        <button class="screen-btn" onclick="showScreen(3)">Settings</button>
+    </div>
+
+    <div class="phone-container">
+        <!-- Home Page -->
+        <div class="screen active">
+            <div class="header">
+                <h1 class="header-title">Home</h1>
+                <div class="profile-avatar" onclick="showScreen(3)">JM</div>
+            </div>
+
+            <div class="content">
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="#" class="quick-action">
+                        <span class="quick-action-icon">✈️</span>
+                        <span class="quick-action-text">New Trip</span>
+                    </a>
+                    <a href="#" class="quick-action">
+                        <span class="quick-action-icon">🧳</span>
+                        <span class="quick-action-text">Add Luggage</span>
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Total Trips</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Luggage Types</div>
+                    </div>
+                </div>
+
+                <!-- Recent Trips -->
+                <div class="section-title" style="margin-left: 8px;">Recent Trips</div>
+                
+                <div class="trip-card upcoming" style="margin-left: 8px; margin-right: 8px; margin-bottom: 20px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Business Trip to Berlin</div>
+                            <div class="card-subtitle">Oct 15-18, 2025</div>
+                        </div>
+                        <span class="status-badge upcoming">Upcoming</span>
+                    </div>
+                    <div class="card-details">
+                        Carry-on only • 3 days • Business attire<br>
+                        Weather: 12-18°C, partly cloudy
+                    </div>
+                </div>
+
+                <div class="trip-card" style="margin-left: 8px; margin-right: 8px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Weekend in Paris</div>
+                            <div class="card-subtitle">Sep 20-22, 2025</div>
+                        </div>
+                        <span class="status-badge">In Progress</span>
+                    </div>
+                    <div class="card-details">
+                        Medium suitcase • 2 days • Casual<br>
+                        Packing: 85% complete
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item active" onclick="showScreen(0)">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(1)">
+                    <div class="nav-icon">✈️</div>
+                    <div class="nav-label">My Trips</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(2)">
+                    <div class="nav-icon">🧳</div>
+                    <div class="nav-label">Luggage</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(3)">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- My Trips Page -->
+        <div class="screen">
+            <div class="header">
+                <h1 class="header-title">My Trips</h1>
+                <button class="add-btn">+</button>
+            </div>
+
+            <div class="content">
+                <!-- Filter Tabs -->
+                <div style="display: flex; margin-bottom: 20px; background: #F2F2F7; border-radius: 8px; padding: 2px;">
+                    <button style="flex: 1; padding: 8px; background: white; border: none; border-radius: 6px; font-weight: 500; color: #007AFF;">All</button>
+                    <button style="flex: 1; padding: 8px; background: none; border: none; color: #8E8E93;">Upcoming</button>
+                    <button style="flex: 1; padding: 8px; background: none; border: none; color: #8E8E93;">Past</button>
+                </div>
+
+                <!-- Trip List -->
+                <div class="trip-card upcoming" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Business Trip to Berlin</div>
+                            <div class="card-subtitle">Oct 15-18, 2025 • 4 days</div>
+                        </div>
+                        <span class="status-badge upcoming">Upcoming</span>
+                    </div>
+                    <div class="card-details">
+                        📍 Berlin, Germany<br>
+                        🧳 Carry-on + Personal item<br>
+                        🌤️ 12-18°C, partly cloudy
+                    </div>
+                </div>
+
+                <div class="trip-card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Weekend in Paris</div>
+                            <div class="card-subtitle">Sep 20-22, 2025 • 3 days</div>
+                        </div>
+                        <span class="status-badge">Packing</span>
+                    </div>
+                    <div class="card-details">
+                        📍 Paris, France<br>
+                        🧳 Medium suitcase<br>
+                        ✅ 85% packed (17/20 items)
+                    </div>
+                </div>
+
+                <div class="trip-card completed" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Summer Vacation</div>
+                            <div class="card-subtitle">Aug 10-17, 2025 • 8 days</div>
+                        </div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    <div class="card-details">
+                        📍 Barcelona, Spain<br>
+                        🧳 Large suitcase<br>
+                        ⭐ Great packing efficiency!
+                    </div>
+                </div>
+
+                <div class="trip-card completed" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">NYC Business Meeting</div>
+                            <div class="card-subtitle">Jul 25-27, 2025 • 3 days</div>
+                        </div>
+                        <span class="status-badge completed">Completed</span>
+                    </div>
+                    <div class="card-details">
+                        📍 New York City, USA<br>
+                        🧳 Carry-on only<br>
+                        💼 Business attire focus
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item" onclick="showScreen(0)">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="#" class="nav-item active" onclick="showScreen(1)">
+                    <div class="nav-icon">✈️</div>
+                    <div class="nav-label">My Trips</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(2)">
+                    <div class="nav-icon">🧳</div>
+                    <div class="nav-label">Luggage</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(3)">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- My Luggage Page -->
+        <div class="screen">
+            <div class="header">
+                <h1 class="header-title">My Luggage</h1>
+                <button class="add-btn">+</button>
+            </div>
+
+            <div class="content">
+                <div class="section-title">Your Luggage Collection</div>
+
+                <div class="luggage-item">
+                    <div class="luggage-icon">🧳</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Travel Pro Carry-on</div>
+                        <div class="luggage-specs">22" × 14" × 9" • 7.2 lbs • 35L capacity</div>
+                    </div>
+                </div>
+
+                <div class="luggage-item">
+                    <div class="luggage-icon">👜</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Personal Backpack</div>
+                        <div class="luggage-specs">18" × 13" × 8" • 2.1 lbs • 20L capacity</div>
+                    </div>
+                </div>
+
+                <div class="luggage-item">
+                    <div class="luggage-icon">🎒</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Large Suitcase</div>
+                        <div class="luggage-specs">28" × 18" × 12" • 12.5 lbs • 78L capacity</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item" onclick="showScreen(0)">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(1)">
+                    <div class="nav-icon">✈️</div>
+                    <div class="nav-label">My Trips</div>
+                </a>
+                <a href="#" class="nav-item active" onclick="showScreen(2)">
+                    <div class="nav-icon">🧳</div>
+                    <div class="nav-label">Luggage</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(3)">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="screen">
+            <div class="header">
+                <h1 class="header-title">Settings</h1>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <!-- User Profile -->
+                <div class="settings-section">
+                    <div class="card" style="text-align: center;">
+                        <div class="profile-avatar" style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto 16px;">JM</div>
+                        <div style="font-size: 20px; font-weight: 600; color: #1D1D1F; margin-bottom: 4px;">John Miller</div>
+                        <div style="font-size: 14px; color: #8E8E93;">john.miller@email.com</div>
+                    </div>
+                </div>
+
+                <!-- Account Info -->
+                <div class="settings-section">
+                    <div class="section-title">Account Info</div>
+                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                        <div class="settings-item">
+                            <div class="settings-icon">✉️</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Email</div>
+                                <div class="settings-description">john.miller@email.com</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">👤</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Name</div>
+                                <div class="settings-description">John Miller</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">📷</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Profile Picture</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">💬</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Text & Backup Google Account</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">🔒</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Change Password</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">❌</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Delete Account</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">🚪</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Log Out</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="settings-section">
+                    <div class="section-title">Settings</div>
+                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                        <div class="settings-item">
+                            <div class="settings-icon">🎨</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Appearance Streamplace</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">📏</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Units</div>
+                                <div class="settings-description">Metric • Imperial</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">📐</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Measurements</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">🌍</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Language</div>
+                                <div class="settings-description">English</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">🌙</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Theme</div>
+                                <div class="settings-description">Light • Dark • System</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">⚙️</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Preferences</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legal -->
+                <div class="settings-section">
+                    <div class="section-title">Legal</div>
+                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                        <div class="settings-item">
+                            <div class="settings-icon">🔐</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Privacy Policy</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">📋</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Terms of Service</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">ℹ️</div>
+                            <div class="settings-text">
+                                <div class="settings-label">About To Contact</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support & Feedback -->
+                <div class="settings-section">
+                    <div class="section-title">Support & Feedback</div>
+                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                        <div class="settings-item">
+                            <div class="settings-icon">📤</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Share App</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">💬</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Send Feedback</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">🐛</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Report a Bug</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-icon">⭐</div>
+                            <div class="settings-text">
+                                <div class="settings-label">Rate in App</div>
+                            </div>
+                            <div class="settings-arrow">›</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Version -->
+                <div style="text-align: center; margin-top: 32px; color: #8E8E93; font-size: 12px;">
+                    TC Nomad v1.0.2
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <a href="#" class="nav-item" onclick="showScreen(0)">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(1)">
+                    <div class="nav-icon">✈️</div>
+                    <div class="nav-label">My Trips</div>
+                </a>
+                <a href="#" class="nav-item" onclick="showScreen(2)">
+                    <div class="nav-icon">🧳</div>
+                    <div class="nav-label">Luggage</div>
+                </a>
+                <a href="#" class="nav-item active" onclick="showScreen(3)">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(index) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            
+            // Show selected screen
+            screens[index].classList.add('active');
+            
+            // Update button states
+            const buttons = document.querySelectorAll('.screen-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            // Update nav states
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Add active to corresponding nav item in current screen
+            const currentScreen = screens[index];
+            const activeNav = currentScreen.querySelector('.nav-item:nth-child(' + (index + 1) + ')');
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Back to Index
+        </a>
+    </div>
+</body>
+</html>

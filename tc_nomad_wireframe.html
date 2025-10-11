@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Authentication Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .wireframe-container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: #333;
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .screen-btn {
+            padding: 6px 10px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.2s;
+        }
+
+        .screen-btn.active {
+            background: #007AFF;
+        }
+
+        /* Wireframe Elements */
+        .wf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .wf-back-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #333;
+            background: #f9f9f9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .wf-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            flex: 1;
+        }
+
+        .wf-progress {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .wf-logo {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #333;
+            border-radius: 8px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .wf-illustration {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed #666;
+            border-radius: 8px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .wf-heading {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .wf-subheading {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .wf-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .wf-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .wf-btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #007AFF;
+            color: white;
+            border: 2px solid #007AFF;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .wf-btn-primary:hover {
+            background: #0056CC;
+            border-color: #0056CC;
+        }
+
+        .wf-btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .wf-btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .wf-btn-google {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .wf-btn-apple {
+            width: 100%;
+            padding: 14px;
+            background: #000;
+            color: white;
+            border: 2px solid #000;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .wf-btn-apple:hover {
+            background: #333;
+        }
+
+        /* Form Elements */
+        .wf-form-group {
+            margin-bottom: 16px;
+        }
+
+        .wf-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .wf-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+
+        .wf-input:focus {
+            outline: none;
+            border-color: #007AFF;
+            background: white;
+        }
+
+        /* Code Input */
+        .wf-code-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .wf-code-input {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .wf-code-input:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        /* Links */
+        .wf-link {
+            color: #007AFF;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Divider */
+        .wf-divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .wf-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .wf-divider span {
+            background: white;
+            padding: 0 12px;
+        }
+
+        /* Success Icon */
+        .wf-success-icon {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #34C759;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0fff0;
+            color: #34C759;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Skip button */
+        .wf-skip {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid #007AFF;
+            color: #007AFF;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Utilities */
+        .flex-1 { flex: 1; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-auto { margin-top: auto; }
+        .mb-20 { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <!-- Screen Controls -->
+    <div class="screen-controls">
+        <button class="screen-btn active" onclick="showScreen(0)">Welcome</button>
+        <button class="screen-btn" onclick="showScreen(1)">Onboard 1</button>
+        <button class="screen-btn" onclick="showScreen(2)">Onboard 2</button>
+        <button class="screen-btn" onclick="showScreen(3)">Onboard 3</button>
+        <button class="screen-btn" onclick="showScreen(4)">Choice</button>
+        <button class="screen-btn" onclick="showScreen(5)">Sign Up</button>
+        <button class="screen-btn" onclick="showScreen(6)">Sign In</button>
+        <button class="screen-btn" onclick="showScreen(7)">Forgot</button>
+        <button class="screen-btn" onclick="showScreen(8)">Code</button>
+        <button class="screen-btn" onclick="showScreen(9)">Reset</button>
+        <button class="screen-btn" onclick="showScreen(10)">Profile</button>
+    </div>
+
+    <div class="wireframe-container">
+        <!-- Screen 1: Welcome/Splash -->
+        <div class="screen active">
+            <div class="flex-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="wf-logo">TC</div>
+                <h1 class="wf-heading">TC Nomad</h1>
+                <p class="wf-text">Pack Smarter. Travel Lighter.</p>
+            </div>
+            <div class="mt-auto">
+                <button class="wf-btn-primary" onclick="showScreen(1)">Get Started</button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Onboarding Slide 1 -->
+        <div class="screen">
+            <button class="wf-skip" onclick="showScreen(4)">Skip</button>
+            <div class="wf-progress text-right">1 of 3</div>
+            
+            <div class="flex-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="wf-illustration">
+                    [Luggage Icon]<br>
+                    Smart Packing
+                </div>
+                <h2 class="wf-subheading text-center">Smart Luggage Packing</h2>
+                <p class="wf-text">Get personalized packing lists based on your actual luggage and trip details</p>
+            </div>
+            
+            <div class="mt-auto">
+                <button class="wf-btn-primary" onclick="showScreen(2)">Next</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Onboarding Slide 2 -->
+        <div class="screen">
+            <button class="wf-skip" onclick="showScreen(4)">Skip</button>
+            <div class="wf-progress text-right">2 of 3</div>
+            
+            <div class="flex-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="wf-illustration">
+                    [3D View]<br>
+                    Visualization
+                </div>
+                <h2 class="wf-subheading text-center">3D Packing Guide</h2>
+                <p class="wf-text">See exactly how items fit in your luggage with our 3D visualization</p>
+            </div>
+            
+            <div class="mt-auto">
+                <button class="wf-btn-primary" onclick="showScreen(3)">Next</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Onboarding Slide 3 -->
+        <div class="screen">
+            <button class="wf-skip" onclick="showScreen(4)">Skip</button>
+            <div class="wf-progress text-right">3 of 3</div>
+            
+            <div class="flex-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="wf-illustration">
+                    [Airline Icon]<br>
+                    Compliance Check
+                </div>
+                <h2 class="wf-subheading text-center">Airline Compliance</h2>
+                <p class="wf-text">Check baggage rules and avoid fees with automatic airline compliance checking</p>
+            </div>
+            
+            <div class="mt-auto">
+                <button class="wf-btn-primary" onclick="showScreen(4)">Done</button>
+            </div>
+        </div>
+
+        <!-- Screen 5: Sign Up / Sign In Choice -->
+        <div class="screen">
+            <div class="flex-1" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="wf-logo">TC</div>
+                <h1 class="wf-subheading text-center">Welcome to TC Nomad</h1>
+                <p class="wf-text">Choose how to get started</p>
+            </div>
+            
+            <div class="mt-auto">
+                <button class="wf-btn-primary" onclick="showScreen(5)">Create Account</button>
+                <button class="wf-btn-secondary" onclick="showScreen(6)">Sign In</button>
+            </div>
+        </div>
+
+        <!-- Screen 6: Sign Up -->
+        <div class="screen">
+            <div class="wf-header">
+                <button class="wf-back-btn" onclick="showScreen(4)">←</button>
+                <div class="wf-title">Sign Up</div>
+                <div></div>
+            </div>
+
+            <h2 class="wf-subheading">Create your account</h2>
+            <p class="wf-description">Enter your details to get started</p>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Email Address</label>
+                <input type="email" class="wf-input" placeholder="your.email@example.com">
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Password</label>
+                <input type="password" class="wf-input" placeholder="Create a secure password">
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Confirm Password</label>
+                <input type="password" class="wf-input" placeholder="Confirm your password">
+            </div>
+
+            <button class="wf-btn-primary" onclick="showScreen(10)">Create Account</button>
+
+            <div class="wf-divider">
+                <span>OR</span>
+            </div>
+
+            <button class="wf-btn-google" onclick="showScreen(10)">
+                <span style="color: #4285F4; font-weight: bold;">G</span>
+                Continue with Google
+            </button>
+
+            <button class="wf-btn-apple" onclick="showScreen(10)">
+                <span style="font-size: 16px;">🍎</span>
+                Continue with Apple
+            </button>
+
+            <div class="text-center" style="margin-top: 20px;">
+                <span style="color: #666; font-size: 12px;">Already have an account? </span>
+                <a class="wf-link" onclick="showScreen(6)">Sign In</a>
+            </div>
+        </div>
+
+        <!-- Screen 7: Sign In -->
+        <div class="screen">
+            <div class="wf-header">
+                <button class="wf-back-btn" onclick="showScreen(4)">←</button>
+                <div class="wf-title">Sign In</div>
+                <div></div>
+            </div>
+
+            <h2 class="wf-subheading">Welcome back</h2>
+            <p class="wf-description">Sign in to your account</p>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Email Address</label>
+                <input type="email" class="wf-input" placeholder="your.email@example.com">
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Password</label>
+                <input type="password" class="wf-input" placeholder="Enter your password">
+            </div>
+
+            <div class="text-right mb-20">
+                <a class="wf-link" onclick="showScreen(7)">Forgot Password?</a>
+            </div>
+
+            <button class="wf-btn-primary">Sign In</button>
+
+            <div class="wf-divider">
+                <span>OR</span>
+            </div>
+
+            <button class="wf-btn-google">
+                <span style="color: #4285F4; font-weight: bold;">G</span>
+                Continue with Google
+            </button>
+
+            <button class="wf-btn-apple">
+                <span style="font-size: 16px;">🍎</span>
+                Continue with Apple
+            </button>
+
+            <div class="text-center" style="margin-top: 20px;">
+                <span style="color: #666; font-size: 12px;">Don't have an account? </span>
+                <a class="wf-link" onclick="showScreen(5)">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Screen 8: Forgot Password -->
+        <div class="screen">
+            <div class="wf-header">
+                <button class="wf-back-btn" onclick="showScreen(6)">←</button>
+                <div class="wf-title">Reset Password</div>
+                <div></div>
+            </div>
+
+            <h2 class="wf-subheading">Reset your password</h2>
+            <p class="wf-description">Enter your email address and we'll send you a verification code</p>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Email Address</label>
+                <input type="email" class="wf-input" placeholder="your.email@example.com">
+            </div>
+
+            <button class="wf-btn-primary" onclick="showScreen(8)">Send Verification Code</button>
+
+            <div class="text-center" style="margin-top: 20px;">
+                <a class="wf-link" onclick="showScreen(6)">Back to Sign In</a>
+            </div>
+        </div>
+
+        <!-- Screen 9: Code Verification -->
+        <div class="screen">
+            <div class="wf-header">
+                <button class="wf-back-btn" onclick="showScreen(7)">←</button>
+                <div class="wf-title">Verify Code</div>
+                <div></div>
+            </div>
+
+            <h2 class="wf-subheading">Enter verification code</h2>
+            <p class="wf-description">We sent a 6-digit code to<br><strong>your.email@example.com</strong></p>
+
+            <div class="wf-code-container">
+                <input type="text" class="wf-code-input" maxlength="1">
+                <input type="text" class="wf-code-input" maxlength="1">
+                <input type="text" class="wf-code-input" maxlength="1">
+                <input type="text" class="wf-code-input" maxlength="1">
+                <input type="text" class="wf-code-input" maxlength="1">
+                <input type="text" class="wf-code-input" maxlength="1">
+            </div>
+
+            <button class="wf-btn-primary" onclick="showScreen(9)">Verify Code</button>
+
+            <div class="text-center" style="margin-top: 20px;">
+                <a class="wf-link">Resend Code</a>
+                <p style="color: #666; font-size: 12px; margin-top: 8px;">Code expires in 14:32</p>
+            </div>
+        </div>
+
+        <!-- Screen 10: New Password -->
+        <div class="screen">
+            <div class="wf-header">
+                <button class="wf-back-btn" onclick="showScreen(8)">←</button>
+                <div class="wf-title">New Password</div>
+                <div></div>
+            </div>
+
+            <h2 class="wf-subheading">Create new password</h2>
+            <p class="wf-description">Choose a strong password for your account</p>
+
+            <div class="wf-form-group">
+                <label class="wf-label">New Password</label>
+                <input type="password" class="wf-input" placeholder="Enter new password">
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Confirm New Password</label>
+                <input type="password" class="wf-input" placeholder="Confirm new password">
+            </div>
+
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 20px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 4px;"><strong>Password Requirements:</strong></p>
+                <p style="font-size: 11px; color: #666;">• Minimum 8 characters</p>
+                <p style="font-size: 11px; color: #666;">• At least 1 uppercase letter</p>
+                <p style="font-size: 11px; color: #666;">• At least 1 lowercase letter</p>
+                <p style="font-size: 11px; color: #666;">• At least 1 number</p>
+            </div>
+
+            <button class="wf-btn-primary">Reset Password</button>
+        </div>
+
+        <!-- Screen 11: Profile Setup -->
+        <div class="screen">
+            <div style="text-align: center; margin-top: 60px;">
+                <div class="wf-success-icon">✓</div>
+                <h2 class="wf-subheading">Account Created!</h2>
+                <p class="wf-text">Let's set up your profile to get started</p>
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">First Name</label>
+                <input type="text" class="wf-input" placeholder="Enter your first name">
+            </div>
+
+            <div class="wf-form-group">
+                <label class="wf-label">Last Name</label>
+                <input type="text" class="wf-input" placeholder="Enter your last name">
+            </div>
+
+            <button class="wf-btn-primary">Continue to App</button>
+            
+            <div class="text-center" style="margin-top: 16px;">
+                <a class="wf-link">Skip for now</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(index) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            
+            // Show selected screen
+            screens[index].classList.add('active');
+            
+            // Update button states
+            const buttons = document.querySelectorAll('.screen-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        // Auto-advance code inputs
+        document.querySelectorAll('.wf-code-input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    const nextInput = document.querySelectorAll('.wf-code-input')[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    const prevInput = document.querySelectorAll('.wf-code-input')[index - 1];
+                    if (prevInput) {
+                        prevInput.focus();
+                    }
+                }
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Back to Index
+        </a>
+    </div>
+</body>
+</html>

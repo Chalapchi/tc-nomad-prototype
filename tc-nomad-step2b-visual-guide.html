@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Step 2B: Visual Packing Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .mode-toggle {
+            padding: 6px 12px;
+            background: #F2F2F7;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #007AFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+        
+        .stage-indicator {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            padding: 12px 16px;
+            color: white;
+        }
+        
+        .stage-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .stage-text {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .stage-count {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .stage-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .stage-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+        .stage-dot.active {
+            background: white;
+            width: 24px;
+        }
+        
+        .content {
+            padding-bottom: 80px;
+        }
+        
+        .luggage-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #F2F2F7;
+            overflow-x: auto;
+        }
+        
+        .luggage-tab {
+            flex: 1;
+            min-width: 140px;
+            padding: 10px;
+            background: white;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .luggage-tab.active {
+            border-color: #007AFF;
+            background: white;
+        }
+        
+        .luggage-tab-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+        }
+        
+        .luggage-tab-status {
+            font-size: 10px;
+            color: #8E8E93;
+        }
+        
+        .visual-area {
+            background: white;
+            padding: 20px 16px;
+        }
+        
+        .luggage-visual-container {
+            position: relative;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .luggage-base {
+            position: relative;
+            width: 280px;
+            height: 320px;
+            background: linear-gradient(135deg, #E8E8EA 0%, #D1D1D6 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border: 3px solid #2C3E50;
+        }
+
+        /* Open luggage interior */
+        .luggage-interior {
+            position: absolute;
+            inset: 12px;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%);
+            border-radius: 8px;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 4px;
+            padding: 8px;
+        }
+
+        .luggage-compartment {
+            border: 1px dashed #B0B0B0;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.5);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .compartment-label {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 9px;
+            color: #8E8E93;
+            font-weight: 600;
+        }
+        
+        .luggage-handle {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 12px;
+            background: #1A252F;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .luggage-zipper {
+            position: absolute;
+            top: 20px;
+            right: 10px;
+            bottom: 20px;
+            width: 4px;
+            background: #1A252F;
+            border-radius: 2px;
+        }
+        
+        .luggage-wheels {
+            position: absolute;
+            bottom: -8px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .wheel {
+            width: 16px;
+            height: 16px;
+            background: #1A252F;
+            border-radius: 50%;
+        }
+        
+        .svg-item {
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+        
+        .svg-shoes {
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 30px;
+            background: #8B4513;
+            border-radius: 4px 12px 4px 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .svg-shirt {
+            top: 60px;
+            left: 40px;
+            width: 60px;
+            height: 40px;
+            background: #4A90E2;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .svg-pants {
+            top: 110px;
+            left: 35px;
+            width: 70px;
+            height: 50px;
+            background: #2C3E50;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .annotation {
+            position: absolute;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+        
+        .annotation::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+        }
+        
+        .annotation-shoes {
+            bottom: 20px;
+            left: -80px;
+            border-left: 2px solid #FF9500;
+        }
+        
+        .annotation-shoes::after {
+            border-left-color: white;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .annotation-label {
+            position: absolute;
+            background: rgba(0, 122, 255, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .label-1 {
+            bottom: 45px;
+            left: 15px;
+        }
+        
+        .label-2 {
+            top: 75px;
+            left: 15px;
+        }
+        
+        .label-3 {
+            top: 125px;
+            left: 15px;
+        }
+        
+        .volume-bar-container {
+            margin-bottom: 16px;
+        }
+        
+        .volume-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .volume-label {
+            font-size: 13px;
+            color: #3C3C43;
+            font-weight: 500;
+        }
+        
+        .volume-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .volume-bar {
+            width: 100%;
+            height: 10px;
+            background: #E5E5EA;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34C759 0%, #30D158 100%);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        
+        .volume-fill.warning {
+            background: linear-gradient(90deg, #FF9500 0%, #FF9F0A 100%);
+        }
+        
+        .stage-instruction {
+            background: #F2F2F7;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .instruction-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 6px;
+        }
+        
+        .instruction-text {
+            font-size: 13px;
+            color: #3C3C43;
+            line-height: 1.5;
+        }
+        
+        .checklist-section {
+            padding: 0 16px;
+        }
+        
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        
+        .checklist-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .checklist-progress {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .checklist-items {
+            background: white;
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .checklist-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #C7C7CC;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .checkbox.checked {
+            background: #34C759;
+            border-color: #34C759;
+            position: relative;
+        }
+        
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 14px;
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .item-name.completed {
+            color: #8E8E93;
+            text-decoration: line-through;
+        }
+        
+        .item-instruction {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 2px;
+        }
+
+        /* Packed item in luggage */
+        .packed-item {
+            font-size: 24px;
+            animation: placeItem 0.6s ease-out;
+            position: relative;
+        }
+
+        @keyframes placeItem {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(-90deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Flying item animation */
+        .flying-item {
+            position: fixed;
+            font-size: 32px;
+            z-index: 1000;
+            pointer-events: none;
+            animation: flyToLuggage 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes flyToLuggage {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: scale(0.8) rotate(360deg);
+            }
+        }
+
+        /* How to Pack Button */
+        .how-to-pack-btn {
+            padding: 4px 8px;
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+            transition: transform 0.2s;
+        }
+
+        .how-to-pack-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .how-to-pack-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Packing Technique Modal */
+        .packing-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .packing-modal-overlay.active {
+            display: flex;
+        }
+
+        .packing-modal {
+            background: white;
+            border-radius: 20px;
+            width: 340px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideUp 0.3s ease-out;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .packing-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .packing-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .packing-modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #F2F2F7;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #3C3C43;
+        }
+
+        .packing-modal-body {
+            padding: 20px;
+        }
+
+        .technique-animation-area {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .technique-demo {
+            font-size: 80px;
+            animation: demonstratePacking 2s ease-in-out infinite;
+        }
+
+        @keyframes demonstratePacking {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+            }
+            25% {
+                transform: rotate(-15deg) scale(0.9);
+            }
+            50% {
+                transform: rotate(0deg) scale(0.8);
+            }
+            75% {
+                transform: rotate(15deg) scale(0.9);
+            }
+        }
+
+        .technique-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .technique-step {
+            padding: 10px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: #007AFF;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #3C3C43;
+            line-height: 1.5;
+        }
+
+        .stage-badge {
+            padding: 4px 8px;
+            background: #007AFF;
+            color: white;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .navigation-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .nav-btn-secondary {
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+        
+        .nav-btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .nav-btn:disabled {
+            background: #F2F2F7;
+            color: #C7C7CC;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="header-left">
+                    <span class="back-btn">‹</span>
+                    <span class="header-title">Packing Guide</span>
+                </div>
+                <div class="mode-toggle">
+                    📦 Volume
+                </div>
+            </div>
+            <div class="header-subtitle">Follow the visual guide</div>
+        </div>
+        
+        <!-- Stage Indicator -->
+        <div class="stage-indicator">
+            <div class="stage-top">
+                <span class="stage-text">Stage 1: Foundation Items</span>
+                <span class="stage-count">3 of 9 complete</span>
+            </div>
+            <div class="stage-dots">
+                <div class="stage-dot active"></div>
+                <div class="stage-dot"></div>
+                <div class="stage-dot"></div>
+                <div class="stage-dot"></div>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Luggage Tabs (if multiple) -->
+            <div class="luggage-tabs">
+                <div class="luggage-tab active">
+                    <div class="luggage-tab-name">🧳 Carry-on</div>
+                    <div class="luggage-tab-status">Stage 1 of 4</div>
+                </div>
+                <div class="luggage-tab">
+                    <div class="luggage-tab-name">🎒 Backpack</div>
+                    <div class="luggage-tab-status">Not started</div>
+                </div>
+            </div>
+            
+            <!-- Visual Area -->
+            <div class="visual-area">
+                <!-- Volume Progress -->
+                <div class="volume-bar-container">
+                    <div class="volume-bar-header">
+                        <span class="volume-label">Luggage Volume</span>
+                        <span class="volume-value">6.5L / 22L (30%)</span>
+                    </div>
+                    <div class="volume-bar">
+                        <div class="volume-fill" style="width: 30%"></div>
+                    </div>
+                </div>
+                
+                <!-- Luggage Visual with Interactive Placement -->
+                <div class="luggage-visual-container">
+                    <div class="luggage-base">
+                        <!-- Open luggage interior with compartments -->
+                        <div class="luggage-interior">
+                            <div class="luggage-compartment" id="compartment-top">
+                                <span class="compartment-label">TOP</span>
+                                <!-- Packed items will appear here -->
+                                <span class="packed-item">🧥</span>
+                            </div>
+                            <div class="luggage-compartment" id="compartment-middle">
+                                <span class="compartment-label">MIDDLE</span>
+                                <span class="packed-item">👔</span>
+                                <span class="packed-item">👖</span>
+                            </div>
+                            <div class="luggage-compartment" id="compartment-bottom">
+                                <span class="compartment-label">BOTTOM</span>
+                                <span class="packed-item">👞</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stage Instruction -->
+                <div class="stage-instruction">
+                    <div class="instruction-title">📍 Stage 1: Foundation Items</div>
+                    <div class="instruction-text">
+                        Start with heavy items at the bottom. Place shoes against the back wall, then add rolled pants and folded shirts in layers.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checklist Section -->
+            <div class="checklist-section">
+                <div class="checklist-header">
+                    <span class="checklist-title">Current Stage Items</span>
+                    <span class="checklist-progress">3 / 9 packed</span>
+                </div>
+                
+                <div class="checklist-items">
+                    <div class="checklist-item" data-item-emoji="👞" data-compartment="bottom">
+                        <div class="checkbox checked"></div>
+                        <div class="item-content">
+                            <div class="item-name completed">Dress Shoes (1 pair)</div>
+                            <div class="item-instruction">
+                                Bottom corner, against back wall
+                                <button class="how-to-pack-btn" onclick="showPackingTechnique('shoes', '👞')">📹 How to place</button>
+                            </div>
+                        </div>
+                        <div class="stage-badge">DONE</div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="👖" data-compartment="middle">
+                        <div class="checkbox checked"></div>
+                        <div class="item-content">
+                            <div class="item-name completed">Dress Pants (2)</div>
+                            <div class="item-instruction">
+                                Rolled, layered above shoes
+                                <button class="how-to-pack-btn" onclick="showPackingTechnique('roll', '👖')">📹 How to roll</button>
+                            </div>
+                        </div>
+                        <div class="stage-badge">DONE</div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="👔" data-compartment="middle">
+                        <div class="checkbox checked"></div>
+                        <div class="item-content">
+                            <div class="item-name completed">Dress Shirts (2)</div>
+                            <div class="item-instruction">
+                                Folded, stacked flat
+                                <button class="how-to-pack-btn" onclick="showPackingTechnique('fold', '👔')">📹 How to fold</button>
+                            </div>
+                        </div>
+                        <div class="stage-badge">DONE</div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="🧥" data-compartment="top" onclick="packItem(this)">
+                        <div class="checkbox"></div>
+                        <div class="item-content">
+                            <div class="item-name">Blazer (1) <span style="font-size: 10px; color: #007AFF;">← Click to pack</span></div>
+                            <div class="item-instruction">
+                                Fold carefully, place on top
+                                <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('fold-blazer', '🧥')">📹 How to fold</button>
+                            </div>
+                        </div>
+                        <div class="stage-badge">NEXT</div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="👕" data-compartment="middle" onclick="packItem(this)">
+                        <div class="checkbox"></div>
+                        <div class="item-content">
+                            <div class="item-name">T-Shirts (3)</div>
+                            <div class="item-instruction">
+                                Rolled tightly, vertical placement
+                                <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('roll', '👕')">📹 How to roll</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="👖" data-compartment="bottom" onclick="packItem(this)">
+                        <div class="checkbox"></div>
+                        <div class="item-content">
+                            <div class="item-name">Jeans (1)</div>
+                            <div class="item-instruction">
+                                Rolled, fill side gap
+                                <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('roll', '👖')">📹 How to roll</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <button class="nav-btn nav-btn-secondary" onclick="window.location.href='tc-nomad-step2a-compartments.html'">← Previous Stage</button>
+            <button class="nav-btn nav-btn-primary" onclick="window.location.href='tc-nomad-mode-and-ready.html'">Next Stage →</button>
+        </div>
+    </div>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+        <a href="tc-nomad-step2a-compartments.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,0.6); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Step 2A
+        </a>
+        <a href="tc-nomad-mode-and-ready.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0,122,255,0.9); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            Mode & Ready <span style="font-size: 18px;">→</span>
+        </a>
+    </div>
+
+    <!-- Packing Technique Modal -->
+    <div class="packing-modal-overlay" id="packingModal" onclick="closePackingModal()">
+        <div class="packing-modal" onclick="event.stopPropagation()">
+            <div class="packing-modal-header">
+                <div class="packing-modal-title" id="modalTitle">How to Roll</div>
+                <button class="packing-modal-close" onclick="closePackingModal()">×</button>
+            </div>
+            <div class="packing-modal-body">
+                <div class="technique-animation-area">
+                    <div class="technique-demo" id="techniqueDemo">👕</div>
+                </div>
+                <ul class="technique-steps" id="techniqueSteps">
+                    <!-- Steps will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Packing technique data
+        const packingTechniques = {
+            'roll': {
+                title: 'How to Roll Items',
+                emoji: '👕',
+                steps: [
+                    'Lay the item flat on a clean surface',
+                    'Smooth out any wrinkles',
+                    'Fold in the sides if needed',
+                    'Starting from the bottom, roll tightly',
+                    'Keep the roll firm but not too tight to avoid wrinkles'
+                ]
+            },
+            'fold': {
+                title: 'How to Fold Shirts',
+                emoji: '👔',
+                steps: [
+                    'Lay the shirt face down on a flat surface',
+                    'Fold one side toward the center',
+                    'Fold the sleeve back',
+                    'Repeat on the other side',
+                    'Fold in half from bottom to top',
+                    'Stack flat in your luggage'
+                ]
+            },
+            'fold-blazer': {
+                title: 'How to Fold a Blazer',
+                emoji: '🧥',
+                steps: [
+                    'Turn one shoulder inside out',
+                    'Tuck the other shoulder into it',
+                    'This creates a "shoulder sandwich"',
+                    'Fold in half lengthwise',
+                    'Place on top of other items to avoid crushing'
+                ]
+            },
+            'shoes': {
+                title: 'How to Pack Shoes',
+                emoji: '👞',
+                steps: [
+                    'Place shoes sole-to-sole',
+                    'Stuff shoes with socks or small items',
+                    'Place in a shoe bag or plastic bag',
+                    'Position against the back wall of luggage',
+                    'Place heavier items on sides, not on top'
+                ]
+            }
+        };
+
+        // Show packing technique modal
+        function showPackingTechnique(technique, emoji) {
+            const data = packingTechniques[technique];
+            if (!data) return;
+
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('techniqueDemo').textContent = emoji;
+
+            const stepsContainer = document.getElementById('techniqueSteps');
+            stepsContainer.innerHTML = data.steps.map((step, index) => `
+                <li class="technique-step">
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-text">${step}</div>
+                </li>
+            `).join('');
+
+            document.getElementById('packingModal').classList.add('active');
+        }
+
+        // Close packing modal
+        function closePackingModal() {
+            document.getElementById('packingModal').classList.remove('active');
+        }
+
+        // Pack item with flying animation
+        function packItem(element) {
+            const emoji = element.getAttribute('data-item-emoji');
+            const compartment = element.getAttribute('data-compartment');
+            const checkbox = element.querySelector('.checkbox');
+            const itemName = element.querySelector('.item-name');
+
+            // Don't pack if already packed
+            if (checkbox.classList.contains('checked')) return;
+
+            // Get starting position
+            const startRect = element.getBoundingClientRect();
+
+            // Get target compartment position
+            const targetCompartment = document.getElementById(`compartment-${compartment}`);
+            const targetRect = targetCompartment.getBoundingClientRect();
+
+            // Create flying emoji
+            const flyingItem = document.createElement('div');
+            flyingItem.className = 'flying-item';
+            flyingItem.textContent = emoji;
+            flyingItem.style.left = startRect.left + 'px';
+            flyingItem.style.top = startRect.top + 'px';
+            document.body.appendChild(flyingItem);
+
+            // Calculate animation
+            const deltaX = targetRect.left + targetRect.width / 2 - startRect.left;
+            const deltaY = targetRect.top + targetRect.height / 2 - startRect.top;
+
+            flyingItem.style.setProperty('--deltaX', deltaX + 'px');
+            flyingItem.style.setProperty('--deltaY', deltaY + 'px');
+
+            // Animate to target
+            setTimeout(() => {
+                flyingItem.style.left = (targetRect.left + targetRect.width / 2 - 16) + 'px';
+                flyingItem.style.top = (targetRect.top + targetRect.height / 2 - 16) + 'px';
+            }, 10);
+
+            // After animation, add to compartment and mark as checked
+            setTimeout(() => {
+                const packedItem = document.createElement('span');
+                packedItem.className = 'packed-item';
+                packedItem.textContent = emoji;
+                targetCompartment.appendChild(packedItem);
+
+                checkbox.classList.add('checked');
+                itemName.classList.add('completed');
+                element.style.cursor = 'default';
+                element.onclick = null;
+
+                flyingItem.remove();
+            }, 800);
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('packingModal').classList.contains('active')) {
+                    closePackingModal();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+            if (e.key === 'ArrowLeft' && !document.getElementById('packingModal').classList.contains('active')) {
+                window.location.href = 'tc-nomad-step2a-compartments.html';
+            }
+            if (e.key === 'ArrowRight' && !document.getElementById('packingModal').classList.contains('active')) {
+                window.location.href = 'tc-nomad-mode-and-ready.html';
+            }
+        });
+    </script>
+</body>
+</html>

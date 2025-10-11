@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Step 2A: Compartment Assignment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+        
+        .progress-indicator {
+            background: #F2F2F7;
+            padding: 12px 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .progress-next {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 4px;
+        }
+        
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        .info-banner {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .info-banner-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .info-banner-text {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        
+        .luggage-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+        
+        .luggage-tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px;
+            background: #F2F2F7;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .luggage-tab.active {
+            background: white;
+            border-color: #007AFF;
+        }
+        
+        .luggage-tab-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .luggage-tab-info {
+            font-size: 11px;
+            color: #8E8E93;
+        }
+        
+        .luggage-visual {
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .luggage-image {
+            width: 200px;
+            height: 140px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, #E5E5EA 0%, #C7C7CC 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #8E8E93;
+        }
+        
+        .luggage-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .luggage-specs {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .compartments-section {
+            margin-bottom: 16px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .item-count {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .compartment-card {
+            background: white;
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .compartment-header {
+            padding: 12px 16px;
+            background: #F2F2F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .compartment-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .compartment-icon {
+            font-size: 18px;
+        }
+        
+        .compartment-meta {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .compartment-items {
+            padding: 0;
+        }
+        
+        .compartment-item {
+            padding: 10px 16px;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .drag-handle {
+            font-size: 16px;
+            color: #C7C7CC;
+            cursor: grab;
+        }
+        
+        .item-icon {
+            width: 32px;
+            height: 32px;
+            background: #F2F2F7;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 13px;
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .item-details {
+            font-size: 11px;
+            color: #8E8E93;
+            margin-top: 2px;
+        }
+        
+        .move-btn {
+            padding: 6px 12px;
+            background: #F2F2F7;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: #34C759;
+            color: white;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .add-item-zone {
+            padding: 12px 16px;
+            border-top: 1px dashed #C7C7CC;
+            text-align: center;
+            color: #8E8E93;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .add-item-zone:hover {
+            background: #FAFAFA;
+        }
+        
+        .tip-box {
+            background: #FFF9E6;
+            border: 1px solid #FFD60A;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .tip-icon {
+            font-size: 16px;
+        }
+        
+        .tip-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .tip-text {
+            font-size: 12px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .bottom-summary {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .bottom-summary-value {
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .btn-continue {
+            width: 100%;
+            padding: 14px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <span class="back-btn">‹</span>
+                <span class="header-title">Compartment Assignment</span>
+            </div>
+            <div class="header-subtitle">Organize items by compartment</div>
+        </div>
+        
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-text">Step 2 of 2: Packing Guide</div>
+            <div class="progress-next">Phase 1: Assign Compartments</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <div class="info-banner-title">✨ AI Smart Assignment Complete</div>
+                <div class="info-banner-text">
+                    Items have been optimally assigned to compartments based on size, access frequency, and packing best practices. Drag items to reassign if needed.
+                </div>
+            </div>
+
+            <!-- Luggage Tabs (if multiple luggage) -->
+            <div class="luggage-tabs">
+                <div class="luggage-tab active">
+                    <div class="luggage-tab-name">🧳 Carry-on</div>
+                    <div class="luggage-tab-info">22L • 25 items</div>
+                </div>
+                <div class="luggage-tab">
+                    <div class="luggage-tab-name">🎒 Backpack</div>
+                    <div class="luggage-tab-info">15L • 7 items</div>
+                </div>
+            </div>
+            
+            <!-- Luggage Visual -->
+            <div class="luggage-visual">
+                <div class="luggage-image">🧳</div>
+                <div class="luggage-name">Standard Carry-on Suitcase</div>
+                <div class="luggage-specs">55×40×23 cm • 22L capacity • 2 compartments</div>
+            </div>
+            
+            <!-- Tip Box -->
+            <div class="tip-box">
+                <div class="tip-header">
+                    <span class="tip-icon">💡</span>
+                    <span class="tip-title">Packing Tip</span>
+                </div>
+                <div class="tip-text">
+                    Items are assigned based on access needs and volume. Frequently needed items go in easy-access pockets.
+                </div>
+            </div>
+            
+            <!-- Main Compartment -->
+            <div class="compartments-section">
+                <div class="section-header">
+                    <span class="section-title">Compartments</span>
+                    <span class="item-count">25 items assigned</span>
+                </div>
+                
+                <!-- Main Compartment Card -->
+                <div class="compartment-card">
+                    <div class="compartment-header">
+                        <div class="compartment-name">
+                            <span class="compartment-icon">📦</span>
+                            <span>Main Compartment</span>
+                            <span class="ai-badge">AI</span>
+                        </div>
+                        <span class="compartment-meta">18 items • 16.5L</span>
+                    </div>
+                    <div class="compartment-items">
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">👔</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Shirts (2)</div>
+                                <div class="item-details">Folded • ~1.6L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">👖</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Pants (2)</div>
+                                <div class="item-details">Rolled • ~2.4L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">🧥</div>
+                            <div class="item-info">
+                                <div class="item-name">Blazer (1)</div>
+                                <div class="item-details">Fold carefully • ~2.5L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="add-item-zone">
+                            + Drop items here or tap to add
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Front Pocket -->
+                <div class="compartment-card">
+                    <div class="compartment-header">
+                        <div class="compartment-name">
+                            <span class="compartment-icon">👝</span>
+                            <span>Front Zippered Pocket</span>
+                            <span class="ai-badge">AI</span>
+                        </div>
+                        <span class="compartment-meta">5 items • 1.2L</span>
+                    </div>
+                    <div class="compartment-items">
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">🧴</div>
+                            <div class="item-info">
+                                <div class="item-name">Toiletries Kit</div>
+                                <div class="item-details">Travel size • ~0.5L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">💻</div>
+                            <div class="item-info">
+                                <div class="item-name">Laptop Charger</div>
+                                <div class="item-details">Coiled • ~0.3L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="add-item-zone">
+                            + Drop items here or tap to add
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Internal Divider Pocket -->
+                <div class="compartment-card">
+                    <div class="compartment-header">
+                        <div class="compartment-name">
+                            <span class="compartment-icon">📂</span>
+                            <span>Internal Divider Pocket</span>
+                            <span class="ai-badge">AI</span>
+                        </div>
+                        <span class="compartment-meta">2 items • 0.8L</span>
+                    </div>
+                    <div class="compartment-items">
+                        <div class="compartment-item">
+                            <span class="drag-handle">☰</span>
+                            <div class="item-icon">🩲</div>
+                            <div class="item-info">
+                                <div class="item-name">Underwear (6)</div>
+                                <div class="item-details">Rolled • ~0.6L</div>
+                            </div>
+                            <button class="move-btn">Move</button>
+                        </div>
+                        <div class="add-item-zone">
+                            + Drop items here or tap to add
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            <div class="bottom-summary">
+                All <span class="bottom-summary-value">25 items</span> assigned to compartments
+            </div>
+            <button class="btn-continue" onclick="window.location.href='tc-nomad-step2b-visual-guide.html'">Continue to Visual Packing Guide →</button>
+        </div>
+    </div>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+        <a href="tc-nomad-step1-wireframe.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,0.6); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Step 1
+        </a>
+        <a href="tc-nomad-step2b-visual-guide.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0,122,255,0.9); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            Step 2B <span style="font-size: 18px;">→</span>
+        </a>
+    </div>
+
+    <script>
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'tc-nomad-step1-wireframe.html';
+            }
+            if (e.key === 'ArrowRight') {
+                window.location.href = 'tc-nomad-step2b-visual-guide.html';
+            }
+        });
+    </script>
+</body>
+</html>

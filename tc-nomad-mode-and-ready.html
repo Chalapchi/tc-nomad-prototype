@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Packing Mode & Trip Ready</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .close-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+        
+        .content {
+            padding: 20px 16px;
+        }
+        
+        .modal-content {
+            padding: 20px 16px;
+            padding-bottom: 100px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .mode-card {
+            flex: 1;
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mode-card.active {
+            border-color: #007AFF;
+            background: #F0F7FF;
+        }
+        
+        .mode-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .mode-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        
+        .mode-desc {
+            font-size: 11px;
+            color: #8E8E93;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .comparison-section {
+            background: #F2F2F7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .comparison-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .comparison-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .comparison-text {
+            flex: 1;
+        }
+        
+        .comparison-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+        }
+        
+        .comparison-detail {
+            font-size: 12px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+        
+        .info-box {
+            background: #FFF9E6;
+            border: 1px solid #FFD60A;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .info-box-text {
+            font-size: 12px;
+            color: #3C3C43;
+            line-height: 1.5;
+        }
+        
+        .success-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+        
+        .success-subtitle {
+            font-size: 15px;
+            color: #8E8E93;
+            margin-bottom: 32px;
+        }
+        
+        .checklist-card {
+            background: white;
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        
+        .checklist-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+        }
+        
+        .checklist-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F2F2F7;
+        }
+        
+        .checklist-row:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-label {
+            font-size: 14px;
+            color: #3C3C43;
+        }
+        
+        .checklist-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #FFF3CD;
+            color: #856404;
+        }
+        
+        .documents-reminder {
+            background: #FFF9E6;
+            border: 2px solid #FFD60A;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        
+        .reminder-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .reminder-icon {
+            font-size: 24px;
+        }
+        
+        .reminder-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+        
+        .reminder-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #34C759;
+            background: #34C759;
+            border-radius: 4px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .reminder-checkbox::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .reminder-text {
+            font-size: 13px;
+            color: #000;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen 1: Packing Mode Selection -->
+    <div class="phone-container">
+        <div class="header">
+            <div class="header-top">
+                <span class="close-btn">×</span>
+                <span class="header-title">Packing Mode</span>
+            </div>
+            <div class="header-subtitle">Choose your priority</div>
+        </div>
+        
+        <div class="modal-content">
+            <div class="mode-selector">
+                <div class="mode-card active">
+                    <div class="mode-icon">📦</div>
+                    <div class="mode-name">Volume Priority</div>
+                    <div class="mode-desc">Maximize space, minimize bulk</div>
+                </div>
+                
+                <div class="mode-card">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-name">Access Priority</div>
+                    <div class="mode-desc">Quick access to items</div>
+                </div>
+            </div>
+            
+            <div class="comparison-section">
+                <div class="comparison-title">Volume Priority Mode</div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Compact Packing</div>
+                        <div class="comparison-detail">Items packed tightly to use minimum space</div>
+                    </div>
+                </div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Rolling Preferred</div>
+                        <div class="comparison-detail">More items rolled vs folded to save space</div>
+                    </div>
+                </div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Dense Layering</div>
+                        <div class="comparison-detail">Heavy items at bottom, fill all gaps</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comparison-section">
+                <div class="comparison-title">Access Priority Mode</div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Frequently Used on Top</div>
+                        <div class="comparison-detail">Daily items easily accessible without unpacking</div>
+                    </div>
+                </div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Compartment Organization</div>
+                        <div class="comparison-detail">Items grouped by use in dedicated pockets</div>
+                    </div>
+                </div>
+                <div class="comparison-item">
+                    <span class="comparison-icon">✓</span>
+                    <div class="comparison-text">
+                        <div class="comparison-label">Easy Retrieval</div>
+                        <div class="comparison-detail">Less digging, more convenience</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">
+                    <span>💡</span>
+                    <span>Recommendation</span>
+                </div>
+                <div class="info-box-text">
+                    For business trips with daily presentation needs, choose Access Priority. For vacation with limited luggage space, choose Volume Priority.
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-bar">
+            <button class="btn btn-primary">Apply Selection</button>
+        </div>
+    </div>
+    
+    <!-- Screen 2: Trip Ready Confirmation -->
+    <div class="phone-container">
+        <div class="header">
+            <div class="header-top">
+                <span class="close-btn">×</span>
+                <span class="header-title">Trip Ready</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="success-screen">
+                <div class="success-icon">✅</div>
+                <div class="success-title">All Packed!</div>
+                <div class="success-subtitle">Your luggage is ready for Paris</div>
+            </div>
+            
+            <div class="checklist-card">
+                <div class="checklist-card-title">Packing Summary</div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Total Items Packed</span>
+                    <span class="checklist-value">32 items</span>
+                </div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Luggage Used</span>
+                    <span class="checklist-value">2 pieces</span>
+                </div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Volume Usage</span>
+                    <span class="checklist-value">18.5L / 22L (84%)</span>
+                </div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Packing Mode</span>
+                    <span class="checklist-value">Volume Priority</span>
+                </div>
+            </div>
+            
+            <div class="checklist-card">
+                <div class="checklist-card-title">Airline Compliance</div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Airline</span>
+                    <span class="checklist-value">Delta Airlines</span>
+                </div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Carry-on Dimensions</span>
+                    <span class="status-badge badge-success">✓ Compliant</span>
+                </div>
+                <div class="checklist-row">
+                    <span class="checklist-label">Weight Limit</span>
+                    <span class="status-badge badge-warning">⚠️ Check at airport</span>
+                </div>
+            </div>
+            
+            <div class="documents-reminder">
+                <div class="reminder-header">
+                    <span class="reminder-icon">📄</span>
+                    <span class="reminder-title">Important Documents</span>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-checkbox"></div>
+                    <span class="reminder-text">Passport (valid 6+ months)</span>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-checkbox"></div>
+                    <span class="reminder-text">Travel Insurance Documents</span>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-checkbox"></div>
+                    <span class="reminder-text">Flight Tickets / Boarding Pass</span>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">
+                    <span>💡</span>
+                    <span>Pro Tip</span>
+                </div>
+                <div class="info-box-text">
+                    Take a photo of your packed luggage before closing. This helps if you need to repack or remember where you put specific items.
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="window.location.href='tc-nomad-step2b-visual-guide.html'">View Packing Guide Again</button>
+                <button class="btn btn-secondary" onclick="window.location.href='tc_nomad_main_wireframes.html'">Save Trip to History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+        <a href="tc-nomad-step2b-visual-guide.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,0.6); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Step 2B
+        </a>
+    </div>
+
+    <script>
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'tc-nomad-step2b-visual-guide.html';
+            }
+        });
+    </script>
+</body>
+</html>

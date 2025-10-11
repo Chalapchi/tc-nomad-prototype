@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Step 2B: 3D Layer Packing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .layer-toggle {
+            padding: 6px 12px;
+            background: #007AFF;
+            border-radius: 8px;
+            font-size: 11px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+
+        .content {
+            padding-bottom: 80px;
+        }
+
+        /* Layer Selector */
+        .layer-selector {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .layer-selector-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .layer-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .layer-btn {
+            padding: 10px;
+            background: #F2F2F7;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .layer-btn.active {
+            background: #E3F2FF;
+            border-color: #007AFF;
+        }
+
+        .layer-btn-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        .layer-btn-label {
+            font-size: 9px;
+            color: #8E8E93;
+            text-transform: uppercase;
+        }
+
+        .layer-btn-fill {
+            font-size: 10px;
+            color: #34C759;
+            margin-top: 2px;
+        }
+
+        /* Luggage Grid View */
+        .luggage-grid-view {
+            background: white;
+            padding: 20px 16px;
+        }
+
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .grid-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .grid-subtitle {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        /* Stacked Layer View - Shows all 4 layers stacked */
+        .quadrant-grid {
+            width: 100%;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border: 3px solid #2C3E50;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        /* Individual layer in the stack */
+        .layer-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+            position: relative;
+            border-radius: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .layer-stack:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Different heights for different layers */
+        .layer-stack[data-layer="1"] {
+            min-height: 60px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .layer-stack[data-layer="2"] {
+            min-height: 80px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .layer-stack[data-layer="3"] {
+            min-height: 100px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .layer-stack[data-layer="4"] {
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .layer-number {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #007AFF;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .quadrant {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px dashed #B0B0B0;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quadrant:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: #007AFF;
+        }
+
+        .quadrant.has-item {
+            background: rgba(52, 199, 89, 0.1);
+            border-color: #34C759;
+        }
+
+        .quadrant-label {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #8E8E93;
+        }
+
+        .quadrant-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quadrant-item {
+            font-size: 28px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3) rotate(-90deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .quadrant-depth {
+            font-size: 9px;
+            color: #8E8E93;
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            background: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Layer depth indicator (side view) */
+        .depth-indicator {
+            background: #F2F2F7;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .depth-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 8px;
+        }
+
+        .depth-bars {
+            display: flex;
+            gap: 4px;
+            height: 60px;
+            align-items: flex-end;
+        }
+
+        .depth-bar {
+            flex: 1;
+            background: #E5E5EA;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .depth-bar.active {
+            background: linear-gradient(180deg, #007AFF 0%, #0051D5 100%);
+        }
+
+        .depth-bar.filled {
+            background: linear-gradient(180deg, #34C759 0%, #30B057 100%);
+        }
+
+        .depth-bar-label {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: #8E8E93;
+            white-space: nowrap;
+        }
+
+        /* AI Reasoning Box */
+        .ai-reasoning {
+            background: linear-gradient(135deg, #E3F2FF 0%, #F0F8FF 100%);
+            border: 1px solid #007AFF;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 16px;
+        }
+
+        .ai-reasoning-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #007AFF;
+            margin-bottom: 8px;
+        }
+
+        .ai-reasoning-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .ai-reasoning-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reasoning-placement {
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+
+        .reasoning-why {
+            font-size: 11px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+
+        /* Item List */
+        .item-list {
+            padding: 0 16px;
+        }
+
+        .item-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .item-list-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .item-list-count {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        .item-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .item-card:hover {
+            border-color: #007AFF;
+            transform: translateX(4px);
+        }
+
+        .item-card.packed {
+            background: #F2F2F7;
+            border-color: #34C759;
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .item-card.packed:hover {
+            transform: none;
+        }
+
+        .item-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .item-emoji {
+            font-size: 32px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        .item-dimensions {
+            font-size: 11px;
+            color: #8E8E93;
+        }
+
+        .item-badge {
+            padding: 4px 8px;
+            background: #007AFF;
+            color: white;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .item-badge.packed {
+            background: #34C759;
+        }
+
+        .item-suggestion {
+            background: #F2F2F7;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+
+        .suggestion-highlight {
+            display: inline-block;
+            background: #007AFF;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 0 2px;
+        }
+
+        /* Flying animation */
+        .flying-item {
+            position: fixed;
+            font-size: 40px;
+            z-index: 1000;
+            pointer-events: none;
+            animation: flyToQuadrant 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes flyToQuadrant {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        /* Navigation Bar */
+        .navigation-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-btn-secondary {
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+
+        .nav-btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="header-left">
+                    <span class="back-btn" onclick="window.location.href='tc-nomad-step2a-compartments.html'">‹</span>
+                    <span class="header-title">3D Layer Packing</span>
+                </div>
+                <div class="layer-toggle" onclick="toggleViewMode()">
+                    📦 Grid View
+                </div>
+            </div>
+            <div class="header-subtitle">Pack by layers & quadrants</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Layer Selector -->
+            <div class="layer-selector">
+                <div class="layer-selector-title">SELECT LAYER TO PACK</div>
+                <div class="layer-buttons">
+                    <div class="layer-btn" onclick="selectLayer(1)">
+                        <div class="layer-btn-number">L1</div>
+                        <div class="layer-btn-label">Top</div>
+                        <div class="layer-btn-fill">0/4</div>
+                    </div>
+                    <div class="layer-btn" onclick="selectLayer(2)">
+                        <div class="layer-btn-number">L2</div>
+                        <div class="layer-btn-label">Upper</div>
+                        <div class="layer-btn-fill">0/4</div>
+                    </div>
+                    <div class="layer-btn" onclick="selectLayer(3)">
+                        <div class="layer-btn-number">L3</div>
+                        <div class="layer-btn-label">Lower</div>
+                        <div class="layer-btn-fill">0/4</div>
+                    </div>
+                    <div class="layer-btn active" onclick="selectLayer(4)">
+                        <div class="layer-btn-number">L4</div>
+                        <div class="layer-btn-label">Bottom</div>
+                        <div class="layer-btn-fill">1/4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luggage Grid View -->
+            <div class="luggage-grid-view">
+                <div class="grid-header">
+                    <div>
+                        <div class="grid-title">Layer 4 (Bottom) - 3" depth</div>
+                        <div class="grid-subtitle">Looking down into luggage</div>
+                    </div>
+                </div>
+
+                <!-- Quadrant Grid (Top-down view) -->
+                <div class="quadrant-grid">
+                    <div class="quadrant has-item" data-quadrant="A" id="quadrant-A">
+                        <span class="quadrant-label">A</span>
+                        <div class="quadrant-items">
+                            <span class="quadrant-item">👞</span>
+                        </div>
+                        <span class="quadrant-depth">3" used</span>
+                    </div>
+                    <div class="quadrant" data-quadrant="B" id="quadrant-B">
+                        <span class="quadrant-label">B</span>
+                        <div class="quadrant-items"></div>
+                        <span class="quadrant-depth">0" used</span>
+                    </div>
+                    <div class="quadrant" data-quadrant="C" id="quadrant-C">
+                        <span class="quadrant-label">C</span>
+                        <div class="quadrant-items"></div>
+                        <span class="quadrant-depth">0" used</span>
+                    </div>
+                    <div class="quadrant" data-quadrant="D" id="quadrant-D">
+                        <span class="quadrant-label">D</span>
+                        <div class="quadrant-items"></div>
+                        <span class="quadrant-depth">0" used</span>
+                    </div>
+                </div>
+
+                <!-- Depth Indicator (Side view) -->
+                <div class="depth-indicator">
+                    <div class="depth-title">LUGGAGE DEPTH (Side View)</div>
+                    <div class="depth-bars">
+                        <div class="depth-bar" style="height: 25%;">
+                            <span class="depth-bar-label">L1 (1")</span>
+                        </div>
+                        <div class="depth-bar" style="height: 35%;">
+                            <span class="depth-bar-label">L2 (1.5")</span>
+                        </div>
+                        <div class="depth-bar" style="height: 45%;">
+                            <span class="depth-bar-label">L3 (2")</span>
+                        </div>
+                        <div class="depth-bar filled active" style="height: 60%;">
+                            <span class="depth-bar-label">L4 (3")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Reasoning -->
+            <div class="ai-reasoning">
+                <div class="ai-reasoning-header">
+                    ✨ Why AI suggests this:
+                </div>
+                <div class="ai-reasoning-item">
+                    <div class="reasoning-placement">👞 Shoes → Quadrant A, Layers 3-4</div>
+                    <div class="reasoning-why">
+                        • Heavy item provides stability at bottom<br>
+                        • Back position (Quadrant A) - won't shift during travel<br>
+                        • 3 inches tall - occupies 2 layers (L3 + L4)
+                    </div>
+                </div>
+                <div class="ai-reasoning-item">
+                    <div class="reasoning-placement">💻 Laptop → Quadrant C, Layer 4</div>
+                    <div class="reasoning-why">
+                        • Thin (0.5") - only needs bottom layer<br>
+                        • Front position for easy access<br>
+                        • Protected by clothes stacked above
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item List -->
+            <div class="item-list">
+                <div class="item-list-header">
+                    <span class="item-list-title">Items to Pack</span>
+                    <span class="item-list-count">1 / 8 packed</span>
+                </div>
+
+                <div class="item-cards">
+                    <!-- Packed item -->
+                    <div class="item-card packed">
+                        <div class="item-card-top">
+                            <div class="item-emoji">👞</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Shoes (1 pair)</div>
+                                <div class="item-dimensions">Height: 3" | Weight: Heavy</div>
+                            </div>
+                            <div class="item-badge packed">✓ PACKED</div>
+                        </div>
+                        <div class="item-suggestion">
+                            Placed in <span class="suggestion-highlight">Quadrant A</span> at <span class="suggestion-highlight">Layers 3-4</span>
+                        </div>
+                    </div>
+
+                    <!-- Next item to pack -->
+                    <div class="item-card" onclick="packItemToQuadrant(this, '💻', 'C', 4, 0.5)">
+                        <div class="item-card-top">
+                            <div class="item-emoji">💻</div>
+                            <div class="item-info">
+                                <div class="item-name">Laptop</div>
+                                <div class="item-dimensions">Height: 0.5" | Weight: Medium</div>
+                            </div>
+                            <div class="item-badge">NEXT</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <span class="suggestion-highlight">Quadrant C</span> at <span class="suggestion-highlight">Layer 4</span> (bottom layer, front-left, easy access)
+                        </div>
+                    </div>
+
+                    <!-- Other items -->
+                    <div class="item-card" onclick="packItemToQuadrant(this, '👖', 'B', 3, 2)">
+                        <div class="item-card-top">
+                            <div class="item-emoji">👖</div>
+                            <div class="item-info">
+                                <div class="item-name">Jeans (2, rolled)</div>
+                                <div class="item-dimensions">Height: 2" each | Weight: Medium</div>
+                            </div>
+                            <div class="item-badge">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <span class="suggestion-highlight">Quadrant B</span> at <span class="suggestion-highlight">Layers 3-4</span> (fills back-right corner)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '👔', 'D', 2, 1)">
+                        <div class="item-card-top">
+                            <div class="item-emoji">👔</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Shirts (3, folded)</div>
+                                <div class="item-dimensions">Height: 1" each | Weight: Light</div>
+                            </div>
+                            <div class="item-badge">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <span class="suggestion-highlight">Quadrant D</span> at <span class="suggestion-highlight">Layer 2</span> (upper-middle layer, prevents wrinkles)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '🧥', 'D', 1, 1)">
+                        <div class="item-card-top">
+                            <div class="item-emoji">🧥</div>
+                            <div class="item-info">
+                                <div class="item-name">Blazer (folded)</div>
+                                <div class="item-dimensions">Height: 1" | Weight: Light</div>
+                            </div>
+                            <div class="item-badge">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <span class="suggestion-highlight">Quadrant D</span> at <span class="suggestion-highlight">Layer 1</span> (top layer - no crushing, easy access)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '💼', 'D', 1, 1)">
+                        <div class="item-card-top">
+                            <div class="item-emoji">💼</div>
+                            <div class="item-info">
+                                <div class="item-name">Toiletry Bag</div>
+                                <div class="item-dimensions">Height: 4" | Weight: Medium</div>
+                            </div>
+                            <div class="item-badge">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <span class="suggestion-highlight">Quadrant D</span> at <span class="suggestion-highlight">Layers 1-4</span> (spans full depth, front position for access)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <button class="nav-btn nav-btn-secondary" onclick="window.location.href='tc-nomad-step2a-compartments.html'">← Back</button>
+            <button class="nav-btn nav-btn-primary" onclick="window.location.href='tc-nomad-mode-and-ready.html'">Continue →</button>
+        </div>
+    </div>
+
+    <!-- Global Navigation -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+    </div>
+
+    <script>
+        let currentLayer = 4;
+        let packedItems = {
+            1: {A: [], B: [], C: [], D: []},
+            2: {A: [], B: [], C: [], D: []},
+            3: {A: [], B: [], C: [], D: []},
+            4: {A: [{emoji: '👞', height: 3}], B: [], C: [], D: []}
+        };
+
+        // Select layer
+        function selectLayer(layerNum) {
+            currentLayer = layerNum;
+
+            // Update UI
+            document.querySelectorAll('.layer-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === layerNum);
+            });
+
+            // Update grid title
+            const layerNames = ['Top', 'Upper', 'Lower', 'Bottom'];
+            const layerDepths = ['1"', '1.5"', '2"', '3"'];
+            document.querySelector('.grid-title').textContent =
+                `Layer ${layerNum} (${layerNames[layerNum - 1]}) - ${layerDepths[layerNum - 1]} depth`;
+
+            // Update depth bars
+            document.querySelectorAll('.depth-bar').forEach((bar, idx) => {
+                bar.classList.toggle('active', idx + 1 === layerNum);
+            });
+
+            // Redraw quadrants
+            renderQuadrants();
+        }
+
+        // Render quadrants for current layer
+        function renderQuadrants() {
+            const quadrants = ['A', 'B', 'C', 'D'];
+
+            quadrants.forEach(q => {
+                const quadrantEl = document.getElementById(`quadrant-${q}`);
+                const items = packedItems[currentLayer][q];
+                const itemsContainer = quadrantEl.querySelector('.quadrant-items');
+                const depthDisplay = quadrantEl.querySelector('.quadrant-depth');
+
+                // Clear and repopulate
+                itemsContainer.innerHTML = items.map(item =>
+                    `<span class="quadrant-item">${item.emoji}</span>`
+                ).join('');
+
+                // Calculate depth used
+                const depthUsed = items.reduce((sum, item) => sum + item.height, 0);
+                depthDisplay.textContent = `${depthUsed}" used`;
+
+                // Toggle has-item class
+                quadrantEl.classList.toggle('has-item', items.length > 0);
+            });
+
+            // Update layer fill counts
+            document.querySelectorAll('.layer-btn').forEach((btn, idx) => {
+                const layer = idx + 1;
+                const totalItems = Object.values(packedItems[layer]).flat().length;
+                btn.querySelector('.layer-btn-fill').textContent = `${totalItems}/4`;
+            });
+        }
+
+        // Pack item to specific quadrant
+        function packItemToQuadrant(cardElement, emoji, quadrant, suggestedLayer, height) {
+            if (cardElement.classList.contains('packed')) return;
+
+            // Get positions for animation
+            const startRect = cardElement.getBoundingClientRect();
+            const targetQuadrant = document.getElementById(`quadrant-${quadrant}`);
+            const targetRect = targetQuadrant.getBoundingClientRect();
+
+            // Create flying item
+            const flyingItem = document.createElement('div');
+            flyingItem.className = 'flying-item';
+            flyingItem.textContent = emoji;
+            flyingItem.style.left = startRect.left + 'px';
+            flyingItem.style.top = startRect.top + 'px';
+            document.body.appendChild(flyingItem);
+
+            // Animate to target
+            setTimeout(() => {
+                flyingItem.style.left = (targetRect.left + targetRect.width / 2 - 20) + 'px';
+                flyingItem.style.top = (targetRect.top + targetRect.height / 2 - 20) + 'px';
+            }, 10);
+
+            // After animation, add to data and update UI
+            setTimeout(() => {
+                // Add to packed items
+                packedItems[currentLayer][quadrant].push({emoji, height});
+
+                // Update card appearance
+                cardElement.classList.add('packed');
+                cardElement.querySelector('.item-badge').textContent = '✓ PACKED';
+                cardElement.querySelector('.item-badge').classList.add('packed');
+                cardElement.querySelector('.item-suggestion').innerHTML =
+                    `Placed in <span class="suggestion-highlight">Quadrant ${quadrant}</span> at <span class="suggestion-highlight">Layer ${currentLayer}</span>`;
+                cardElement.onclick = null;
+
+                // Render quadrants
+                renderQuadrants();
+
+                // Update item count
+                const totalPacked = Object.values(packedItems).flatMap(layer =>
+                    Object.values(layer).flat()
+                ).length;
+                document.querySelector('.item-list-count').textContent = `${totalPacked} / 8 packed`;
+
+                // Remove flying item
+                flyingItem.remove();
+            }, 800);
+        }
+
+        // Toggle view mode
+        function toggleViewMode() {
+            alert('3D view mode coming soon! This would show a rotatable 3D model of your luggage.');
+        }
+
+        // Initialize
+        renderQuadrants();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'tc-nomad-step2a-compartments.html';
+            }
+            if (e.key === 'ArrowRight') {
+                window.location.href = 'tc-nomad-mode-and-ready.html';
+            }
+            // Number keys to switch layers
+            if (e.key >= '1' && e.key <= '4') {
+                selectLayer(parseInt(e.key));
+            }
+        });
+    </script>
+</body>
+</html>

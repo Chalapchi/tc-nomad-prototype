@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Enhanced Trip Creation Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .screen-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 20px;
+            z-index: 1000;
+        }
+
+        .screen-btn {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .screen-btn.active {
+            background: #007AFF;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 60px 24px 16px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: none;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007AFF;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            color: #1D1D1F;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #F2F2F7;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007AFF;
+            background: white;
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Activity selection */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .activity-option {
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .activity-option.selected {
+            border-color: #007AFF;
+            background: #F0F9FF;
+            color: #007AFF;
+        }
+
+        .activity-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .activity-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Luggage selection */
+        .luggage-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .luggage-item.selected {
+            border-color: #007AFF;
+            background: #F0F9FF;
+        }
+
+        .luggage-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .luggage-info {
+            flex: 1;
+        }
+
+        .luggage-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 4px;
+        }
+
+        .luggage-specs {
+            font-size: 14px;
+            color: #8E8E93;
+        }
+
+        .add-luggage-btn {
+            border: 2px dashed #8E8E93;
+            background: none;
+            color: #8E8E93;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Weather widget */
+        .weather-widget {
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .weather-location {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .weather-temp {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .weather-days {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .weather-day {
+            text-align: center;
+            flex: 1;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px 8px;
+        }
+
+        .weather-day-name {
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .weather-day-temp {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* Progress section */
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 600;
+            color: #007AFF;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #E5E5EA;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007AFF, #00C7BE);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        /* 2D Model Section */
+        .model-section {
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .model-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .model-visual {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .luggage-2d {
+            width: 80px;
+            height: 60px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 8px;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .luggage-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #34C759, #30D158);
+            border-radius: 6px;
+            transition: height 0.3s ease;
+            height: 25%;
+        }
+
+        .model-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Optimization mode - smaller */
+        .optimization-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .optimization-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 12px;
+        }
+
+        .optimization-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .optimization-option {
+            background: #F2F2F7;
+            border: 2px solid #E5E5EA;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .optimization-option.selected {
+            border-color: #007AFF;
+            background: #F0F9FF;
+        }
+
+        .optimization-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .optimization-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .optimization-desc {
+            font-size: 10px;
+            color: #8E8E93;
+        }
+
+        /* Packing categories */
+        .packing-categories {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .category-section {
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .category-section:last-child {
+            border-bottom: none;
+        }
+
+        .category-header {
+            background: #F8F9FA;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .category-toggle {
+            font-size: 12px;
+            color: #007AFF;
+        }
+
+        .category-items {
+            padding: 0;
+        }
+
+        .packing-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #F2F2F7;
+        }
+
+        .packing-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E5E5EA;
+            border-radius: 4px;
+            margin-right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .item-checkbox.checked {
+            background: #34C759;
+            border-color: #34C759;
+        }
+
+        .item-info {
+            flex: 1;
+            margin-right: 12px;
+        }
+
+        .item-name {
+            font-size: 14px;
+            color: #1D1D1F;
+            font-weight: 500;
+        }
+
+        .item-details {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            background: #F2F2F7;
+            border-radius: 6px;
+            padding: 4px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #007AFF;
+        }
+
+        .qty-input {
+            width: 32px;
+            text-align: center;
+            border: none;
+            background: none;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 0 4px;
+        }
+
+        .remove-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: #FF3B30;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .add-new-item-btn {
+            width: 100%;
+            background: none;
+            border: 2px dashed #007AFF;
+            color: #007AFF;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .add-new-item-btn:hover {
+            background: #F0F9FF;
+        }
+
+        /* Pro tip callout */
+        .protip-callout {
+            background: linear-gradient(135deg, #FFE066, #FFC107);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-left: 4px solid #FF9F00;
+        }
+
+        .protip-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .protip-icon {
+            font-size: 20px;
+        }
+
+        .protip-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .protip-text {
+            font-size: 14px;
+            color: #1D1D1F;
+            line-height: 1.4;
+        }
+
+        /* Compliance section */
+        .compliance-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .compliance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .compliance-airline {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .compliance-status {
+            background: #E8F5E8;
+            color: #34C759;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .compliance-details {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-bottom: 16px;
+        }
+
+        .compliance-checks {
+            display: grid;
+            gap: 8px;
+        }
+
+        .compliance-check {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #F2F2F7;
+        }
+
+        .compliance-check:last-child {
+            border-bottom: none;
+        }
+
+        .check-label {
+            color: #8E8E93;
+            font-size: 14px;
+        }
+
+        .check-status {
+            color: #34C759;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Trip summary */
+        .trip-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 16px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #F2F2F7;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #8E8E93;
+            font-size: 14px;
+        }
+
+        .summary-value {
+            color: #1D1D1F;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #0056CC;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            color: #007AFF;
+            border: 2px solid #007AFF;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* Success screen */
+        .success-content {
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #34C759, #30D158);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            color: white;
+            font-size: 48px;
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 12px;
+        }
+
+        .success-description {
+            font-size: 16px;
+            color: #8E8E93;
+            margin-bottom: 48px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen Controls -->
+    <div class="screen-controls">
+        <button class="screen-btn active" onclick="showScreen(0)">New Trip</button>
+        <button class="screen-btn" onclick="showScreen(1)">Activities</button>
+        <button class="screen-btn" onclick="showScreen(2)">Luggage</button>
+        <button class="screen-btn" onclick="showScreen(3)">Weather</button>
+        <button class="screen-btn" onclick="showScreen(4)">Packing</button>
+        <button class="screen-btn" onclick="showScreen(5)">Ready</button>
+    </div>
+
+    <div class="phone-container">
+        <!-- Screen 1: New Trip -->
+        <div class="screen active">
+            <div class="header">
+                <button class="back-btn">←</button>
+                <h2 class="header-title">New Trip</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <div class="form-group">
+                    <label class="form-label">Destination</label>
+                    <input type="text" class="form-input" placeholder="City, Country" value="Berlin, Germany">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Travel Dates</label>
+                    <div class="date-grid">
+                        <input type="date" class="form-input" value="2025-10-15">
+                        <input type="date" class="form-input" value="2025-10-18">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Trip Type</label>
+                    <select class="form-input">
+                        <option value="business" selected>Business Trip</option>
+                        <option value="vacation">Vacation</option>
+                        <option value="family">Family Visit</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Airline</label>
+                    <select class="form-input">
+                        <option value="american" selected>American Airlines</option>
+                        <option value="delta">Delta Air Lines</option>
+                        <option value="united">United Airlines</option>
+                        <option value="lufthansa">Lufthansa</option>
+                        <option value="british">British Airways</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Number of Travelers</label>
+                    <select class="form-input">
+                        <option value="1" selected>1 - Just me</option>
+                        <option value="2">2 travelers</option>
+                        <option value="3">3 travelers</option>
+                        <option value="4+">4+ travelers</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="form-input">
+                        <option value="male" selected>Male</option>
+                        <option value="female">Female</option>
+                        <option value="mixed">Mixed group</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen(1)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Activities -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(0)">←</button>
+                <h2 class="header-title">Activities</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">What will you be doing?</h3>
+                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">Select all activities that apply</p>
+
+                <div class="activity-grid">
+                    <div class="activity-option selected" onclick="toggleActivity(this)">
+                        <span class="activity-icon">🏢</span>
+                        <div class="activity-name">Business Meetings</div>
+                    </div>
+                    <div class="activity-option selected" onclick="toggleActivity(this)">
+                        <span class="activity-icon">📚</span>
+                        <div class="activity-name">Conference</div>
+                    </div>
+                    <div class="activity-option selected" onclick="toggleActivity(this)">
+                        <span class="activity-icon">🏃</span>
+                        <div class="activity-name">Gym/Fitness</div>
+                    </div>
+                    <div class="activity-option" onclick="toggleActivity(this)">
+                        <span class="activity-icon">🗺️</span>
+                        <div class="activity-name">Sightseeing</div>
+                    </div>
+                    <div class="activity-option" onclick="toggleActivity(this)">
+                        <span class="activity-icon">🍽️</span>
+                        <div class="activity-name">Dining</div>
+                    </div>
+                    <div class="activity-option" onclick="toggleActivity(this)">
+                        <span class="activity-icon">🛍️</span>
+                        <div class="activity-name">Shopping</div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen(2)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Luggage Selection -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(1)">←</button>
+                <h2 class="header-title">Select Luggage</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Choose Your Luggage</h3>
+                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">Select luggage for this trip</p>
+
+                <div class="luggage-item selected" onclick="selectLuggage(this)">
+                    <div class="luggage-icon">🧳</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Black Carry-On</div>
+                        <div class="luggage-specs">24" × 16" × 10" • 58L capacity</div>
+                    </div>
+                </div>
+
+                <div class="luggage-item" onclick="selectLuggage(this)">
+                    <div class="luggage-icon">💜</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Personal Backpack</div>
+                        <div class="luggage-specs">18" × 13" × 8" • 20L capacity</div>
+                    </div>
+                </div>
+
+                <div class="luggage-item add-luggage-btn" onclick="addNewLuggage()">
+                    <span style="font-size: 20px;">+</span>
+                    <span>Add New Luggage</span>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen(3)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Weather Forecast -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(2)">←</button>
+                <h2 class="header-title">Weather</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Weather Forecast</h3>
+                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">We'll adjust your packing list based on weather</p>
+
+                <div class="weather-widget">
+                    <div class="weather-header">
+                        <div>
+                            <div class="weather-location">Berlin, Germany</div>
+                            <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">Oct 15-18, 2025</div>
+                        </div>
+                        <div class="weather-temp">16°C</div>
+                    </div>
+                    
+                    <div class="weather-days">
+                        <div class="weather-day">
+                            <div class="weather-day-name">Tue</div>
+                            <div style="font-size: 24px; margin: 8px 0;">🌤️</div>
+                            <div class="weather-day-temp">18°</div>
+                        </div>
+                        <div class="weather-day">
+                            <div class="weather-day-name">Wed</div>
+                            <div style="font-size: 24px; margin: 8px 0;">☁️</div>
+                            <div class="weather-day-temp">15°</div>
+                        </div>
+                        <div class="weather-day">
+                            <div class="weather-day-name">Thu</div>
+                            <div style="font-size: 24px; margin: 8px 0;">🌧️</div>
+                            <div class="weather-day-temp">12°</div>
+                        </div>
+                        <div class="weather-day">
+                            <div class="weather-day-name">Fri</div>
+                            <div style="font-size: 24px; margin: 8px 0;">⛅</div>
+                            <div class="weather-day-temp">16°</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h4 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">Key Weather Notes</h4>
+                    <div style="color: #8E8E93; font-size: 14px; line-height: 1.5;">
+                        • Expect rain on Thursday - pack waterproof jacket<br>
+                        • Cool temperatures (12-18°C) - bring layers<br>
+                        • Mix of sun and clouds - versatile clothing recommended
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen(4)">Generate Packing List</button>
+            </div>
+        </div>
+
+        <!-- Screen 5: Smart Packing List -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(3)">←</button>
+                <h2 class="header-title">Smart Packing</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <!-- 1. Progress Section -->
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-title">Packing Progress</span>
+                        <span class="progress-percentage">35%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%;"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span>7 of 20 items packed</span>
+                        <span>Space used: 28%</span>
+                    </div>
+                </div>
+
+                <!-- 2. 2D Model Section -->
+                <div class="model-section">
+                    <div class="model-title">Luggage Visualization</div>
+                    <div class="model-visual">
+                        <div class="luggage-2d">
+                            <div class="luggage-fill"></div>
+                        </div>
+                    </div>
+                    <div class="model-info">
+                        <span>28% Full</span>
+                        <span>6.2 lbs / 22 lbs</span>
+                        <span>Black Carry-On</span>
+                    </div>
+                </div>
+
+                <!-- 3. Packing Priority (Smaller) -->
+                <div class="optimization-section">
+                    <div class="optimization-title">Packing Priority</div>
+                    <div class="optimization-options">
+                        <div class="optimization-option selected" onclick="selectOptimization(this)">
+                            <div class="optimization-icon">📦</div>
+                            <div class="optimization-name">Volume</div>
+                            <div class="optimization-desc">Maximize space</div>
+                        </div>
+                        <div class="optimization-option" onclick="selectOptimization(this)">
+                            <div class="optimization-icon">⚡</div>
+                            <div class="optimization-name">Access</div>
+                            <div class="optimization-desc">Quick retrieval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Categorized Items List -->
+                <div class="packing-categories">
+                    <!-- Business Attire -->
+                    <div class="category-section">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <span class="category-title">Business Attire</span>
+                            <span class="category-toggle">▼</span>
+                        </div>
+                        <div class="category-items">
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)">✓</div>
+                                <div class="item-info">
+                                    <div class="item-name">Business Shirts</div>
+                                    <div class="item-details">Wrinkle-free, folded</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="3" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)">✓</div>
+                                <div class="item-info">
+                                    <div class="item-name">Dress Pants</div>
+                                    <div class="item-details">Business formal</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="2" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)">✓</div>
+                                <div class="item-info">
+                                    <div class="item-name">Business Shoes</div>
+                                    <div class="item-details">Leather dress shoes</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="1" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather Gear -->
+                    <div class="category-section">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <span class="category-title">Weather Gear</span>
+                            <span class="category-toggle">▼</span>
+                        </div>
+                        <div class="category-items">
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)">✓</div>
+                                <div class="item-info">
+                                    <div class="item-name">Rain Jacket</div>
+                                    <div class="item-details">Waterproof, compact</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="1" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                            <div class="packing-item">
+                                <div class="item-checkbox" onclick="toggleItem(this)"></div>
+                                <div class="item-info">
+                                    <div class="item-name">Warm Sweater</div>
+                                    <div class="item-details">For cool evenings</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="2" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Care -->
+                    <div class="category-section">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <span class="category-title">Personal Care</span>
+                            <span class="category-toggle">▼</span>
+                        </div>
+                        <div class="category-items">
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)">✓</div>
+                                <div class="item-info">
+                                    <div class="item-name">Toiletry Bag</div>
+                                    <div class="item-details">Complete travel kit</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="1" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                            <div class="packing-item">
+                                <div class="item-checkbox checked" onclick="toggleItem(this)"></div>
+                                <div class="item-info">
+                                    <div class="item-name">Medications</div>
+                                    <div class="item-details">Prescription & vitamins</div>
+                                </div>
+                                <div class="item-controls">
+                                    <div class="quantity-control">
+                                        <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" class="qty-input" value="1" min="0">
+                                        <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeItem(this)">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="showScreen(5)">Check Compliance</button>
+            </div>
+        </div>
+
+        <!-- Screen 6: Compliance & Trip Ready -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(4)">←</button>
+                <h2 class="header-title">Trip Ready</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <!-- Pro Tip Callout -->
+                <div class="protip-callout">
+                    <div class="protip-header">
+                        <span class="protip-icon">⚠️</span>
+                        <span class="protip-title">Accuracy Check</span>
+                    </div>
+                    <p class="protip-text">We use average weight data for items. Since you're at 78% capacity, we recommend weighing your actual luggage to ensure airline compliance.</p>
+                </div>
+
+                <!-- Compliance Check -->
+                <div class="compliance-card">
+                    <div class="compliance-header">
+                        <div class="compliance-airline">American Airlines</div>
+                        <div class="compliance-status">✓ Compliant</div>
+                    </div>
+                    <div class="compliance-details">
+                        Your luggage meets all airline requirements
+                    </div>
+                    <div class="compliance-checks">
+                        <div class="compliance-check">
+                            <span class="check-label">Size Compliance</span>
+                            <span class="check-status">✓ Passed</span>
+                        </div>
+                        <div class="compliance-check">
+                            <span class="check-label">Weight Limit</span>
+                            <span class="check-status">✓ Passed</span>
+                        </div>
+                        <div class="compliance-check">
+                            <span class="check-label">Liquid Restrictions</span>
+                            <span class="check-status">✓ Passed</span>
+                        </div>
+                        <div class="compliance-check">
+                            <span class="check-label">Prohibited Items</span>
+                            <span class="check-status">✓ None Found</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Summary -->
+                <div class="trip-summary">
+                    <div class="summary-title">Trip Summary</div>
+                    <div class="summary-item">
+                        <span class="summary-label">Destination</span>
+                        <span class="summary-value">Berlin, Germany</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Duration</span>
+                        <span class="summary-value">Oct 15-18, 2025 (4 days)</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Packing Progress</span>
+                        <span class="summary-value" style="color: #34C759;">100% Complete</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Space Efficiency</span>
+                        <span class="summary-value">78%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Weight Used</span>
+                        <span class="summary-value">17.2 lbs / 22 lbs</span>
+                    </div>
+                </div>
+
+                <div class="success-content">
+                    <div class="success-icon">✈️</div>
+                    <div class="success-title">Ready to Travel!</div>
+                    <div class="success-description">
+                        Your Berlin business trip is fully optimized. Have a great journey!
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="goToTrips()">View My Trips</button>
+                <button class="btn-secondary" onclick="createAnother()">Create Another Trip</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(index) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            screens[index].classList.add('active');
+            
+            const buttons = document.querySelectorAll('.screen-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        function toggleActivity(element) {
+            element.classList.toggle('selected');
+        }
+
+        function selectLuggage(element) {
+            document.querySelectorAll('.luggage-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function addNewLuggage() {
+            alert('Open luggage creation flow');
+        }
+
+        function selectOptimization(element) {
+            document.querySelectorAll('.optimization-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function toggleCategory(header) {
+            const toggle = header.querySelector('.category-toggle');
+            const items = header.parentElement.querySelector('.category-items');
+            
+            if (items.style.display === 'none') {
+                items.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                items.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+
+        function toggleItem(checkbox) {
+            checkbox.classList.toggle('checked');
+            if (checkbox.classList.contains('checked')) {
+                checkbox.textContent = '✓';
+            } else {
+                checkbox.textContent = '';
+            }
+            updateProgress();
+        }
+
+        function changeQuantity(button, delta) {
+            const input = button.parentElement.querySelector('.qty-input');
+            const currentValue = parseInt(input.value) || 0;
+            const newValue = Math.max(0, currentValue + delta);
+            input.value = newValue;
+            
+            if (newValue === 0) {
+                // Uncheck item if quantity is 0
+                const checkbox = button.closest('.packing-item').querySelector('.item-checkbox');
+                checkbox.classList.remove('checked');
+                checkbox.textContent = '';
+            }
+            updateProgress();
+        }
+
+        function removeItem(button) {
+            if (confirm('Remove this item from your packing list?')) {
+                button.closest('.packing-item').remove();
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const checkedItems = document.querySelectorAll('.item-checkbox.checked').length;
+            const totalItems = document.querySelectorAll('.item-checkbox').length;
+            const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+            
+            const progressPercentage = document.querySelector('.progress-percentage');
+            const progressFill = document.querySelector('.progress-fill');
+            const luggageFill = document.querySelector('.luggage-fill');
+            const progressStats = document.querySelector('.progress-stats span:first-child');
+            
+            if (progressPercentage) progressPercentage.textContent = percentage + '%';
+            if (progressFill) progressFill.style.width = percentage + '%';
+            if (luggageFill) luggageFill.style.height = Math.max(5, percentage) + '%';
+            if (progressStats) progressStats.textContent = `${checkedItems} of ${totalItems} items packed`;
+        }
+
+        function addNewItemToCategory(button, categoryName) {
+            const categoryItems = button.parentElement;
+            const itemName = prompt(`Add new item to ${categoryName}:`);
+            
+            if (itemName && itemName.trim()) {
+                const newItem = document.createElement('div');
+                newItem.className = 'packing-item';
+                newItem.innerHTML = `
+                    <div class="item-checkbox" onclick="toggleItem(this)"></div>
+                    <div class="item-info">
+                        <div class="item-name">${itemName.trim()}</div>
+                        <div class="item-details">Custom item</div>
+                    </div>
+                    <div class="item-controls">
+                        <div class="quantity-control">
+                            <button class="qty-btn" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" class="qty-input" value="1" min="0">
+                            <button class="qty-btn" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(this)">×</button>
+                    </div>
+                `;
+                
+                categoryItems.insertBefore(newItem, button);
+                updateProgress();
+            }
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; bottom: 100px; right: 20px; z-index: 2000;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            color: #1D1D1F;
+        }
+
+        .admin-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1D1D1F;
+            color: white;
+            padding: 24px 0;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 24px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-header {
+            padding: 0 24px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #8E8E93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #8E8E93;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #007AFF;
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #E5E5EA;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #0056CC;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #007AFF;
+            border: 2px solid #007AFF;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #E5E5EA;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: #8E8E93;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            background: #F2F2F7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1D1D1F;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            color: #34C759;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #E5E5EA;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #8E8E93;
+            text-transform: uppercase;
+            background: #F8F9FA;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F2F2F7;
+            font-size: 14px;
+        }
+
+        .table tr:hover {
+            background: #F8F9FA;
+        }
+
+        /* User avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #007AFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #E8F5E8;
+            color: #34C759;
+        }
+
+        .status-inactive {
+            background: #FFE5E5;
+            color: #FF3B30;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 250px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #1D1D1F;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* File upload */
+        .file-upload {
+            border: 2px dashed #E5E5EA;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #007AFF;
+            background: #F0F9FF;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        /* Action buttons */
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .action-edit {
+            background: #F0F9FF;
+            color: #007AFF;
+        }
+
+        .action-delete {
+            background: #FFE5E5;
+            color: #FF3B30;
+        }
+
+        .action-view {
+            background: #F2F2F7;
+            color: #8E8E93;
+        }
+
+        /* Screen Controls */
+        .screen-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px;
+            border-radius: 12px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            max-width: 400px;
+        }
+
+        .screen-btn {
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .screen-btn.active {
+            background: #007AFF;
+        }
+
+        /* Activity log */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F2F2F7;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #F0F9FF;
+            color: #007AFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        /* Categories and items */
+        .category-item {
+            background: #F8F9FA;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .items-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .item-row {
+            background: white;
+            border: 1px solid #E5E5EA;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-preview {
+            width: 32px;
+            height: 32px;
+            background: #F2F2F7;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #8E8E93;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen Controls -->
+    <div class="screen-controls">
+        <button class="screen-btn active" onclick="showScreen(0)">Dashboard</button>
+        <button class="screen-btn" onclick="showScreen(1)">Users</button>
+        <button class="screen-btn" onclick="showScreen(2)">Luggage Types</button>
+        <button class="screen-btn" onclick="showScreen(3)">Airlines</button>
+        <button class="screen-btn" onclick="showScreen(4)">Trip Types</button>
+        <button class="screen-btn" onclick="showScreen(5)">Activities</button>
+        <button class="screen-btn" onclick="showScreen(6)">Item Categories</button>
+        <button class="screen-btn" onclick="showScreen(7)">Welcome Screen</button>
+        <button class="screen-btn" onclick="showScreen(8)">Settings</button>
+    </div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">TC</div>
+                <div class="logo-text">TC Nomad Admin</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-header">Overview</div>
+                <button class="nav-item active" onclick="showScreen(0)">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-header">User Management</div>
+                <button class="nav-item" onclick="showScreen(1)">
+                    <span class="nav-icon">👥</span>
+                    <span>Manage Users</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-header">Content Management</div>
+                <button class="nav-item" onclick="showScreen(2)">
+                    <span class="nav-icon">🧳</span>
+                    <span>Luggage Types</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(3)">
+                    <span class="nav-icon">✈️</span>
+                    <span>Airlines</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(4)">
+                    <span class="nav-icon">🗺️</span>
+                    <span>Trip Types</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(5)">
+                    <span class="nav-icon">🎯</span>
+                    <span>Activities</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(6)">
+                    <span class="nav-icon">📦</span>
+                    <span>Item Categories</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(7)">
+                    <span class="nav-icon">📱</span>
+                    <span>Welcome Screen</span>
+                </button>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-header">System</div>
+                <button class="nav-item" onclick="showScreen(8)">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Screen 1: Dashboard -->
+            <div class="screen active">
+                <div class="header">
+                    <h1 class="header-title">Dashboard</h1>
+                    <div class="header-actions">
+                        <button class="btn-secondary">Export Data</button>
+                        <button class="btn-primary">Generate Report</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- Overview Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-title">Total Users</div>
+                                <div class="stat-icon">👥</div>
+                            </div>
+                            <div class="stat-number">2,547</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-title">Active Trips</div>
+                                <div class="stat-icon">✈️</div>
+                            </div>
+                            <div class="stat-number">1,238</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-title">Luggage Profiles</div>
+                                <div class="stat-icon">🧳</div>
+                            </div>
+                            <div class="stat-number">4,891</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                        <!-- Recent Activity -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Recent Activity</div>
+                                <button class="btn-secondary">View All</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-item">
+                                    <div class="activity-icon">👤</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">New user registered: john.miller@email.com</div>
+                                        <div class="activity-time">2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">🧳</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">Luggage profile created: "Travel Backpack 65L"</div>
+                                        <div class="activity-time">5 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">✈️</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">Trip completed: Berlin Business Trip</div>
+                                        <div class="activity-time">12 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Quick Actions</div>
+                            </div>
+                            <div class="card-body" style="padding: 24px;">
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    <button class="btn-primary">Add New User</button>
+                                    <button class="btn-primary">Create Luggage Type</button>
+                                    <button class="btn-primary">Add Activity</button>
+                                    <button class="btn-primary">Create Item Category</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Manage Users (unchanged) -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Manage Users</h1>
+                    <div class="header-actions">
+                        <button class="btn-secondary">Export Users</button>
+                        <button class="btn-primary">Add User</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="filters">
+                        <input type="text" class="search-input" placeholder="Search users...">
+                        <select class="filter-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Users List</div>
+                            <div style="font-size: 14px; color: #8E8E93;">2,547 total users</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Trips</th>
+                                        <th>Join Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div class="user-avatar">JM</div>
+                                                <span style="font-weight: 500;">John Miller</span>
+                                            </div>
+                                        </td>
+                                        <td>john.miller@email.com</td>
+                                        <td><span class="status-badge status-active">Active</span></td>
+                                        <td>12</td>
+                                        <td>Oct 15, 2024</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-view" title="View">👁</button>
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 3: Luggage Types (unchanged) -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Luggage Types</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Add Luggage Type</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Luggage Types</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Default Dimensions</th>
+                                        <th>Volume</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 20px;">🧳</span>
+                                                <span style="font-weight: 500;">Carry-on Suitcase</span>
+                                            </div>
+                                        </td>
+                                        <td>Suitcase</td>
+                                        <td>22" × 14" × 9"</td>
+                                        <td>35L</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add New Luggage Type Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add New Luggage Type</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Type Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Business Briefcase">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-input">
+                                        <option>Select category...</option>
+                                        <option>Suitcase</option>
+                                        <option>Backpack</option>
+                                        <option>Duffel Bag</option>
+                                        <option>Briefcase</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Length (inches)</label>
+                                    <input type="number" class="form-input" placeholder="22">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Width (inches)</label>
+                                    <input type="number" class="form-input" placeholder="14">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Height (inches)</label>
+                                    <input type="number" class="form-input" placeholder="9">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Volume (Liters)</label>
+                                    <input type="number" class="form-input" placeholder="35">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description (Optional)</label>
+                                <textarea class="form-input" rows="3" placeholder="Add notes about this luggage type..."></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Luggage Type</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 4: Airlines (unchanged) -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Airlines Management</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Add Airline</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Airlines List</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Airline</th>
+                                        <th>Code</th>
+                                        <th>Region</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>American Airlines</td>
+                                        <td>AA</td>
+                                        <td>North America</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Edit Airline Baggage Rules -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Edit Baggage Rules: American Airlines (AA)</div>
+                            <button class="btn-secondary" style="font-size: 12px;">Change Airline</button>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px;">
+                                <!-- Economy Class -->
+                                <div style="border: 1px solid #E5E5EA; border-radius: 12px; padding: 20px; background: #F8F9FA;">
+                                    <h4 style="font-weight: 600; margin-bottom: 16px; color: #1D1D1F;">Economy Class</h4>
+
+                                    <div style="margin-bottom: 20px;">
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Carry-on Allowance</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Dimensions (L × W × H)</label>
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                                                <input type="text" class="form-input" placeholder="22" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="14" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="9" style="font-size: 13px; padding: 8px;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="22 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Checked Baggage</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Linear Dimensions</label>
+                                            <input type="text" class="form-input" placeholder="62 inches total" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="50 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Number of Bags</label>
+                                            <input type="number" class="form-input" placeholder="1" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Business Class -->
+                                <div style="border: 1px solid #E5E5EA; border-radius: 12px; padding: 20px; background: #F0F9FF;">
+                                    <h4 style="font-weight: 600; margin-bottom: 16px; color: #1D1D1F;">Business Class</h4>
+
+                                    <div style="margin-bottom: 20px;">
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Carry-on Allowance</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Dimensions (L × W × H)</label>
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                                                <input type="text" class="form-input" placeholder="22" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="14" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="9" style="font-size: 13px; padding: 8px;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="22 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Checked Baggage</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Linear Dimensions</label>
+                                            <input type="text" class="form-input" placeholder="62 inches total" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="70 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Number of Bags</label>
+                                            <input type="number" class="form-input" placeholder="2" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- First Class -->
+                                <div style="border: 1px solid #E5E5EA; border-radius: 12px; padding: 20px; background: #FFF4E5;">
+                                    <h4 style="font-weight: 600; margin-bottom: 16px; color: #1D1D1F;">First Class</h4>
+
+                                    <div style="margin-bottom: 20px;">
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Carry-on Allowance</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Dimensions (L × W × H)</label>
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                                                <input type="text" class="form-input" placeholder="22" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="14" style="font-size: 13px; padding: 8px;">
+                                                <input type="text" class="form-input" placeholder="9" style="font-size: 13px; padding: 8px;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="22 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h5 style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #6B7280;">Checked Baggage</h5>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Linear Dimensions</label>
+                                            <input type="text" class="form-input" placeholder="62 inches total" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Max Weight</label>
+                                            <input type="text" class="form-input" placeholder="70 lbs" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Number of Bags</label>
+                                            <input type="number" class="form-input" placeholder="3" style="font-size: 13px; padding: 8px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Special Notes & Restrictions</label>
+                                <textarea class="form-input" rows="3" placeholder="Add any special baggage policies, fees, or restrictions..."></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Baggage Rules</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 5: Trip Types -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Trip Types Management</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Add Trip Type</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- Trip Types Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Trip Types</div>
+                            <div style="font-size: 14px; color: #8E8E93;">8 trip types configured</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Trip Type</th>
+                                        <th>Duration Range</th>
+                                        <th>Climate</th>
+                                        <th>Activities</th>
+                                        <th>Suggested Items</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 20px;">💼</span>
+                                                <span style="font-weight: 500;">Business Trip</span>
+                                            </div>
+                                        </td>
+                                        <td>2-5 days</td>
+                                        <td>Any</td>
+                                        <td>Meetings, Conferences</td>
+                                        <td>47 items</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 20px;">🏖️</span>
+                                                <span style="font-weight: 500;">Beach Vacation</span>
+                                            </div>
+                                        </td>
+                                        <td>7-14 days</td>
+                                        <td>Tropical, Warm</td>
+                                        <td>Swimming, Sunbathing</td>
+                                        <td>52 items</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 20px;">⛰️</span>
+                                                <span style="font-weight: 500;">Adventure/Hiking</span>
+                                            </div>
+                                        </td>
+                                        <td>5-10 days</td>
+                                        <td>Variable</td>
+                                        <td>Hiking, Camping, Outdoor</td>
+                                        <td>68 items</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 20px;">🏛️</span>
+                                                <span style="font-weight: 500;">City Sightseeing</span>
+                                            </div>
+                                        </td>
+                                        <td>3-7 days</td>
+                                        <td>Any</td>
+                                        <td>Museums, Tours, Dining</td>
+                                        <td>41 items</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add New Trip Type Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add New Trip Type</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Trip Type Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Ski Trip">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon/Emoji</label>
+                                    <input type="text" class="form-input" placeholder="⛷️">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Duration Range</label>
+                                    <input type="text" class="form-input" placeholder="e.g., 5-7 days">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Primary Climate</label>
+                                    <select class="form-input">
+                                        <option>Select climate...</option>
+                                        <option>Tropical/Hot</option>
+                                        <option>Temperate/Mild</option>
+                                        <option>Cold/Winter</option>
+                                        <option>Variable</option>
+                                        <option>Any</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Secondary Climate (Optional)</label>
+                                    <select class="form-input">
+                                        <option>None</option>
+                                        <option>Humid</option>
+                                        <option>Dry/Arid</option>
+                                        <option>Rainy</option>
+                                        <option>Windy</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Typical Activities</label>
+                                <input type="text" class="form-input" placeholder="e.g., Skiing, Snowboarding, Après-ski">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">AI Packing List Prompt</label>
+                                <textarea class="form-input" rows="3" placeholder="Describe what items should be suggested for this trip type..."></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Suggested Luggage Type</label>
+                                    <select class="form-input">
+                                        <option>Select luggage type...</option>
+                                        <option>Carry-on Suitcase</option>
+                                        <option>Check-in Suitcase</option>
+                                        <option>Travel Backpack</option>
+                                        <option>Duffel Bag</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Packing Complexity</label>
+                                    <select class="form-input">
+                                        <option>Simple (30-40 items)</option>
+                                        <option>Moderate (40-55 items)</option>
+                                        <option>Complex (55+ items)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Default Item Categories</label>
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 12px; background: #F8F9FA; border-radius: 8px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox" checked> Clothing
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox" checked> Toiletries
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox" checked> Electronics
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox"> Sports Equipment
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox"> Beach Items
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox"> Business Items
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox"> Outdoor Gear
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox" checked> Documents
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Trip Type</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 6: Activities -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Activities Management</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Add Activity</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Activities List</div>
+                            <div style="font-size: 14px; color: #8E8E93;">12 activities configured</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Activity</th>
+                                        <th>Icon</th>
+                                        <th>AI Description</th>
+                                        <th>Usage</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight: 500;">Business Meetings</td>
+                                        <td style="font-size: 20px;">🏢</td>
+                                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Professional attire required, formal shoes, business accessories</td>
+                                        <td>847 trips</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 500;">Gym/Fitness</td>
+                                        <td style="font-size: 20px;">🏃</td>
+                                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Athletic wear, workout shoes, towel, water bottle</td>
+                                        <td>523 trips</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add Activity Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add New Activity</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Activity Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Beach Activities">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon (Emoji)</label>
+                                    <input type="text" class="form-input" placeholder="🏖️">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">AI Description for Packing</label>
+                                <textarea class="form-textarea" placeholder="Describe what items are typically needed for this activity to help AI generate accurate packing suggestions..."></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Activity</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 6: Item Categories -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Item Categories & Items</h1>
+                    <div class="header-actions">
+                        <button class="btn-secondary">Add Item</button>
+                        <button class="btn-primary">Add Category</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- Categories List -->
+                    <div class="category-item">
+                        <div class="category-header">
+                            <div>
+                                <div class="category-name">Business Attire</div>
+                                <div style="font-size: 12px; color: #8E8E93;">8 items • Used in 1,247 trips</div>
+                            </div>
+                            <div class="actions">
+                                <button class="action-btn action-edit" title="Edit Category">✏️</button>
+                                <button class="action-btn action-delete" title="Delete Category">🗑</button>
+                            </div>
+                        </div>
+                        <div class="items-list">
+                            <div class="item-row">
+                                <div class="item-preview">SVG</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Business Shirt</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 85 • Access: 70 • 16"×12"×1" • 0.3 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="item-preview">SVG</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Dress Pants</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 90 • Access: 60 • 14"×10"×2" • 0.8 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="category-item">
+                        <div class="category-header">
+                            <div>
+                                <div class="category-name">Personal Care</div>
+                                <div style="font-size: 12px; color: #8E8E93;">12 items • Used in 2,891 trips</div>
+                            </div>
+                            <div class="actions">
+                                <button class="action-btn action-edit" title="Edit Category">✏️</button>
+                                <button class="action-btn action-delete" title="Delete Category">🗑</button>
+                            </div>
+                        </div>
+                        <div class="items-list">
+                            <div class="item-row">
+                                <div class="item-preview">SVG</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Toiletry Bag</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 95 • Access: 90 • 8"×6"×4" • 1.2 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Item Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add New Item</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Item Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Business Shoes">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-input">
+                                        <option>Business Attire</option>
+                                        <option>Personal Care</option>
+                                        <option>Electronics</option>
+                                        <option>Weather Gear</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row-4">
+                                <div class="form-group">
+                                    <label class="form-label">Length (inches)</label>
+                                    <input type="number" class="form-input" placeholder="12">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Width (inches)</label>
+                                    <input type="number" class="form-input" placeholder="8">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Height (inches)</label>
+                                    <input type="number" class="form-input" placeholder="4">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Weight (lbs)</label>
+                                    <input type="number" step="0.1" class="form-input" placeholder="2.5">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Volume Priority (1-100)</label>
+                                    <input type="number" class="form-input" placeholder="85" min="1" max="100">
+                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Higher = more volume efficient</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ease of Access Priority (1-100)</label>
+                                    <input type="number" class="form-input" placeholder="70" min="1" max="100">
+                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Higher = easier to access</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">SVG Icon for 3D Model</label>
+                                <div class="file-upload" onclick="document.getElementById('svg-upload').click()">
+                                    <input type="file" id="svg-upload" accept=".svg">
+                                    <div>📎 Click to upload SVG file</div>
+                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Used for WebGL 3D visualization</div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 7: Welcome Screen -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Welcome Screen Configuration</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Welcome Screen Content</div>
+                            <div style="font-size: 14px; color: #8E8E93;">Customize the app's welcome experience</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div class="form-group">
+                                <label class="form-label">Welcome Title</label>
+                                <input type="text" class="form-input" value="Welcome to TC Nomad" placeholder="Main welcome message">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Subtitle</label>
+                                <input type="text" class="form-input" value="Smart Travel Packing Assistant" placeholder="Subtitle description">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description Text</label>
+                                <textarea class="form-textarea" placeholder="Longer description of the app's benefits...">Pack smarter, travel better. TC Nomad uses AI and 3D visualization to optimize your luggage space and ensure you never forget essential items.</textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Primary Button Text</label>
+                                    <input type="text" class="form-input" value="Get Started" placeholder="Main action button">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Secondary Button Text</label>
+                                    <input type="text" class="form-input" value="Learn More" placeholder="Secondary action button">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Feature Highlights</label>
+                                <textarea class="form-textarea" placeholder="Key features to highlight (one per line)...">• 3D luggage visualization
+• AI-powered packing suggestions
+• Airline compliance checking
+• Weather-based recommendations</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Background Image</label>
+                                <div class="file-upload" onclick="document.getElementById('bg-upload').click()">
+                                    <input type="file" id="bg-upload" accept="image/*">
+                                    <div>🖼️ Click to upload background image</div>
+                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Recommended: 1080x1920px</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Preview</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div style="background: linear-gradient(135deg, #007AFF, #00C7BE); border-radius: 12px; padding: 40px; text-align: center; color: white;">
+                                <h2 style="font-size: 28px; margin-bottom: 8px;">Welcome to TC Nomad</h2>
+                                <p style="font-size: 16px; margin-bottom: 24px; opacity: 0.9;">Smart Travel Packing Assistant</p>
+                                <p style="font-size: 14px; margin-bottom: 32px; opacity: 0.8;">Pack smarter, travel better. TC Nomad uses AI and 3D visualization to optimize your luggage space.</p>
+                                <div style="display: flex; gap: 12px; justify-content: center;">
+                                    <button style="background: white; color: #007AFF; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Get Started</button>
+                                    <button style="background: rgba(255,255,255,0.2); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;">Learn More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 8: Settings -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Settings</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- Admin Profile -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Admin Profile</div>
+                            </div>
+                            <div class="card-body" style="padding: 24px;">
+                                <div class="form-group">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-input" value="Admin User">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-input" value="admin@tcnomad.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- API Keys -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">API Keys</div>
+                            </div>
+                            <div class="card-body" style="padding: 24px;">
+                                <div class="form-group">
+                                    <label class="form-label">OpenAI API Key</label>
+                                    <input type="password" class="form-input" value="sk-***************">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">OpenWeather API Key</label>
+                                    <input type="password" class="form-input" value="ae4f***************">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(index) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            screens[index].classList.add('active');
+            
+            // Update nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            navItems[index].classList.add('active');
+            
+            // Update screen buttons
+            const buttons = document.querySelectorAll('.screen-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 20px; left: 20px; z-index: 2000;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Back to Index
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Step 1: Smart Packing List Selection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+        
+        .progress-indicator {
+            background: #F2F2F7;
+            padding: 12px 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .progress-next {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 4px;
+        }
+        
+        .content {
+            padding: 16px;
+            padding-bottom: 120px;
+        }
+        
+        .trip-context {
+            background: #F2F2F7;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .trip-context-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .trip-context-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .trip-context-details {
+            font-size: 13px;
+            color: #3C3C43;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        
+        .category {
+            background: white;
+            border: 1px solid #E5E5EA;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            padding: 14px 16px;
+            background: #F2F2F7;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-icon {
+            font-size: 20px;
+        }
+        
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .category-meta {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .category-items {
+            padding: 0;
+        }
+        
+        .item {
+            padding: 12px 16px;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-left {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 15px;
+            color: #000;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .item-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #E5E5EA;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #3C3C43;
+        }
+        
+        .item-volume {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #E5E5EA;
+            border-radius: 6px;
+            background: white;
+            color: #007AFF;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .qty-value {
+            min-width: 24px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .add-item-btn {
+            padding: 10px 16px;
+            border-top: 1px solid #E5E5EA;
+            color: #007AFF;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .documents-section {
+            background: #FFF9E6;
+            border: 2px solid #FFD60A;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        
+        .documents-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .documents-icon {
+            font-size: 24px;
+        }
+        
+        .documents-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .documents-subtitle {
+            font-size: 13px;
+            color: #3C3C43;
+            margin-top: 2px;
+        }
+        
+        .document-item {
+            padding: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #C7C7CC;
+            border-radius: 6px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        
+        .checkbox.checked {
+            background: #34C759;
+            border-color: #34C759;
+            position: relative;
+        }
+        
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .document-text {
+            flex: 1;
+        }
+        
+        .document-name {
+            font-size: 14px;
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .document-hint {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 2px;
+        }
+        
+        .documents-note {
+            font-size: 11px;
+            color: #8E8E93;
+            font-style: italic;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #FFD60A;
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .summary-card {
+            background: #F2F2F7;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .summary-label {
+            color: #3C3C43;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #E5E5EA;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #FF9500;
+            border-radius: 4px;
+        }
+        
+        .warning-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #FF9500;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        
+        .btn-secondary {
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+        
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E8E93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 24px 0 12px 0;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 375px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 20px;
+            z-index: 1001;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-top: 4px;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #F2F2F7;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #8E8E93;
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid #E5E5EA;
+            background: #F8F9FA;
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: #8E8E93;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .modal-tab.active {
+            color: #007AFF;
+        }
+
+        .modal-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #007AFF;
+        }
+
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+
+        .modal-tab-panel {
+            display: none;
+        }
+
+        .modal-tab-panel.active {
+            display: block;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #F8F9FA;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .item-option:hover {
+            background: #E5E5EA;
+        }
+
+        .item-option-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-option-icon {
+            font-size: 20px;
+        }
+
+        .item-option-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-option-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .item-option-meta {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        .item-option-add {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #007AFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .save-btn:active {
+            background: #0056CC;
+        }
+
+        /* Additional Form Styles */
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .required {
+            color: #FF3B30;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qty-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            background: white;
+            color: #007AFF;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .qty-value {
+            width: 60px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 8px;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+        }
+
+        .dimensions-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dimension-field {
+            flex: 1;
+        }
+
+        .dimension-label {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .dimension-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E5E5EA;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 6px;
+        }
+
+        .advanced-section {
+            background: #F2F2F7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .advanced-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        .advanced-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .chevron {
+            font-size: 16px;
+            color: #8E8E93;
+            transition: transform 0.3s;
+        }
+
+        .chevron.open {
+            transform: rotate(90deg);
+        }
+
+        .advanced-content {
+            display: none;
+        }
+
+        .advanced-content.open {
+            display: block;
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .slider-container {
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: #E5E5EA;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background: #007AFF;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            background: #007AFF;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .slider-min, .slider-max {
+            font-size: 11px;
+            color: #8E8E93;
+        }
+
+        .slider-current {
+            font-size: 13px;
+            font-weight: 600;
+            color: #007AFF;
+        }
+
+        .slider-hint {
+            font-size: 12px;
+            color: #8E8E93;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .examples-box {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .examples-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 8px;
+        }
+
+        .example-item {
+            font-size: 12px;
+            color: #3C3C43;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .example-name {
+            font-weight: 600;
+            color: #000;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+
+        .btn-primary-footer {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary-footer:disabled {
+            background: #C7C7CC;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <span class="back-btn">‹</span>
+                <span class="header-title">Smart Packing List</span>
+            </div>
+            <div class="header-subtitle">Paris, France • Oct 15-20 • Business Trip</div>
+        </div>
+        
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-text">Step 1 of 2: Select Items</div>
+            <div class="progress-next">Next: Packing Guide</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Trip Context -->
+            <div class="trip-context">
+                <div class="trip-context-header">
+                    <span class="trip-context-title">📋 Trip Summary</span>
+                    <span>›</span>
+                </div>
+                <div class="trip-context-details">
+                    🌤️ Weather: 15-18°C, Partly Cloudy<br>
+                    🎯 Activities: Business, City Exploration<br>
+                    🧳 Luggage: Carry-on (55×40×23 cm)<br>
+                    ✈️ Airline: Delta - 10kg limit
+                </div>
+            </div>
+            
+            <!-- Business Attire Category -->
+            <div class="category">
+                <div class="category-header">
+                    <div class="category-header-left">
+                        <span class="category-icon">👔</span>
+                        <span class="category-name">Business Attire</span>
+                    </div>
+                    <span class="category-meta">5 items • ~8.5L</span>
+                </div>
+                <div class="category-items">
+                    <div class="item">
+                        <div class="item-left">
+                            <div class="item-name">Dress Shirt</div>
+                            <div class="item-meta">
+                                <span class="badge">Folded</span>
+                                <span class="item-volume">~0.8L each</span>
+                            </div>
+                        </div>
+                        <div class="quantity-control">
+                            <div class="qty-btn">−</div>
+                            <div class="qty-value">2</div>
+                            <div class="qty-btn">+</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <div class="item-name">Blazer</div>
+                            <div class="item-meta">
+                                <span class="badge">Fold carefully</span>
+                                <span class="item-volume">~2.5L</span>
+                            </div>
+                        </div>
+                        <div class="quantity-control">
+                            <div class="qty-btn">−</div>
+                            <div class="qty-value">1</div>
+                            <div class="qty-btn">+</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <div class="item-name">Dress Pants</div>
+                            <div class="item-meta">
+                                <span class="badge">Rolled</span>
+                                <span class="item-volume">~1.2L each</span>
+                            </div>
+                        </div>
+                        <div class="quantity-control">
+                            <div class="qty-btn">−</div>
+                            <div class="qty-value">2</div>
+                            <div class="qty-btn">+</div>
+                        </div>
+                    </div>
+                    <div class="add-item-btn">
+                        <span>+</span>
+                        <span>Add item to Business Attire</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Casual Wear Category -->
+            <div class="category">
+                <div class="category-header">
+                    <div class="category-header-left">
+                        <span class="category-icon">👕</span>
+                        <span class="category-name">Casual Wear</span>
+                    </div>
+                    <span class="category-meta">3 items • ~4.2L</span>
+                </div>
+            </div>
+            
+            <!-- Toiletries Category -->
+            <div class="category">
+                <div class="category-header">
+                    <div class="category-header-left">
+                        <span class="category-icon">🧴</span>
+                        <span class="category-name">Toiletries & Personal Care</span>
+                    </div>
+                    <span class="category-meta">4 items • ~1.8L</span>
+                </div>
+            </div>
+            
+            <!-- Electronics Category -->
+            <div class="category">
+                <div class="category-header">
+                    <div class="category-header-left">
+                        <span class="category-icon">💻</span>
+                        <span class="category-name">Electronics & Accessories</span>
+                    </div>
+                    <span class="category-meta">4 items • ~4.2L</span>
+                </div>
+            </div>
+            
+            <!-- Important Documents Section -->
+            <div class="section-title">Travel Checklist</div>
+            
+            <div class="documents-section">
+                <div class="documents-header">
+                    <span class="documents-icon">📄</span>
+                    <div>
+                        <div class="documents-title">Important Documents</div>
+                        <div class="documents-subtitle">Check these before you leave</div>
+                    </div>
+                </div>
+                
+                <div class="document-item">
+                    <div class="checkbox checked"></div>
+                    <div class="document-text">
+                        <div class="document-name">Passport</div>
+                        <div class="document-hint">Valid for 6+ months</div>
+                    </div>
+                </div>
+                
+                <div class="document-item">
+                    <div class="checkbox"></div>
+                    <div class="document-text">
+                        <div class="document-name">Visa (if required)</div>
+                        <div class="document-hint">Check visa requirements for France</div>
+                    </div>
+                </div>
+                
+                <div class="document-item">
+                    <div class="checkbox checked"></div>
+                    <div class="document-text">
+                        <div class="document-name">Travel Insurance Documents</div>
+                    </div>
+                </div>
+                
+                <div class="document-item">
+                    <div class="checkbox"></div>
+                    <div class="document-text">
+                        <div class="document-name">Flight Tickets / Boarding Pass</div>
+                    </div>
+                </div>
+                
+                <div class="add-item-btn" style="border-top: 1px solid #FFD60A; margin-top: 8px; padding-top: 12px;">
+                    <span>+</span>
+                    <span>Add custom document</span>
+                </div>
+                
+                <div class="documents-note">
+                    These won't be added to luggage packing but will appear in your Trip Ready checklist
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Summary Bar -->
+        <div class="bottom-bar">
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Total Items:</span>
+                    <span class="summary-value">32 items</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Estimated Volume:</span>
+                    <span class="summary-value">18.5L / 22L capacity</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 84%"></div>
+                </div>
+                <div class="warning-text">
+                    <span>⚠️</span>
+                    <span>You may be overpacking. Consider reducing items.</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary">Save Draft</button>
+                <button class="btn btn-primary" onclick="window.location.href='tc-nomad-step2a-compartments.html'">Continue to Packing Guide →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Navigation Overlay -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+        <a href="tc-nomad-step2a-compartments.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,122,255,0.9); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s;">
+            Next: Step 2A <span style="font-size: 18px;">→</span>
+        </a>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal-overlay" id="addItemModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Add Item</div>
+                    <div class="modal-subtitle" id="modalSubtitle">To: Business Attire</div>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('browse')">Browse Items</button>
+                <button class="modal-tab" onclick="switchTab('custom')">Add Custom</button>
+            </div>
+
+            <div class="modal-content">
+                <!-- Browse Items Tab -->
+                <div class="modal-tab-panel active" id="browsePanel">
+                    <input type="text" class="search-box" placeholder="Search items..." id="searchInput" oninput="filterItems()">
+                    <div class="item-list" id="itemList">
+                        <!-- Items will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Add Custom Tab -->
+                <div class="modal-tab-panel" id="customPanel">
+                    <div class="modal-body">
+                        <!-- Item Name -->
+                        <div class="form-group">
+                            <label class="form-label">Item Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="customItemName" placeholder="Enter item name">
+                        </div>
+
+                        <!-- Packing Method -->
+                        <div class="form-group">
+                            <label class="form-label">Packing Method (Optional)</label>
+                            <select class="form-select" id="customItemMethod">
+                                <option value="">Select method</option>
+                                <option value="Folded">Folded</option>
+                                <option value="Rolled">Rolled</option>
+                                <option value="Hanging">Hanging</option>
+                                <option value="As-is">As-is</option>
+                                <option value="Other">None/Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="form-group">
+                            <label class="form-label">Quantity</label>
+                            <div class="quantity-control">
+                                <div class="qty-btn" onclick="decreaseQuantity()">−</div>
+                                <input type="number" class="qty-value" id="itemQuantity" value="1" min="1">
+                                <div class="qty-btn" onclick="increaseQuantity()">+</div>
+                            </div>
+                        </div>
+
+                        <!-- Estimated Dimensions -->
+                        <div class="form-group">
+                            <label class="form-label">Estimated Dimensions (Optional)</label>
+                            <div class="dimensions-row">
+                                <div class="dimension-field">
+                                    <label class="dimension-label">Length (cm)</label>
+                                    <input type="number" class="dimension-input" id="dimLength" placeholder="0">
+                                </div>
+                                <div class="dimension-field">
+                                    <label class="dimension-label">Width (cm)</label>
+                                    <input type="number" class="dimension-input" id="dimWidth" placeholder="0">
+                                </div>
+                                <div class="dimension-field">
+                                    <label class="dimension-label">Height (cm)</label>
+                                    <input type="number" class="dimension-input" id="dimHeight" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="helper-text">Helps with packing optimization</div>
+                        </div>
+
+                        <!-- Advanced Settings -->
+                        <div class="advanced-section">
+                            <div class="advanced-header" onclick="toggleAdvanced()">
+                                <span class="advanced-title">Advanced Settings</span>
+                                <span class="chevron" id="advancedChevron">›</span>
+                            </div>
+
+                            <div class="advanced-content" id="advancedContent">
+                                <!-- Volume Priority -->
+                                <div class="slider-group">
+                                    <label class="slider-label">Volume Priority</label>
+                                    <div class="slider-container">
+                                        <input type="range" min="1" max="100" value="50" class="slider" id="volumeSlider" oninput="updateSliderValue('volumeSlider', 'volumeValue')">
+                                        <div class="slider-value">
+                                            <span class="slider-min">Low (1)</span>
+                                            <span class="slider-current" id="volumeValue">50</span>
+                                            <span class="slider-max">High (100)</span>
+                                        </div>
+                                    </div>
+                                    <div class="slider-hint">How important is compact packing for this item?</div>
+                                </div>
+
+                                <!-- Ease of Access Priority -->
+                                <div class="slider-group">
+                                    <label class="slider-label">Ease of Access Priority</label>
+                                    <div class="slider-container">
+                                        <input type="range" min="1" max="100" value="50" class="slider" id="accessSlider" oninput="updateSliderValue('accessSlider', 'accessValue')">
+                                        <div class="slider-value">
+                                            <span class="slider-min">Low (1)</span>
+                                            <span class="slider-current" id="accessValue">50</span>
+                                            <span class="slider-max">High (100)</span>
+                                        </div>
+                                    </div>
+                                    <div class="slider-hint">How often will you need this item during the trip?</div>
+                                </div>
+
+                                <!-- Examples -->
+                                <div class="examples-box">
+                                    <div class="examples-title">Example Use Cases</div>
+                                    <div class="example-item">
+                                        <span class="example-name">Toiletries:</span> High access priority (need daily)
+                                    </div>
+                                    <div class="example-item">
+                                        <span class="example-name">Important documents:</span> Very high access priority (need at security)
+                                    </div>
+                                    <div class="example-item">
+                                        <span class="example-name">Dress shoes:</span> Low access priority (only for special occasions)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                        <button class="btn-primary-footer" onclick="addCustomItem()">Add Item</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample items database
+        const itemsDatabase = {
+            business: [
+                { name: 'Blazer/Sport Coat', icon: '🧥', volume: '~2.5L', method: 'Hung' },
+                { name: 'Dress Shirt', icon: '👔', volume: '~0.7L', method: 'Folded' },
+                { name: 'Tie', icon: '👔', volume: '~0.1L', method: 'Rolled' },
+                { name: 'Belt', icon: '⚫', volume: '~0.2L', method: 'Rolled' },
+                { name: 'Dress Shoes', icon: '👞', volume: '~2L each', method: 'Packed' },
+            ],
+            casual: [
+                { name: 'T-Shirt', icon: '👕', volume: '~0.5L', method: 'Rolled' },
+                { name: 'Jeans', icon: '👖', volume: '~1.5L', method: 'Rolled' },
+                { name: 'Sneakers', icon: '👟', volume: '~2L', method: 'Packed' },
+                { name: 'Hoodie', icon: '🧥', volume: '~1.8L', method: 'Folded' },
+                { name: 'Shorts', icon: '🩳', volume: '~0.8L', method: 'Rolled' },
+            ],
+            toiletries: [
+                { name: 'Toothbrush & Toothpaste', icon: '🪥', volume: '~0.1L', method: 'Packed' },
+                { name: 'Shampoo', icon: '🧴', volume: '~0.2L', method: 'Packed' },
+                { name: 'Deodorant', icon: '🧴', volume: '~0.15L', method: 'Packed' },
+                { name: 'Razor', icon: '🪒', volume: '~0.1L', method: 'Packed' },
+                { name: 'Sunscreen', icon: '🧴', volume: '~0.2L', method: 'Packed' },
+            ],
+            electronics: [
+                { name: 'Phone Charger', icon: '🔌', volume: '~0.2L', method: 'Rolled' },
+                { name: 'Laptop Charger', icon: '🔌', volume: '~0.5L', method: 'Packed' },
+                { name: 'Headphones', icon: '🎧', volume: '~0.3L', method: 'Packed' },
+                { name: 'Power Bank', icon: '🔋', volume: '~0.3L', method: 'Packed' },
+                { name: 'Travel Adapter', icon: '🔌', volume: '~0.2L', method: 'Packed' },
+            ],
+            documents: [
+                { name: 'Credit/Debit Cards', icon: '💳', volume: '~0.01L', method: 'Wallet' },
+                { name: 'Travel Insurance', icon: '📄', volume: '~0.01L', method: 'Folder' },
+                { name: 'Hotel Confirmation', icon: '📄', volume: '~0.01L', method: 'Folder' },
+                { name: 'Emergency Contacts', icon: '📋', volume: '~0.01L', method: 'Folder' },
+            ]
+        };
+
+        let currentCategory = 'business';
+        let allItems = [];
+
+        // Flatten all items for search
+        function getAllItems() {
+            const items = [];
+            for (const category in itemsDatabase) {
+                itemsDatabase[category].forEach(item => {
+                    items.push({ ...item, category });
+                });
+            }
+            return items;
+        }
+
+        // Category names mapping
+        const categoryNames = {
+            'business': 'Business Attire',
+            'casual': 'Casual Wear',
+            'toiletries': 'Toiletries & Personal Care',
+            'electronics': 'Electronics & Accessories',
+            'documents': 'Documents',
+            'other': 'Other'
+        };
+
+        // Open modal
+        function openModal(category = 'business') {
+            currentCategory = category;
+            allItems = getAllItems();
+            document.getElementById('addItemModal').classList.add('active');
+            document.getElementById('modalSubtitle').textContent = `To: ${categoryNames[category] || 'Packing List'}`;
+            populateItems(allItems);
+            switchTab('browse');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('addItemModal').classList.remove('active');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('customItemName').value = '';
+            document.getElementById('customItemVolume').value = '';
+        }
+
+        // Close modal when clicking overlay
+        document.getElementById('addItemModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Switch tabs
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.modal-tab');
+            const panels = document.querySelectorAll('.modal-tab-panel');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            if (tab === 'browse') {
+                tabs[0].classList.add('active');
+                document.getElementById('browsePanel').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('customPanel').classList.add('active');
+            }
+        }
+
+        // Populate items list
+        function populateItems(items) {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = '';
+
+            items.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'item-option';
+                itemEl.innerHTML = `
+                    <div class="item-option-left">
+                        <span class="item-option-icon">${item.icon}</span>
+                        <div class="item-option-details">
+                            <div class="item-option-name">${item.name}</div>
+                            <div class="item-option-meta">${item.method} • ${item.volume}</div>
+                        </div>
+                    </div>
+                    <button class="item-option-add" onclick="addItemToList('${item.name}', '${item.category}')">+</button>
+                `;
+                itemList.appendChild(itemEl);
+            });
+        }
+
+        // Filter items based on search
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredItems = allItems.filter(item =>
+                item.name.toLowerCase().includes(searchTerm)
+            );
+            populateItems(filteredItems);
+        }
+
+        // Add item to list
+        function addItemToList(itemName, category) {
+            console.log(`Adding ${itemName} to ${category} category`);
+            // In a real implementation, this would add the item to the actual list
+            alert(`"${itemName}" added to your packing list!`);
+            closeModal();
+        }
+
+        // Add custom item
+        function addCustomItem() {
+            const name = document.getElementById('customItemName').value;
+            const category = document.getElementById('customItemCategory').value;
+            const method = document.getElementById('customItemMethod').value || 'Packed';
+            const volume = document.getElementById('customItemVolume').value || '~0.5L';
+
+            if (!name) {
+                alert('Please enter an item name');
+                return;
+            }
+
+            console.log(`Adding custom item: ${name} to ${category}`);
+            alert(`Custom item "${name}" added to your packing list!`);
+            closeModal();
+        }
+
+        // Quantity controls
+        function increaseQuantity() {
+            const input = document.getElementById('itemQuantity');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('itemQuantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        // Update slider value display
+        function updateSliderValue(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(valueId);
+            valueDisplay.textContent = slider.value;
+        }
+
+        // Toggle advanced settings
+        function toggleAdvanced() {
+            const content = document.getElementById('advancedContent');
+            const chevron = document.getElementById('advancedChevron');
+            content.classList.toggle('open');
+            chevron.classList.toggle('open');
+        }
+
+        // Add click handlers to all add-item buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const addButtons = document.querySelectorAll('.add-item-btn');
+            addButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Try to determine category from context
+                    const categoryEl = this.closest('.category');
+                    let category = 'business';
+
+                    if (categoryEl) {
+                        const categoryName = categoryEl.querySelector('.category-name');
+                        if (categoryName) {
+                            const text = categoryName.textContent.toLowerCase();
+                            if (text.includes('casual')) category = 'casual';
+                            else if (text.includes('toiletries')) category = 'toiletries';
+                            else if (text.includes('electronics')) category = 'electronics';
+                        }
+                    } else if (this.closest('.documents-section')) {
+                        category = 'documents';
+                    }
+
+                    openModal(category);
+                });
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('addItemModal').classList.contains('active')) {
+                    closeModal();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+            if (e.key === 'ArrowRight' && !document.getElementById('addItemModal').classList.contains('active')) {
+                window.location.href = 'tc-nomad-step2a-compartments.html';
+            }
+        });
+    </script>
+</body>
+</html>

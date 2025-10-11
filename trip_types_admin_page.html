@@ -1,0 +1,271 @@
+<!-- Trip Types Management Screen -->
+<div class="screen">
+    <div class="header">
+        <h1 class="header-title">Trip Types Management</h1>
+        <div class="header-actions">
+            <button class="btn-primary">Add Trip Type</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Trip Types List</div>
+                <div style="font-size: 14px; color: #8E8E93;">8 trip types configured</div>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Trip Type</th>
+                            <th>Icon</th>
+                            <th>AI Description</th>
+                            <th>Usage</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500;">Business Trip</td>
+                            <td style="font-size: 20px;">💼</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Professional attire required, formal shoes, business accessories, laptop, documents</td>
+                            <td>1,247 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">Vacation</td>
+                            <td style="font-size: 20px;">🏖️</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Casual clothes, swimwear, sunscreen, comfortable shoes, camera, entertainment</td>
+                            <td>892 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">Family Visit</td>
+                            <td style="font-size: 20px;">👨‍👩‍👧‍👦</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Comfortable casual wear, gifts, family photos, personal items, multiple day outfits</td>
+                            <td>654 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">Adventure</td>
+                            <td style="font-size: 20px;">🏔️</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Outdoor gear, hiking boots, weather protection, safety equipment, durable clothing</td>
+                            <td>423 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">Cultural</td>
+                            <td style="font-size: 20px;">🏛️</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Smart casual attire, comfortable walking shoes, guidebooks, camera, respectful clothing</td>
+                            <td>387 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500;">Weekend Getaway</td>
+                            <td style="font-size: 20px;">🌆</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Minimal packing, casual wear, one nice outfit, essentials only, light luggage</td>
+                            <td>298 trips</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Trip Type Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Add New Trip Type</div>
+            </div>
+            <div class="card-body" style="padding: 24px;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Trip Type Name</label>
+                        <input type="text" class="form-input" placeholder="e.g., Honeymoon">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Icon (Emoji)</label>
+                        <input type="text" class="form-input" placeholder="💕">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">AI Description for Packing</label>
+                    <textarea class="form-textarea" placeholder="Describe what items and clothing styles are typically needed for this trip type to help AI generate accurate packing suggestions..." style="min-height: 100px;"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn-secondary">Cancel</button>
+                    <button class="btn-primary">Save Trip Type</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Reuse existing admin panel styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #1D1D1F;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E5E5EA;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #007AFF;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #E5E5EA;
+    border-radius: 8px;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.btn-primary {
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary {
+    background: white;
+    color: #007AFF;
+    border: 2px solid #007AFF;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E5E5EA;
+    margin-bottom: 24px;
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #E5E5EA;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8E8E93;
+    text-transform: uppercase;
+    background: #F8F9FA;
+    border-bottom: 1px solid #E5E5EA;
+}
+
+.table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #F2F2F7;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.action-edit {
+    background: #F0F9FF;
+    color: #007AFF;
+}
+
+.action-delete {
+    background: #FFE5E5;
+    color: #FF3B30;
+}
+</style>

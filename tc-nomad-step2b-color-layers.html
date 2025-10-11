@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Step 2B: Color-Coded Layer Packing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-container {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            color: #007AFF;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-left: 36px;
+        }
+
+        .content {
+            padding-bottom: 80px;
+        }
+
+        /* Layer Legend */
+        .layer-legend {
+            background: white;
+            padding: 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .legend-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8E8E93;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .legend-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-color {
+            width: 100%;
+            height: 32px;
+            border-radius: 6px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .legend-color.layer-1 {
+            background: linear-gradient(180deg, #FFD700 0%, #FFC700 100%);
+        }
+
+        .legend-color.layer-2 {
+            background: linear-gradient(180deg, #9B59B6 0%, #8E44AD 100%);
+        }
+
+        .legend-color.layer-3 {
+            background: linear-gradient(180deg, #3498DB 0%, #2980B9 100%);
+        }
+
+        .legend-color.layer-4 {
+            background: linear-gradient(180deg, #27AE60 0%, #229954 100%);
+        }
+
+        .legend-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #3C3C43;
+            text-align: center;
+        }
+
+        .legend-depth {
+            font-size: 9px;
+            color: #8E8E93;
+        }
+
+        /* Luggage Grid View - Single 2D top-down view */
+        .luggage-grid-view {
+            background: white;
+            padding: 20px 16px;
+        }
+
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .grid-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .grid-subtitle {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        /* Single quadrant grid - color shows depth */
+        .quadrant-grid {
+            width: 100%;
+            aspect-ratio: 1.1;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            border: 3px solid #2C3E50;
+            border-radius: 12px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .quadrant {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px dashed #B0B0B0;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            min-height: 140px;
+        }
+
+        .quadrant-label {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #8E8E93;
+        }
+
+        .quadrant-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Item in quadrant - colored by highest layer it reaches */
+        .packed-item {
+            position: relative;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 100%;
+            animation: slideIn 0.4s ease-out;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(-90deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Layer colors - indicate highest layer reached */
+        .packed-item.reaches-layer-1 {
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+        }
+
+        .packed-item.reaches-layer-2 {
+            background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+        }
+
+        .packed-item.reaches-layer-3 {
+            background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+        }
+
+        .packed-item.reaches-layer-4 {
+            background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+        }
+
+        .item-emoji {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .item-height-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .item-layers-label {
+            font-size: 8px;
+            color: white;
+            opacity: 0.9;
+        }
+
+        /* Flying animation */
+        .flying-item {
+            position: fixed;
+            font-size: 40px;
+            z-index: 1000;
+            pointer-events: none;
+            animation: flyToQuadrant 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes flyToQuadrant {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+            }
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #E3F2FF 0%, #F0F8FF 100%);
+            border: 1px solid #007AFF;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #007AFF;
+            margin-bottom: 6px;
+        }
+
+        .info-box-text {
+            font-size: 11px;
+            color: #3C3C43;
+            line-height: 1.5;
+        }
+
+        /* AI Reasoning */
+        .ai-reasoning {
+            background: #F2F2F7;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 16px;
+        }
+
+        .ai-reasoning-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #007AFF;
+            margin-bottom: 8px;
+        }
+
+        .ai-reasoning-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid transparent;
+        }
+
+        .ai-reasoning-item.layer-1 {
+            border-left-color: #FFD700;
+        }
+
+        .ai-reasoning-item.layer-2 {
+            border-left-color: #9B59B6;
+        }
+
+        .ai-reasoning-item.layer-3 {
+            border-left-color: #3498DB;
+        }
+
+        .ai-reasoning-item.layer-4 {
+            border-left-color: #27AE60;
+        }
+
+        .ai-reasoning-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .reasoning-placement {
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+
+        .reasoning-why {
+            font-size: 11px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+
+        /* Item List */
+        .item-list {
+            padding: 0 16px;
+        }
+
+        .item-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .item-list-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .item-list-count {
+            font-size: 12px;
+            color: #8E8E93;
+        }
+
+        .item-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid #E5E5EA;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .item-card:hover {
+            border-color: #007AFF;
+            transform: translateX(4px);
+        }
+
+        .item-card.packed {
+            background: #F2F2F7;
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .item-card.packed:hover {
+            transform: none;
+        }
+
+        .item-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .card-emoji {
+            font-size: 32px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        .item-dimensions {
+            font-size: 11px;
+            color: #8E8E93;
+        }
+
+        .item-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .item-badge.next {
+            background: #007AFF;
+            color: white;
+        }
+
+        .item-badge.packed {
+            background: #34C759;
+            color: white;
+        }
+
+        .item-badge.waiting {
+            background: #E5E5EA;
+            color: #8E8E93;
+        }
+
+        .item-suggestion {
+            background: #F2F2F7;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            color: #3C3C43;
+            line-height: 1.4;
+        }
+
+        .color-indicator {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin: 0 4px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .color-indicator.layer-1 {
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+        }
+
+        .color-indicator.layer-2 {
+            background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+        }
+
+        .color-indicator.layer-3 {
+            background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+        }
+
+        .color-indicator.layer-4 {
+            background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+        }
+
+        /* Navigation Bar */
+        .navigation-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #E5E5EA;
+            padding: 16px;
+            border-radius: 30px 30px 0 0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-btn-secondary {
+            background: #F2F2F7;
+            color: #007AFF;
+        }
+
+        .nav-btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="header-left">
+                    <span class="back-btn" onclick="window.location.href='tc-nomad-step2a-compartments.html'">‹</span>
+                    <span class="header-title">Visual Packing</span>
+                </div>
+            </div>
+            <div class="header-subtitle">Color shows layer depth</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Layer Legend -->
+            <div class="layer-legend">
+                <div class="legend-title">LAYER COLOR GUIDE</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color layer-4"></div>
+                        <div class="legend-label">Layer 4</div>
+                        <div class="legend-depth">Bottom<br>(3")</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color layer-3"></div>
+                        <div class="legend-label">Layer 3</div>
+                        <div class="legend-depth">Lower<br>(2")</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color layer-2"></div>
+                        <div class="legend-label">Layer 2</div>
+                        <div class="legend-depth">Upper<br>(1.5")</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color layer-1"></div>
+                        <div class="legend-label">Layer 1</div>
+                        <div class="legend-depth">Top<br>(1")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luggage Grid View -->
+            <div class="luggage-grid-view">
+                <div class="grid-header">
+                    <div>
+                        <div class="grid-title">Luggage Top-Down View</div>
+                        <div class="grid-subtitle">Color = highest layer reached</div>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <div class="info-box-title">💡 How it works</div>
+                    <div class="info-box-text">
+                        Items start at the bottom and stack upward. Color shows the <strong>highest layer</strong> each item reaches.
+                        Example: Shoes (3" tall) occupy layers 4→3→2, so they show as <span class="color-indicator layer-2"></span> <strong>purple</strong>.
+                    </div>
+                </div>
+
+                <!-- Single Quadrant Grid -->
+                <div class="quadrant-grid">
+                    <div class="quadrant" data-quadrant="A" id="quadrant-A">
+                        <span class="quadrant-label">A (Back-Left)</span>
+                        <div class="quadrant-items">
+                            <!-- Shoes: 3" tall, starts at Layer 4 (bottom), reaches Layer 2 (purple) -->
+                            <div class="packed-item reaches-layer-2">
+                                <div class="item-emoji">👞</div>
+                                <div class="item-height-label">3" tall</div>
+                                <div class="item-layers-label">L4→L3→L2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="quadrant" data-quadrant="B" id="quadrant-B">
+                        <span class="quadrant-label">B (Back-Right)</span>
+                        <div class="quadrant-items">
+                            <!-- Empty for now -->
+                        </div>
+                    </div>
+                    <div class="quadrant" data-quadrant="C" id="quadrant-C">
+                        <span class="quadrant-label">C (Front-Left)</span>
+                        <div class="quadrant-items">
+                            <!-- Empty for now -->
+                        </div>
+                    </div>
+                    <div class="quadrant" data-quadrant="D" id="quadrant-D">
+                        <span class="quadrant-label">D (Front-Right)</span>
+                        <div class="quadrant-items">
+                            <!-- Empty for now -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Reasoning -->
+            <div class="ai-reasoning">
+                <div class="ai-reasoning-header">
+                    ✨ AI Packing Logic
+                </div>
+                <div class="ai-reasoning-item layer-2">
+                    <div class="reasoning-placement">👞 Shoes → Quadrant A (Back-Left)</div>
+                    <div class="reasoning-why">
+                        • <strong>Height:</strong> 3 inches (occupies Layers 4→3→2)<br>
+                        • <strong>Color:</strong> Purple (reaches Layer 2)<br>
+                        • <strong>Why here:</strong> Heavy item at bottom-back for stability, won't shift during travel
+                    </div>
+                </div>
+                <div class="ai-reasoning-item layer-4">
+                    <div class="reasoning-placement">💻 Laptop → Quadrant C (Front-Left)</div>
+                    <div class="reasoning-why">
+                        • <strong>Height:</strong> 0.5 inches (only Layer 4)<br>
+                        • <strong>Color:</strong> Green (stays at bottom)<br>
+                        • <strong>Why here:</strong> Thin, protected by items above, front position for easy access
+                    </div>
+                </div>
+                <div class="ai-reasoning-item layer-1">
+                    <div class="reasoning-placement">🧥 Blazer → Quadrant D (Front-Right)</div>
+                    <div class="reasoning-why">
+                        • <strong>Height:</strong> 1 inch (only Layer 1)<br>
+                        • <strong>Color:</strong> Yellow (top layer)<br>
+                        • <strong>Why here:</strong> Delicate fabric on top, won't be crushed, first item you see when opening
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item List -->
+            <div class="item-list">
+                <div class="item-list-header">
+                    <span class="item-list-title">Items to Pack</span>
+                    <span class="item-list-count">1 / 7 packed</span>
+                </div>
+
+                <div class="item-cards">
+                    <!-- Packed item -->
+                    <div class="item-card packed">
+                        <div class="item-card-top">
+                            <div class="card-emoji">👞</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Shoes (1 pair)</div>
+                                <div class="item-dimensions">3" tall | Layers 4→3→2</div>
+                            </div>
+                            <div class="item-badge packed">✓ PACKED</div>
+                        </div>
+                        <div class="item-suggestion">
+                            Placed in <strong>Quadrant A</strong> • Shows as <span class="color-indicator layer-2"></span> <strong>Purple</strong> (reaches Layer 2)
+                        </div>
+                    </div>
+
+                    <!-- Next item -->
+                    <div class="item-card" onclick="packItemToQuadrant(this, '💻', 'C', 0.5, 4, 4)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">💻</div>
+                            <div class="item-info">
+                                <div class="item-name">Laptop</div>
+                                <div class="item-dimensions">0.5" tall | Only Layer 4</div>
+                            </div>
+                            <div class="item-badge next">NEXT ▸</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant C</strong> • Will show as <span class="color-indicator layer-4"></span> <strong>Green</strong> (stays at bottom)
+                        </div>
+                    </div>
+
+                    <!-- Other items -->
+                    <div class="item-card" onclick="packItemToQuadrant(this, '👕', 'B', 2, 4, 3, 4)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">👕</div>
+                            <div class="item-info">
+                                <div class="item-name">T-Shirts (4, rolled)</div>
+                                <div class="item-dimensions">2" tall (fills quadrant) | Layers 4→3</div>
+                            </div>
+                            <div class="item-badge waiting">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant B</strong> (4 shirts fill entire quadrant) • Will show as <span class="color-indicator layer-3"></span> <strong>Blue</strong> (reaches Layer 3)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '👔', 'D', 1.5, 3, 2)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">👔</div>
+                            <div class="item-info">
+                                <div class="item-name">Dress Shirts (3, folded)</div>
+                                <div class="item-dimensions">1.5" tall | Layers 3→2</div>
+                            </div>
+                            <div class="item-badge waiting">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant D</strong> • Will show as <span class="color-indicator layer-2"></span> <strong>Purple</strong> (reaches Layer 2)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '🧥', 'D', 1, 2, 1)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">🧥</div>
+                            <div class="item-info">
+                                <div class="item-name">Blazer (folded)</div>
+                                <div class="item-dimensions">1" tall | Layers 2→1</div>
+                            </div>
+                            <div class="item-badge waiting">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant D</strong> (stack on shirts) • Will show as <span class="color-indicator layer-1"></span> <strong>Yellow</strong> (reaches top)
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '🧦', 'C', 0.5, 4, 4)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">🧦</div>
+                            <div class="item-info">
+                                <div class="item-name">Socks (5 pairs, rolled)</div>
+                                <div class="item-dimensions">0.5" tall | Only Layer 4</div>
+                            </div>
+                            <div class="item-badge waiting">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant C</strong> (fill gap) • Will show as <span class="color-indicator layer-4"></span> <strong>Green</strong>
+                        </div>
+                    </div>
+
+                    <div class="item-card" onclick="packItemToQuadrant(this, '💼', 'A', 1, 3, 2)">
+                        <div class="item-card-top">
+                            <div class="card-emoji">💼</div>
+                            <div class="item-info">
+                                <div class="item-name">Toiletry Bag</div>
+                                <div class="item-dimensions">1" tall | Layers 3→2</div>
+                            </div>
+                            <div class="item-badge waiting">WAITING</div>
+                        </div>
+                        <div class="item-suggestion">
+                            AI suggests: <strong>Quadrant A</strong> (on top of shoes) • Will show as <span class="color-indicator layer-2"></span> <strong>Purple</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <div class="navigation-bar">
+            <button class="nav-btn nav-btn-secondary" onclick="window.location.href='tc-nomad-step2a-compartments.html'">← Back</button>
+            <button class="nav-btn nav-btn-primary" onclick="window.location.href='tc-nomad-mode-and-ready.html'">Continue →</button>
+        </div>
+    </div>
+
+    <!-- Global Navigation -->
+    <div style="position: fixed; top: 60px; right: 20px; z-index: 2000; display: flex; gap: 8px;">
+        <a href="index.html" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,0,0,0.8); color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 500;">
+            <span style="font-size: 18px;">←</span> Index
+        </a>
+    </div>
+
+    <script>
+        let packedCount = 1;
+        const totalItems = 7;
+
+        // Pack item to specific quadrant with layer coloring
+        function packItemToQuadrant(cardElement, emoji, quadrant, heightInches, startLayer, endLayer, quantity = 1) {
+            if (cardElement.classList.contains('packed')) return;
+
+            // Get positions for animation
+            const startRect = cardElement.getBoundingClientRect();
+            const targetQuadrant = document.getElementById(`quadrant-${quadrant}`);
+            const targetRect = targetQuadrant.getBoundingClientRect();
+
+            // Create flying item
+            const flyingItem = document.createElement('div');
+            flyingItem.className = 'flying-item';
+            flyingItem.textContent = emoji;
+            flyingItem.style.left = startRect.left + 'px';
+            flyingItem.style.top = startRect.top + 'px';
+            document.body.appendChild(flyingItem);
+
+            // Animate to target
+            setTimeout(() => {
+                flyingItem.style.left = (targetRect.left + targetRect.width / 2 - 20) + 'px';
+                flyingItem.style.top = (targetRect.top + targetRect.height / 2 - 20) + 'px';
+            }, 10);
+
+            // After animation, add to quadrant
+            setTimeout(() => {
+                const itemsContainer = targetQuadrant.querySelector('.quadrant-items');
+
+                // Create layer string
+                let layerString;
+                if (startLayer === endLayer) {
+                    layerString = `L${startLayer}`;
+                } else {
+                    const layers = [];
+                    for (let i = startLayer; i >= endLayer; i--) {
+                        layers.push(`L${i}`);
+                    }
+                    layerString = layers.join('→');
+                }
+
+                // Add packed item with color based on highest layer (endLayer)
+                const packedItem = document.createElement('div');
+                packedItem.className = `packed-item reaches-layer-${endLayer}`;
+
+                // Show quantity if > 1
+                const quantityLabel = quantity > 1 ? ` ×${quantity}` : '';
+
+                packedItem.innerHTML = `
+                    <div class="item-emoji">${emoji}${quantityLabel}</div>
+                    <div class="item-height-label">${heightInches}" tall</div>
+                    <div class="item-layers-label">${layerString}</div>
+                `;
+                itemsContainer.appendChild(packedItem);
+
+                // Update card appearance
+                cardElement.classList.add('packed');
+                cardElement.querySelector('.item-badge').textContent = '✓ PACKED';
+                cardElement.querySelector('.item-badge').classList.remove('next', 'waiting');
+                cardElement.querySelector('.item-badge').classList.add('packed');
+
+                // Update suggestion text
+                const colorNames = {1: 'Yellow', 2: 'Purple', 3: 'Blue', 4: 'Green'};
+                cardElement.querySelector('.item-suggestion').innerHTML =
+                    `Placed in <strong>Quadrant ${quadrant}</strong> • Shows as <span class="color-indicator layer-${endLayer}"></span> <strong>${colorNames[endLayer]}</strong> (reaches Layer ${endLayer})`;
+
+                cardElement.onclick = null;
+
+                // Update counter
+                packedCount++;
+                document.querySelector('.item-list-count').textContent = `${packedCount} / ${totalItems} packed`;
+
+                // Remove flying item
+                flyingItem.remove();
+            }, 800);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.location.href = 'index.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'tc-nomad-step2a-compartments.html';
+            }
+            if (e.key === 'ArrowRight') {
+                window.location.href = 'tc-nomad-mode-and-ready.html';
+            }
+        });
+    </script>
+</body>
+</html>
