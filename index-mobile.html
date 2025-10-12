@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TC Nomad - Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            color: #1D1D1F;
+            padding-bottom: 20px;
+        }
+
+        .mobile-header {
+            background: linear-gradient(135deg, #007AFF 0%, #00C7BE 100%);
+            color: white;
+            padding: 20px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .logo-small {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #007AFF;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            padding: 16px 16px 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .wireframe-list {
+            background: white;
+            border-radius: 0;
+        }
+
+        .wireframe-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #E5E5EA;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+        }
+
+        .wireframe-item:active {
+            background: #F2F2F7;
+        }
+
+        .wireframe-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .item-icon.mobile {
+            background: #E8F5E9;
+        }
+
+        .item-icon.admin {
+            background: #FFF8E1;
+        }
+
+        .item-icon.archive {
+            background: #F5F5F5;
+        }
+
+        .item-content {
+            flex: 1;
+            margin: 0 12px;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1D1D1F;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-description {
+            font-size: 12px;
+            color: #8E8E93;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-chevron {
+            color: #C7C7CC;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .badge.mobile {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .badge.admin {
+            background: #FFF8E1;
+            color: #F57C00;
+        }
+
+        .badge.archive {
+            background: #F5F5F5;
+            color: #757575;
+        }
+
+        .flow-dots {
+            display: flex;
+            gap: 3px;
+            margin-top: 4px;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #E5E5EA;
+        }
+
+        .dot.active {
+            background: #007AFF;
+        }
+
+        .section-divider {
+            height: 8px;
+            background: #F2F2F7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="mobile-header">
+        <div class="header-top">
+            <div class="logo-small">TC</div>
+            <div class="header-title">TC Nomad Prototype</div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">📱 12 wireframes</div>
+            <div class="stat-item">🎨 3 versions</div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Search wireframes..." id="searchInput" onkeyup="searchWireframes()">
+    </div>
+
+    <!-- Base Wireframes -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📱</span>
+            <span class="section-title">Base Wireframes</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc_nomad_wireframe.html" class="wireframe-item">
+                <div class="item-icon mobile">🔐</div>
+                <div class="item-content">
+                    <div class="item-title">Login Screen</div>
+                    <div class="item-description">Email/password authentication</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Main App -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🏠</span>
+            <span class="section-title">Main App & Settings</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc_nomad_main_wireframes.html" class="wireframe-item">
+                <div class="item-icon mobile">📊</div>
+                <div class="item-content">
+                    <div class="item-title">Dashboard & Main Screens</div>
+                    <div class="item-description">Home, trips, profile navigation</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc_nomad_settings_wireframe.html" class="wireframe-item">
+                <div class="item-icon mobile">⚙️</div>
+                <div class="item-content">
+                    <div class="item-title">Settings Screen</div>
+                    <div class="item-description">App preferences and configuration</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Luggage Flow -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">🧳</span>
+            <span class="section-title">Luggage & Premium</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc_nomad_luggage_flow_enhanced.html" class="wireframe-item">
+                <div class="item-icon mobile">🎒</div>
+                <div class="item-content">
+                    <div class="item-title">Enhanced Luggage Flow</div>
+                    <div class="item-description">Select and manage luggage types</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc_nomad_paywall_screen.html" class="wireframe-item">
+                <div class="item-icon mobile">💎</div>
+                <div class="item-content">
+                    <div class="item-title">Premium Paywall</div>
+                    <div class="item-description">Subscription and feature unlock</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Admin -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">👨‍💼</span>
+            <span class="section-title">Admin Panel</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc_nomad_enhanced_admin_panel2.html" class="wireframe-item">
+                <div class="item-icon admin">🎛️</div>
+                <div class="item-content">
+                    <div class="item-title">Admin Dashboard</div>
+                    <div class="item-description">Manage items, luggage, airlines</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Packing Flow -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📦</span>
+            <span class="section-title">Trip Creation & Packing</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc_nomad_enhanced_trip_flow.html" class="wireframe-item">
+                <div class="item-icon mobile">✈️</div>
+                <div class="item-content">
+                    <div class="item-title">Enhanced Trip Flow</div>
+                    <div class="item-description">Trip details and activity selection</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc-nomad-step1-wireframe.html" class="wireframe-item">
+                <div class="item-icon mobile">📝</div>
+                <div class="item-content">
+                    <div class="item-title">Step 1: Smart Packing List</div>
+                    <div class="item-description">AI-powered packing suggestions</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc-nomad-step2a-compartments.html" class="wireframe-item">
+                <div class="item-icon mobile">🗂️</div>
+                <div class="item-content">
+                    <div class="item-title">Step 2A: Compartment View</div>
+                    <div class="item-description">Organize items into compartments</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc-nomad-step2b-visual-guide.html" class="wireframe-item">
+                <div class="item-icon mobile">👁️</div>
+                <div class="item-content">
+                    <div class="item-title">Step 2B: Visual Guide</div>
+                    <div class="item-description">Interactive packing animation</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc-nomad-step2b-color-layers.html" class="wireframe-item">
+                <div class="item-icon mobile">🎨</div>
+                <div class="item-content">
+                    <div class="item-title">Step 2B: Layer Grid (Alt)</div>
+                    <div class="item-description">Color-coded layer depth system</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="tc-nomad-mode-and-ready.html" class="wireframe-item">
+                <div class="item-icon mobile">✅</div>
+                <div class="item-content">
+                    <div class="item-title">Mode Selection & Trip Ready</div>
+                    <div class="item-description">Final confirmation screens</div>
+                    <div class="flow-dots">
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                    </div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Archive -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-icon">📦</span>
+            <span class="section-title">Archive & Iterations</span>
+        </div>
+        <div class="wireframe-list">
+            <a href="tc-nomad-step2b-3d-layers.html" class="wireframe-item">
+                <div class="item-icon archive">🧊</div>
+                <div class="item-content">
+                    <div class="item-title">Step 2B v2: 3D Layers</div>
+                    <div class="item-description">Layer selector with quadrants</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+            <a href="Jalen-BA-Meeting-Summary.md" class="wireframe-item">
+                <div class="item-icon archive">📄</div>
+                <div class="item-content">
+                    <div class="item-title">Meeting Summary</div>
+                    <div class="item-description">Business analysis meeting notes</div>
+                </div>
+                <div class="item-chevron">›</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function searchWireframes() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.wireframe-item');
+
+            items.forEach(item => {
+                const title = item.querySelector('.item-title').textContent.toLowerCase();
+                const desc = item.querySelector('.item-description').textContent.toLowerCase();
+
+                if (title.includes(input) || desc.includes(input)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Hide empty sections
+            document.querySelectorAll('.section').forEach(section => {
+                const visibleItems = section.querySelectorAll('.wireframe-item[style="display: flex;"], .wireframe-item:not([style*="display"])');
+                section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

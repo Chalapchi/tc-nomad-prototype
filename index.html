@@ -232,27 +232,51 @@
             font-weight: 500;
         }
 
+        .mobile-redirect {
+            display: none;
+        }
+
         @media (max-width: 768px) {
-            .card-grid {
-                grid-template-columns: 1fr;
-                margin-left: 0;
+            .container {
+                display: none !important;
             }
 
-            .section-description {
-                margin-left: 0;
+            .mobile-redirect {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 20px;
+                text-align: center;
+                flex-direction: column;
+                gap: 20px;
             }
 
-            .stats {
-                grid-template-columns: 1fr;
+            .mobile-redirect-text {
+                font-size: 18px;
+                color: #1D1D1F;
+                margin-bottom: 12px;
             }
 
-            .header h1 {
-                font-size: 36px;
+            .mobile-redirect-button {
+                display: inline-block;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #007AFF, #00C7BE);
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="mobile-redirect">
+        <div class="mobile-redirect-text">📱 Mobile version available</div>
+        <a href="index-mobile.html" class="mobile-redirect-button">Open Mobile View</a>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="logo">TC</div>

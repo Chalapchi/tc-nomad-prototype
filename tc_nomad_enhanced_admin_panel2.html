@@ -878,6 +878,71 @@
                                 <textarea class="form-input" rows="3" placeholder="Add notes about this luggage type..."></textarea>
                             </div>
 
+                            <!-- Compartments Section -->
+                            <div class="form-group" style="border-top: 2px solid #E5E5EA; padding-top: 24px; margin-top: 24px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div>
+                                        <label class="form-label" style="font-size: 16px; margin-bottom: 4px;">Compartments Configuration</label>
+                                        <div style="font-size: 13px; color: #8E8E93;">Define the internal structure of this luggage type (max 5)</div>
+                                    </div>
+                                    <button class="btn-secondary" onclick="addCompartment()" style="font-size: 13px;">+ Add Compartment</button>
+                                </div>
+
+                                <!-- Main Compartment (Always Exists) -->
+                                <div style="background: #F8F9FA; border: 2px solid #007AFF; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 18px;">📦</span>
+                                            <span style="font-weight: 600; font-size: 15px;">Main Compartment</span>
+                                            <span style="background: #007AFF; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;">DEFAULT</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Length (in)</label>
+                                            <input type="number" class="form-input" value="20" style="font-size: 13px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Width (in)</label>
+                                            <input type="number" class="form-input" value="14" style="font-size: 13px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Height (in)</label>
+                                            <input type="number" class="form-input" value="9" style="font-size: 13px;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Volume (L)</label>
+                                            <input type="number" class="form-input" value="30" style="font-size: 13px;">
+                                        </div>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Layer Count</label>
+                                            <select class="form-input" style="font-size: 13px;">
+                                                <option value="1">1 Layer</option>
+                                                <option value="2">2 Layers</option>
+                                                <option value="3">3 Layers</option>
+                                                <option value="4" selected>4 Layers</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">Quadrants</label>
+                                            <select class="form-input" style="font-size: 13px;">
+                                                <option value="2">2 Quadrants (Left/Right)</option>
+                                                <option value="4" selected>4 Quadrants (Grid)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Optional Compartments Container -->
+                                <div id="optional-compartments">
+                                    <!-- Additional compartments will be added here via JavaScript -->
+                                </div>
+                            </div>
+
                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                                 <button class="btn-secondary">Cancel</button>
                                 <button class="btn-primary">Save Luggage Type</button>
@@ -1500,11 +1565,30 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">SVG Icon for 3D Model</label>
-                                <div class="file-upload" onclick="document.getElementById('svg-upload').click()">
-                                    <input type="file" id="svg-upload" accept=".svg">
-                                    <div>📎 Click to upload SVG file</div>
-                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Used for WebGL 3D visualization</div>
+                                <label class="form-label">Layer Count (Height)</label>
+                                <input type="number" class="form-input" placeholder="2" min="1" max="4">
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">How many layers this item occupies (1-4)</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Packing Options</label>
+                                <div style="background: #F8F9FA; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                                        <input type="text" class="form-input" placeholder="Option name (e.g., Rolled)" style="flex: 1;">
+                                        <input type="number" class="form-input" placeholder="Layers" style="width: 100px;">
+                                        <button class="btn-secondary" style="padding: 8px 16px;">+ Add Animation</button>
+                                    </div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Different ways to pack this item (rolling, folding, etc.)</div>
+                                </div>
+                                <button class="btn-secondary" style="width: 100%;">+ Add Packing Option</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Item Animation/Icon</label>
+                                <div class="file-upload" onclick="document.getElementById('item-animation-upload').click()">
+                                    <input type="file" id="item-animation-upload" accept=".svg,.gif,.webp,image/*">
+                                    <div>📎 Click to upload animation/icon</div>
+                                    <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">SVG, GIF, or image for item visualization</div>
                                 </div>
                             </div>
 
@@ -1673,6 +1757,95 @@
                 window.location.href = 'index.html';
             }
         });
+
+        // Compartment management
+        let compartmentCount = 0;
+        const maxCompartments = 5;
+
+        function addCompartment() {
+            if (compartmentCount >= maxCompartments - 1) { // -1 because main compartment exists
+                alert(`Maximum ${maxCompartments} compartments allowed (including main compartment)`);
+                return;
+            }
+
+            compartmentCount++;
+            const container = document.getElementById('optional-compartments');
+
+            const compartmentHTML = `
+                <div class="compartment-card" id="compartment-${compartmentCount}" style="background: white; border: 1px solid #E5E5EA; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                            <input type="text" class="form-input" placeholder="Compartment Name (e.g., Front Pocket)" style="flex: 1; font-size: 14px; font-weight: 500;">
+                            <select class="form-input" style="width: 140px; font-size: 13px;">
+                                <option value="">Type</option>
+                                <option value="pocket">Pocket</option>
+                                <option value="sleeve">Sleeve</option>
+                                <option value="divider">Divider</option>
+                                <option value="expansion">Expansion</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <select class="form-input" style="width: 120px; font-size: 13px;">
+                                <option value="">Position</option>
+                                <option value="front">Front</option>
+                                <option value="back">Back</option>
+                                <option value="side">Side</option>
+                                <option value="top">Top</option>
+                                <option value="internal">Internal</option>
+                            </select>
+                        </div>
+                        <button class="btn-secondary" onclick="removeCompartment(${compartmentCount})" style="padding: 8px 12px; font-size: 12px; background: #FEE; color: #D32F2F; border: 1px solid #FFCDD2;">✕ Remove</button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Length (in)</label>
+                            <input type="number" class="form-input" placeholder="10" style="font-size: 13px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Width (in)</label>
+                            <input type="number" class="form-input" placeholder="8" style="font-size: 13px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Height (in)</label>
+                            <input type="number" class="form-input" placeholder="2" style="font-size: 13px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Volume (L)</label>
+                            <input type="number" class="form-input" placeholder="5" style="font-size: 13px;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Layer Count</label>
+                            <select class="form-input" style="font-size: 13px;">
+                                <option value="1">1 Layer</option>
+                                <option value="2" selected>2 Layers</option>
+                                <option value="3">3 Layers</option>
+                                <option value="4">4 Layers</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-size: 12px;">Quadrants</label>
+                            <select class="form-input" style="font-size: 13px;">
+                                <option value="2" selected>2 Quadrants (Left/Right)</option>
+                                <option value="4">4 Quadrants (Grid)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', compartmentHTML);
+        }
+
+        function removeCompartment(id) {
+            const element = document.getElementById(`compartment-${id}`);
+            if (element) {
+                element.remove();
+                compartmentCount--;
+            }
+        }
     </script>
 
     <!-- Global Navigation Overlay -->
