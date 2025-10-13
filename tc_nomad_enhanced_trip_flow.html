@@ -846,6 +846,19 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">How are you traveling?</label>
+                    <select class="form-input" id="travel-type-select" onchange="updateTravelTypeFields(this.value)">
+                        <option value="airplane" selected>✈️ Airplane</option>
+                        <option value="car">🚗 Car</option>
+                        <option value="train">🚆 Train</option>
+                        <option value="bus">🚌 Bus</option>
+                    </select>
+                    <div class="helper-text" id="travel-type-helper" style="font-size: 12px; color: #8E8E93; margin-top: 6px;">
+                        Strict weight & size limits apply
+                    </div>
+                </div>
+
+                <div class="form-group" id="airline-field">
                     <label class="form-label">Airline</label>
                     <select class="form-input">
                         <option value="american" selected>American Airlines</option>
@@ -1422,6 +1435,27 @@
                 
                 categoryItems.insertBefore(newItem, button);
                 updateProgress();
+            }
+        }
+
+        // Travel Type conditional fields
+        function updateTravelTypeFields(travelType) {
+            const airlineField = document.getElementById('airline-field');
+            const helperText = document.getElementById('travel-type-helper');
+
+            const helpers = {
+                'airplane': 'Strict weight & size limits apply',
+                'car': 'Flexible packing - bring extra items as needed',
+                'train': 'Pack light for easy carrying through stations',
+                'bus': 'Compact luggage recommended for storage'
+            };
+
+            helperText.textContent = helpers[travelType] || '';
+
+            if (travelType === 'airplane') {
+                airlineField.style.display = 'block';
+            } else {
+                airlineField.style.display = 'none';
             }
         }
 

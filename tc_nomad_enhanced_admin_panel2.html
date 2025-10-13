@@ -561,10 +561,11 @@
         <button class="screen-btn" onclick="showScreen(2)">Luggage Types</button>
         <button class="screen-btn" onclick="showScreen(3)">Airlines</button>
         <button class="screen-btn" onclick="showScreen(4)">Trip Types</button>
-        <button class="screen-btn" onclick="showScreen(5)">Activities</button>
-        <button class="screen-btn" onclick="showScreen(6)">Item Categories</button>
-        <button class="screen-btn" onclick="showScreen(7)">Welcome Screen</button>
-        <button class="screen-btn" onclick="showScreen(8)">Settings</button>
+        <button class="screen-btn" onclick="showScreen(5)">Travel Types</button>
+        <button class="screen-btn" onclick="showScreen(6)">Activities</button>
+        <button class="screen-btn" onclick="showScreen(7)">Item Categories</button>
+        <button class="screen-btn" onclick="showScreen(8)">Welcome Screen</button>
+        <button class="screen-btn" onclick="showScreen(9)">Settings</button>
     </div>
 
     <div class="admin-container">
@@ -606,14 +607,18 @@
                     <span>Trip Types</span>
                 </button>
                 <button class="nav-item" onclick="showScreen(5)">
+                    <span class="nav-icon">🚗</span>
+                    <span>Travel Types</span>
+                </button>
+                <button class="nav-item" onclick="showScreen(6)">
                     <span class="nav-icon">🎯</span>
                     <span>Activities</span>
                 </button>
-                <button class="nav-item" onclick="showScreen(6)">
+                <button class="nav-item" onclick="showScreen(7)">
                     <span class="nav-icon">📦</span>
                     <span>Item Categories</span>
                 </button>
-                <button class="nav-item" onclick="showScreen(7)">
+                <button class="nav-item" onclick="showScreen(8)">
                     <span class="nav-icon">📱</span>
                     <span>Welcome Screen</span>
                 </button>
@@ -621,7 +626,7 @@
 
             <div class="nav-section">
                 <div class="nav-header">System</div>
-                <button class="nav-item" onclick="showScreen(8)">
+                <button class="nav-item" onclick="showScreen(9)">
                     <span class="nav-icon">⚙️</span>
                     <span>Settings</span>
                 </button>
@@ -1342,6 +1347,200 @@
                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                                 <button class="btn-secondary">Cancel</button>
                                 <button class="btn-primary">Save Trip Type</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 5: Travel Types (NEW) -->
+            <div class="screen">
+                <div class="header">
+                    <h1 class="header-title">Travel Types Management</h1>
+                    <div class="header-actions">
+                        <button class="btn-primary">Add Travel Type</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <!-- Travel Types Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Travel Types</div>
+                            <div style="font-size: 14px; color: #8E8E93;">Define transportation methods for travel planning</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Travel Type</th>
+                                        <th>Icon</th>
+                                        <th>Luggage Restrictions</th>
+                                        <th>Packing Priority</th>
+                                        <th>AI Considerations</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 24px;">✈️</span>
+                                                <span style="font-weight: 500;">Airplane</span>
+                                            </div>
+                                        </td>
+                                        <td style="font-size: 20px;">✈️</td>
+                                        <td>
+                                            <span style="background: #FEE; color: #D32F2F; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">STRICT</span>
+                                        </td>
+                                        <td>Weight, Size, TSA Rules</td>
+                                        <td style="max-width: 250px; font-size: 12px;">Airline baggage limits, liquid restrictions, carry-on dimensions</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 24px;">🚗</span>
+                                                <span style="font-weight: 500;">Car</span>
+                                            </div>
+                                        </td>
+                                        <td style="font-size: 20px;">🚗</td>
+                                        <td>
+                                            <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">FLEXIBLE</span>
+                                        </td>
+                                        <td>Trunk Space, Access</td>
+                                        <td style="max-width: 250px; font-size: 12px;">More flexible, can bring extra items, easy access to luggage</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 24px;">🚆</span>
+                                                <span style="font-weight: 500;">Train</span>
+                                            </div>
+                                        </td>
+                                        <td style="font-size: 20px;">🚆</td>
+                                        <td>
+                                            <span style="background: #FFF8E1; color: #F57C00; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">MODERATE</span>
+                                        </td>
+                                        <td>Carry Ease, Overhead Space</td>
+                                        <td style="max-width: 250px; font-size: 12px;">Must carry luggage yourself, overhead compartments, platform walking</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span style="font-size: 24px;">🚌</span>
+                                                <span style="font-weight: 500;">Bus</span>
+                                            </div>
+                                        </td>
+                                        <td style="font-size: 20px;">🚌</td>
+                                        <td>
+                                            <span style="background: #FFF8E1; color: #F57C00; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">MODERATE</span>
+                                        </td>
+                                        <td>Under Bus Storage, Compact</td>
+                                        <td style="max-width: 250px; font-size: 12px;">Limited storage, compact luggage preferred, accessibility during travel</td>
+                                        <td>
+                                            <div class="actions">
+                                                <button class="action-btn action-edit" title="Edit">✏️</button>
+                                                <button class="action-btn action-delete" title="Delete">🗑</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add New Travel Type Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Add New Travel Type</div>
+                        </div>
+                        <div class="card-body" style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Travel Type Name</label>
+                                    <input type="text" class="form-input" placeholder="e.g., Cruise Ship">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon/Emoji</label>
+                                    <input type="text" class="form-input" placeholder="🚢">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Restriction Level</label>
+                                    <select class="form-input">
+                                        <option>Select level...</option>
+                                        <option>Flexible (Car, RV)</option>
+                                        <option>Moderate (Train, Bus)</option>
+                                        <option>Strict (Airplane)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Packing Priorities (comma separated)</label>
+                                <input type="text" class="form-input" placeholder="e.g., Weight limits, Size restrictions, Easy access">
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">What should users focus on when packing for this travel type?</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">AI Considerations</label>
+                                <textarea class="form-input" rows="3" placeholder="Describe key factors AI should consider when suggesting items for this travel type..."></textarea>
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Examples: baggage policies, accessibility, storage constraints, security requirements</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Suggested Luggage Types</label>
+                                <div style="background: #F8F9FA; border-radius: 8px; padding: 12px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>Carry-on Suitcase</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <input type="checkbox">
+                                        <span>Checked Luggage</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>Backpack</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox">
+                                        <span>Duffel Bag</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Max Weight Recommendation (Optional)</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <input type="number" class="form-input" placeholder="50">
+                                    <select class="form-input">
+                                        <option>lbs</option>
+                                        <option>kg</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-secondary">Cancel</button>
+                                <button class="btn-primary">Save Travel Type</button>
                             </div>
                         </div>
                     </div>

@@ -130,7 +130,7 @@
             background: #F2F2F7;
             overflow-x: auto;
         }
-        
+
         .luggage-tab {
             flex: 1;
             min-width: 140px;
@@ -141,22 +141,55 @@
             cursor: pointer;
             text-align: center;
         }
-        
+
         .luggage-tab.active {
             border-color: #007AFF;
             background: white;
         }
-        
+
         .luggage-tab-name {
             font-size: 13px;
             font-weight: 600;
             color: #000;
             margin-bottom: 2px;
         }
-        
+
         .luggage-tab-status {
             font-size: 10px;
             color: #8E8E93;
+        }
+
+        /* Compartment tabs */
+        .compartment-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: white;
+            overflow-x: auto;
+            border-bottom: 1px solid #E5E5EA;
+        }
+
+        .compartment-tab {
+            padding: 8px 16px;
+            background: #F2F2F7;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #3C3C43;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .compartment-tab.active {
+            background: #007AFF;
+            color: white;
+        }
+
+        .compartment-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .visual-area {
@@ -193,32 +226,38 @@
             inset: 12px;
             background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%);
             border-radius: 8px;
-            display: grid;
-            grid-template-rows: 1fr 1fr 1fr;
-            gap: 4px;
-            padding: 8px;
-        }
-
-        .luggage-compartment {
-            border: 1px dashed #B0B0B0;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.5);
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 4px;
-            gap: 4px;
+            padding: 12px;
+            gap: 8px;
         }
 
-        .compartment-label {
-            position: absolute;
-            top: 2px;
-            left: 4px;
-            font-size: 9px;
+        .luggage-compartment {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .luggage-compartment.active {
+            display: flex;
+        }
+
+        .compartment-info {
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
             color: #8E8E93;
-            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #C0C0C0;
         }
         
         .luggage-handle {
@@ -793,7 +832,23 @@
                     <div class="luggage-tab-status">Not started</div>
                 </div>
             </div>
-            
+
+            <!-- Compartment Tabs -->
+            <div class="compartment-tabs">
+                <div class="compartment-tab active" onclick="switchCompartment('main')">
+                    📦 Main Compartment
+                </div>
+                <div class="compartment-tab" onclick="switchCompartment('front-pocket')">
+                    👝 Front Pocket
+                </div>
+                <div class="compartment-tab disabled">
+                    💻 Laptop Sleeve
+                </div>
+                <div class="compartment-tab disabled">
+                    📂 Side Pocket
+                </div>
+            </div>
+
             <!-- Visual Area -->
             <div class="visual-area">
                 <!-- Volume Progress -->
@@ -810,21 +865,32 @@
                 <!-- Luggage Visual with Interactive Placement -->
                 <div class="luggage-visual-container">
                     <div class="luggage-base">
-                        <!-- Open luggage interior with compartments -->
+                        <!-- Open luggage interior with dynamic compartments -->
                         <div class="luggage-interior">
-                            <div class="luggage-compartment" id="compartment-top">
-                                <span class="compartment-label">TOP</span>
+                            <!-- Main Compartment -->
+                            <div class="luggage-compartment active" id="compartment-main" data-compartment="main">
+                                <div class="compartment-info">Main Compartment • 30L • 4 layers</div>
                                 <!-- Packed items will appear here -->
                                 <span class="packed-item">🧥</span>
-                            </div>
-                            <div class="luggage-compartment" id="compartment-middle">
-                                <span class="compartment-label">MIDDLE</span>
                                 <span class="packed-item">👔</span>
                                 <span class="packed-item">👖</span>
-                            </div>
-                            <div class="luggage-compartment" id="compartment-bottom">
-                                <span class="compartment-label">BOTTOM</span>
                                 <span class="packed-item">👞</span>
+                            </div>
+
+                            <!-- Front Pocket -->
+                            <div class="luggage-compartment" id="compartment-front-pocket" data-compartment="front-pocket">
+                                <div class="compartment-info">Front Pocket • 5L • 2 layers</div>
+                                <!-- Packed items for front pocket -->
+                            </div>
+
+                            <!-- Laptop Sleeve (disabled) -->
+                            <div class="luggage-compartment" id="compartment-laptop" data-compartment="laptop">
+                                <div class="compartment-info">Laptop Sleeve • 2L • 1 layer</div>
+                            </div>
+
+                            <!-- Side Pocket (disabled) -->
+                            <div class="luggage-compartment" id="compartment-side" data-compartment="side">
+                                <div class="compartment-info">Side Pocket • 1L • 1 layer</div>
                             </div>
                         </div>
                     </div>
@@ -847,72 +913,81 @@
                 </div>
                 
                 <div class="checklist-items">
-                    <div class="checklist-item" data-item-emoji="👞" data-compartment="bottom">
+                    <div class="checklist-item" data-item-emoji="👞" data-compartment="main">
                         <div class="checkbox checked"></div>
                         <div class="item-content">
                             <div class="item-name completed">Dress Shoes (1 pair)</div>
                             <div class="item-instruction">
-                                Bottom corner, against back wall
+                                Main Compartment - Bottom corner, against back wall
                                 <button class="how-to-pack-btn" onclick="showPackingTechnique('shoes', '👞')">📹 How to place</button>
                             </div>
                         </div>
                         <div class="stage-badge">DONE</div>
                     </div>
 
-                    <div class="checklist-item" data-item-emoji="👖" data-compartment="middle">
+                    <div class="checklist-item" data-item-emoji="👖" data-compartment="main">
                         <div class="checkbox checked"></div>
                         <div class="item-content">
                             <div class="item-name completed">Dress Pants (2)</div>
                             <div class="item-instruction">
-                                Rolled, layered above shoes
+                                Main Compartment - Rolled, layered above shoes
                                 <button class="how-to-pack-btn" onclick="showPackingTechnique('roll', '👖')">📹 How to roll</button>
                             </div>
                         </div>
                         <div class="stage-badge">DONE</div>
                     </div>
 
-                    <div class="checklist-item" data-item-emoji="👔" data-compartment="middle">
+                    <div class="checklist-item" data-item-emoji="👔" data-compartment="main">
                         <div class="checkbox checked"></div>
                         <div class="item-content">
                             <div class="item-name completed">Dress Shirts (2)</div>
                             <div class="item-instruction">
-                                Folded, stacked flat
+                                Main Compartment - Folded, stacked flat
                                 <button class="how-to-pack-btn" onclick="showPackingTechnique('fold', '👔')">📹 How to fold</button>
                             </div>
                         </div>
                         <div class="stage-badge">DONE</div>
                     </div>
 
-                    <div class="checklist-item" data-item-emoji="🧥" data-compartment="top" onclick="packItem(this)">
+                    <div class="checklist-item" data-item-emoji="🧥" data-compartment="main" onclick="packItem(this)">
                         <div class="checkbox"></div>
                         <div class="item-content">
                             <div class="item-name">Blazer (1) <span style="font-size: 10px; color: #007AFF;">← Click to pack</span></div>
                             <div class="item-instruction">
-                                Fold carefully, place on top
+                                Main Compartment - Fold carefully, place on top
                                 <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('fold-blazer', '🧥')">📹 How to fold</button>
                             </div>
                         </div>
                         <div class="stage-badge">NEXT</div>
                     </div>
 
-                    <div class="checklist-item" data-item-emoji="👕" data-compartment="middle" onclick="packItem(this)">
+                    <div class="checklist-item" data-item-emoji="👕" data-compartment="main" onclick="packItem(this)">
                         <div class="checkbox"></div>
                         <div class="item-content">
                             <div class="item-name">T-Shirts (3)</div>
                             <div class="item-instruction">
-                                Rolled tightly, vertical placement
+                                Main Compartment - Rolled tightly, vertical placement
                                 <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('roll', '👕')">📹 How to roll</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="checklist-item" data-item-emoji="👖" data-compartment="bottom" onclick="packItem(this)">
+                    <div class="checklist-item" data-item-emoji="🔑" data-compartment="front-pocket" onclick="packItem(this)">
                         <div class="checkbox"></div>
                         <div class="item-content">
-                            <div class="item-name">Jeans (1)</div>
+                            <div class="item-name">Keys & Wallet</div>
                             <div class="item-instruction">
-                                Rolled, fill side gap
-                                <button class="how-to-pack-btn" onclick="event.stopPropagation(); showPackingTechnique('roll', '👖')">📹 How to roll</button>
+                                Front Pocket - Quick access items
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checklist-item" data-item-emoji="📱" data-compartment="front-pocket" onclick="packItem(this)">
+                        <div class="checkbox"></div>
+                        <div class="item-content">
+                            <div class="item-name">Phone Charger</div>
+                            <div class="item-instruction">
+                                Front Pocket - Easy to reach
                             </div>
                         </div>
                     </div>
@@ -959,6 +1034,27 @@
     </div>
 
     <script>
+        // Switch between compartments
+        function switchCompartment(compartmentId) {
+            // Update compartment tabs
+            const tabs = document.querySelectorAll('.compartment-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.onclick && tab.onclick.toString().includes(compartmentId)) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update compartment views
+            const compartments = document.querySelectorAll('.luggage-compartment');
+            compartments.forEach(comp => {
+                comp.classList.remove('active');
+                if (comp.dataset.compartment === compartmentId) {
+                    comp.classList.add('active');
+                }
+            });
+        }
+
         // Packing technique data
         const packingTechniques = {
             'roll': {
@@ -1045,45 +1141,49 @@
             // Get starting position
             const startRect = element.getBoundingClientRect();
 
-            // Get target compartment position
-            const targetCompartment = document.getElementById(`compartment-${compartment}`);
-            const targetRect = targetCompartment.getBoundingClientRect();
+            // Get target compartment - use data-compartment attribute to find the right one
+            const targetCompartment = document.querySelector(`[data-compartment="${compartment}"]`);
+            if (!targetCompartment) {
+                console.error('Target compartment not found:', compartment);
+                return;
+            }
 
-            // Create flying emoji
-            const flyingItem = document.createElement('div');
-            flyingItem.className = 'flying-item';
-            flyingItem.textContent = emoji;
-            flyingItem.style.left = startRect.left + 'px';
-            flyingItem.style.top = startRect.top + 'px';
-            document.body.appendChild(flyingItem);
+            // Switch to the target compartment view first
+            switchCompartment(compartment);
 
-            // Calculate animation
-            const deltaX = targetRect.left + targetRect.width / 2 - startRect.left;
-            const deltaY = targetRect.top + targetRect.height / 2 - startRect.top;
-
-            flyingItem.style.setProperty('--deltaX', deltaX + 'px');
-            flyingItem.style.setProperty('--deltaY', deltaY + 'px');
-
-            // Animate to target
+            // Wait a bit for the view to switch, then get the position
             setTimeout(() => {
-                flyingItem.style.left = (targetRect.left + targetRect.width / 2 - 16) + 'px';
-                flyingItem.style.top = (targetRect.top + targetRect.height / 2 - 16) + 'px';
-            }, 10);
+                const targetRect = targetCompartment.getBoundingClientRect();
 
-            // After animation, add to compartment and mark as checked
-            setTimeout(() => {
-                const packedItem = document.createElement('span');
-                packedItem.className = 'packed-item';
-                packedItem.textContent = emoji;
-                targetCompartment.appendChild(packedItem);
+                // Create flying emoji
+                const flyingItem = document.createElement('div');
+                flyingItem.className = 'flying-item';
+                flyingItem.textContent = emoji;
+                flyingItem.style.left = startRect.left + 'px';
+                flyingItem.style.top = startRect.top + 'px';
+                document.body.appendChild(flyingItem);
 
-                checkbox.classList.add('checked');
-                itemName.classList.add('completed');
-                element.style.cursor = 'default';
-                element.onclick = null;
+                // Animate to target
+                setTimeout(() => {
+                    flyingItem.style.left = (targetRect.left + targetRect.width / 2 - 16) + 'px';
+                    flyingItem.style.top = (targetRect.top + targetRect.height / 2 - 16) + 'px';
+                }, 10);
 
-                flyingItem.remove();
-            }, 800);
+                // After animation, add to compartment and mark as checked
+                setTimeout(() => {
+                    const packedItem = document.createElement('span');
+                    packedItem.className = 'packed-item';
+                    packedItem.textContent = emoji;
+                    targetCompartment.appendChild(packedItem);
+
+                    checkbox.classList.add('checked');
+                    itemName.classList.add('completed');
+                    element.style.cursor = 'default';
+                    element.onclick = null;
+
+                    flyingItem.remove();
+                }, 800);
+            }, 200);
         }
 
         // Add keyboard navigation

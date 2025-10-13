@@ -551,9 +551,10 @@
     <div class="screen-controls">
         <button class="screen-btn active" onclick="showScreen(0)">Select Type</button>
         <button class="screen-btn" onclick="showScreen(1)">Dimensions</button>
-        <button class="screen-btn" onclick="showScreen(2)">Name & Settings</button>
-        <button class="screen-btn" onclick="showScreen(3)">Summary</button>
-        <button class="screen-btn" onclick="showScreen(4)">Success</button>
+        <button class="screen-btn" onclick="showScreen(2)">Name</button>
+        <button class="screen-btn" onclick="showScreen(3)">Compartments</button>
+        <button class="screen-btn" onclick="showScreen(4)">Summary</button>
+        <button class="screen-btn" onclick="showScreen(5)">Success</button>
     </div>
 
     <!-- Modal Overlay -->
@@ -672,16 +673,6 @@
                     <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">lbs</div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Number of Compartments</label>
-                    <select class="form-input">
-                        <option value="1">1 - Single compartment</option>
-                        <option value="2" selected>2 - Main + front pocket</option>
-                        <option value="3">3 - Multiple sections</option>
-                        <option value="4+">4+ - Many compartments</option>
-                    </select>
-                </div>
-
                 <button class="btn-primary" onclick="showConfirmation()">Continue</button>
             </div>
         </div>
@@ -719,16 +710,110 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="showScreen(3)">Continue</button>
+                <button class="btn-primary" onclick="showScreen(3)">Continue to Compartments</button>
             </div>
         </div>
 
-        <!-- Screen 4: Summary -->
+        <!-- Screen 4: Compartments Configuration (NEW) -->
         <div class="screen">
             <div class="header">
                 <button class="back-btn" onclick="showScreen(2)">←</button>
+                <h2 class="header-title">Compartments</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <div class="step-indicator">
+                    <div class="step-dot completed"></div>
+                    <div class="step-dot completed"></div>
+                    <div class="step-dot completed"></div>
+                    <div class="step-dot active"></div>
+                </div>
+
+                <h2 class="section-title">Configure Compartments</h2>
+                <p class="section-description">Customize your luggage's internal structure</p>
+
+                <div style="background: #E3F2FF; border: 1px solid #007AFF; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: start; gap: 8px;">
+                        <span style="font-size: 16px;">💡</span>
+                        <div style="font-size: 12px; color: #007AFF; line-height: 1.5;">
+                            These are the default compartments for <strong>Carry-On Suitcase</strong>. You can toggle optional compartments or add custom ones.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Compartment (Always Exists) -->
+                <div style="background: white; border: 2px solid #007AFF; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 24px;">📦</span>
+                            <div>
+                                <div style="font-weight: 600; font-size: 15px;">Main Compartment</div>
+                                <div style="font-size: 11px; color: #8E8E93;">20" × 14" × 9" • 30L • 4 layers</div>
+                            </div>
+                        </div>
+                        <span style="background: #007AFF; color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;">REQUIRED</span>
+                    </div>
+                    <div style="font-size: 12px; color: #6B7280; margin-top: 8px;">
+                        Primary storage area with 4 layers and 4 quadrants
+                    </div>
+                </div>
+
+                <!-- Optional Compartments -->
+                <div style="font-size: 14px; font-weight: 600; color: #1D1D1F; margin: 20px 0 12px 0;">Optional Compartments</div>
+
+                <div style="background: white; border: 1px solid #E5E5EA; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                            <span style="font-size: 20px;">👝</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">Front Pocket</div>
+                                <div style="font-size: 11px; color: #8E8E93;">10" × 8" × 2" • 5L • 2 layers</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSwitch(this)" data-compartment="front-pocket"></div>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 1px solid #E5E5EA; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                            <span style="font-size: 20px;">💻</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">Laptop Sleeve</div>
+                                <div style="font-size: 11px; color: #8E8E93;">15" × 11" × 1" • 2L • 1 layer</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)" data-compartment="laptop-sleeve"></div>
+                    </div>
+                </div>
+
+                <div style="background: white; border: 1px solid #E5E5EA; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                            <span style="font-size: 20px;">📂</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">Side Pocket</div>
+                                <div style="font-size: 11px; color: #8E8E93;">6" × 4" × 2" • 1L • 1 layer</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSwitch(this)" data-compartment="side-pocket"></div>
+                    </div>
+                </div>
+
+                <!-- Add Custom Compartment Button -->
+                <button class="btn-secondary" style="width: 100%; margin-bottom: 20px;" onclick="addCustomCompartment()">+ Add Custom Compartment</button>
+
+                <button class="btn-primary" onclick="showScreen(4)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Screen 5: Summary -->
+        <div class="screen">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(3)">←</button>
                 <h2 class="header-title">Review</h2>
-                <button class="save-btn" onclick="showScreen(4)">Save</button>
+                <button class="save-btn" onclick="showScreen(5)">Save</button>
             </div>
 
             <div class="content">
@@ -757,9 +842,25 @@
                         <span class="summary-label">Empty Weight</span>
                         <span class="summary-value">7.5 lbs</span>
                     </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Compartments</h3>
                     <div class="summary-row">
-                        <span class="summary-label">Compartments</span>
-                        <span class="summary-value">2 sections</span>
+                        <span class="summary-label">📦 Main Compartment</span>
+                        <span class="summary-value">30L</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">👝 Front Pocket</span>
+                        <span class="summary-value" style="color: #34C759;">✓ Enabled</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">💻 Laptop Sleeve</span>
+                        <span class="summary-value" style="color: #8E8E93;">✗ Disabled</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">📂 Side Pocket</span>
+                        <span class="summary-value" style="color: #8E8E93;">✗ Disabled</span>
                     </div>
                 </div>
 
@@ -771,8 +872,8 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="showScreen(4)">Save Luggage Profile</button>
-                <button class="btn-secondary" onclick="showScreen(2)">Edit Details</button>
+                <button class="btn-primary" onclick="showScreen(5)">Save Luggage Profile</button>
+                <button class="btn-secondary" onclick="showScreen(3)">Edit Compartments</button>
             </div>
         </div>
 
