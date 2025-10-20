@@ -903,7 +903,7 @@
                                         </div>
                                     </div>
 
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 12px;">
                                         <div class="form-group">
                                             <label class="form-label" style="font-size: 12px;">Length (in)</label>
                                             <input type="number" class="form-input" value="20" style="font-size: 13px;">
@@ -920,26 +920,12 @@
                                             <label class="form-label" style="font-size: 12px;">Volume (L)</label>
                                             <input type="number" class="form-input" value="30" style="font-size: 13px;">
                                         </div>
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-size: 12px;">% of Total</label>
+                                            <input type="number" class="form-input" value="85" min="1" max="100" style="font-size: 13px;">
+                                        </div>
                                     </div>
 
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
-                                        <div class="form-group">
-                                            <label class="form-label" style="font-size: 12px;">Layer Count</label>
-                                            <select class="form-input" style="font-size: 13px;">
-                                                <option value="1">1 Layer</option>
-                                                <option value="2">2 Layers</option>
-                                                <option value="3">3 Layers</option>
-                                                <option value="4" selected>4 Layers</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label" style="font-size: 12px;">Quadrants</label>
-                                            <select class="form-input" style="font-size: 13px;">
-                                                <option value="2">2 Quadrants (Left/Right)</option>
-                                                <option value="4" selected>4 Quadrants (Grid)</option>
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <!-- Optional Compartments Container -->
@@ -1153,10 +1139,8 @@
                                 <thead>
                                     <tr>
                                         <th>Trip Type</th>
-                                        <th>Duration Range</th>
-                                        <th>Climate</th>
                                         <th>Activities</th>
-                                        <th>Suggested Items</th>
+                                        <th>Number of Items</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1168,9 +1152,7 @@
                                                 <span style="font-weight: 500;">Business Trip</span>
                                             </div>
                                         </td>
-                                        <td>2-5 days</td>
-                                        <td>Any</td>
-                                        <td>Meetings, Conferences</td>
+                                        <td>Meetings, Conferences, Networking</td>
                                         <td>47 items</td>
                                         <td>
                                             <div class="actions">
@@ -1186,9 +1168,7 @@
                                                 <span style="font-weight: 500;">Beach Vacation</span>
                                             </div>
                                         </td>
-                                        <td>7-14 days</td>
-                                        <td>Tropical, Warm</td>
-                                        <td>Swimming, Sunbathing</td>
+                                        <td>Swimming, Sunbathing, Water Sports</td>
                                         <td>52 items</td>
                                         <td>
                                             <div class="actions">
@@ -1204,9 +1184,7 @@
                                                 <span style="font-weight: 500;">Adventure/Hiking</span>
                                             </div>
                                         </td>
-                                        <td>5-10 days</td>
-                                        <td>Variable</td>
-                                        <td>Hiking, Camping, Outdoor</td>
+                                        <td>Hiking, Camping, Outdoor Activities</td>
                                         <td>68 items</td>
                                         <td>
                                             <div class="actions">
@@ -1222,9 +1200,7 @@
                                                 <span style="font-weight: 500;">City Sightseeing</span>
                                             </div>
                                         </td>
-                                        <td>3-7 days</td>
-                                        <td>Any</td>
-                                        <td>Museums, Tours, Dining</td>
+                                        <td>Museums, Tours, Dining, Shopping</td>
                                         <td>41 items</td>
                                         <td>
                                             <div class="actions">
@@ -1255,93 +1231,40 @@
                                 </div>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
-                                <div class="form-group">
-                                    <label class="form-label">Duration Range</label>
-                                    <input type="text" class="form-input" placeholder="e.g., 5-7 days">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Primary Climate</label>
-                                    <select class="form-input">
-                                        <option>Select climate...</option>
-                                        <option>Tropical/Hot</option>
-                                        <option>Temperate/Mild</option>
-                                        <option>Cold/Winter</option>
-                                        <option>Variable</option>
-                                        <option>Any</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Secondary Climate (Optional)</label>
-                                    <select class="form-input">
-                                        <option>None</option>
-                                        <option>Humid</option>
-                                        <option>Dry/Arid</option>
-                                        <option>Rainy</option>
-                                        <option>Windy</option>
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">Typical Activities</label>
+                                <select class="form-input" multiple size="6" style="height: auto; padding: 8px;">
+                                    <option>Meetings</option>
+                                    <option>Conferences</option>
+                                    <option>Networking</option>
+                                    <option>Swimming</option>
+                                    <option>Sunbathing</option>
+                                    <option>Water Sports</option>
+                                    <option>Hiking</option>
+                                    <option>Camping</option>
+                                    <option>Outdoor Activities</option>
+                                    <option>Museums</option>
+                                    <option>Tours</option>
+                                    <option>Dining</option>
+                                    <option>Shopping</option>
+                                    <option>Skiing</option>
+                                    <option>Snowboarding</option>
+                                    <option>Photography</option>
+                                    <option>Wellness/Spa</option>
+                                    <option>Festivals</option>
+                                </select>
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Hold Ctrl/Cmd to select multiple activities</div>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Typical Activities</label>
-                                <input type="text" class="form-input" placeholder="e.g., Skiing, Snowboarding, Après-ski">
+                                <label class="form-label">Number of Suggested Items</label>
+                                <input type="number" class="form-input" placeholder="e.g., 45" min="1" max="100">
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Total number of items to suggest for this trip type</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">AI Packing List Prompt</label>
                                 <textarea class="form-input" rows="3" placeholder="Describe what items should be suggested for this trip type..."></textarea>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                <div class="form-group">
-                                    <label class="form-label">Suggested Luggage Type</label>
-                                    <select class="form-input">
-                                        <option>Select luggage type...</option>
-                                        <option>Carry-on Suitcase</option>
-                                        <option>Check-in Suitcase</option>
-                                        <option>Travel Backpack</option>
-                                        <option>Duffel Bag</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Packing Complexity</label>
-                                    <select class="form-input">
-                                        <option>Simple (30-40 items)</option>
-                                        <option>Moderate (40-55 items)</option>
-                                        <option>Complex (55+ items)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Default Item Categories</label>
-                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 12px; background: #F8F9FA; border-radius: 8px;">
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox" checked> Clothing
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox" checked> Toiletries
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox" checked> Electronics
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox"> Sports Equipment
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox"> Beach Items
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox"> Business Items
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox"> Outdoor Gear
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                        <input type="checkbox" checked> Documents
-                                    </label>
-                                </div>
                             </div>
 
                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
@@ -1375,8 +1298,6 @@
                                     <tr>
                                         <th>Travel Type</th>
                                         <th>Icon</th>
-                                        <th>Luggage Restrictions</th>
-                                        <th>Packing Priority</th>
                                         <th>AI Considerations</th>
                                         <th>Actions</th>
                                     </tr>
@@ -1390,11 +1311,7 @@
                                             </div>
                                         </td>
                                         <td style="font-size: 20px;">✈️</td>
-                                        <td>
-                                            <span style="background: #FEE; color: #D32F2F; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">STRICT</span>
-                                        </td>
-                                        <td>Weight, Size, TSA Rules</td>
-                                        <td style="max-width: 250px; font-size: 12px;">Airline baggage limits, liquid restrictions, carry-on dimensions</td>
+                                        <td style="max-width: 400px; font-size: 13px;">Airline baggage limits, liquid restrictions, carry-on dimensions, TSA rules</td>
                                         <td>
                                             <div class="actions">
                                                 <button class="action-btn action-edit" title="Edit">✏️</button>
@@ -1410,11 +1327,7 @@
                                             </div>
                                         </td>
                                         <td style="font-size: 20px;">🚗</td>
-                                        <td>
-                                            <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">FLEXIBLE</span>
-                                        </td>
-                                        <td>Trunk Space, Access</td>
-                                        <td style="max-width: 250px; font-size: 12px;">More flexible, can bring extra items, easy access to luggage</td>
+                                        <td style="max-width: 400px; font-size: 13px;">Flexible packing, can bring extra items, easy access to luggage during trip</td>
                                         <td>
                                             <div class="actions">
                                                 <button class="action-btn action-edit" title="Edit">✏️</button>
@@ -1430,11 +1343,7 @@
                                             </div>
                                         </td>
                                         <td style="font-size: 20px;">🚆</td>
-                                        <td>
-                                            <span style="background: #FFF8E1; color: #F57C00; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">MODERATE</span>
-                                        </td>
-                                        <td>Carry Ease, Overhead Space</td>
-                                        <td style="max-width: 250px; font-size: 12px;">Must carry luggage yourself, overhead compartments, platform walking</td>
+                                        <td style="max-width: 400px; font-size: 13px;">Must carry luggage yourself, overhead compartments, platform walking, compact preferred</td>
                                         <td>
                                             <div class="actions">
                                                 <button class="action-btn action-edit" title="Edit">✏️</button>
@@ -1450,11 +1359,7 @@
                                             </div>
                                         </td>
                                         <td style="font-size: 20px;">🚌</td>
-                                        <td>
-                                            <span style="background: #FFF8E1; color: #F57C00; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">MODERATE</span>
-                                        </td>
-                                        <td>Under Bus Storage, Compact</td>
-                                        <td style="max-width: 250px; font-size: 12px;">Limited storage, compact luggage preferred, accessibility during travel</td>
+                                        <td style="max-width: 400px; font-size: 13px;">Limited storage, compact luggage preferred, accessibility during travel</td>
                                         <td>
                                             <div class="actions">
                                                 <button class="action-btn action-edit" title="Edit">✏️</button>
@@ -1473,7 +1378,7 @@
                             <div class="card-title">Add New Travel Type</div>
                         </div>
                         <div class="card-body" style="padding: 24px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                 <div class="form-group">
                                     <label class="form-label">Travel Type Name</label>
                                     <input type="text" class="form-input" placeholder="e.g., Cruise Ship">
@@ -1482,60 +1387,12 @@
                                     <label class="form-label">Icon/Emoji</label>
                                     <input type="text" class="form-input" placeholder="🚢">
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Restriction Level</label>
-                                    <select class="form-input">
-                                        <option>Select level...</option>
-                                        <option>Flexible (Car, RV)</option>
-                                        <option>Moderate (Train, Bus)</option>
-                                        <option>Strict (Airplane)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Packing Priorities (comma separated)</label>
-                                <input type="text" class="form-input" placeholder="e.g., Weight limits, Size restrictions, Easy access">
-                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">What should users focus on when packing for this travel type?</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">AI Considerations</label>
-                                <textarea class="form-input" rows="3" placeholder="Describe key factors AI should consider when suggesting items for this travel type..."></textarea>
-                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Examples: baggage policies, accessibility, storage constraints, security requirements</div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Suggested Luggage Types</label>
-                                <div style="background: #F8F9FA; border-radius: 8px; padding: 12px;">
-                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                        <input type="checkbox" checked>
-                                        <span>Carry-on Suitcase</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                        <input type="checkbox">
-                                        <span>Checked Luggage</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                        <input type="checkbox" checked>
-                                        <span>Backpack</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox">
-                                        <span>Duffel Bag</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Max Weight Recommendation (Optional)</label>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                                    <input type="number" class="form-input" placeholder="50">
-                                    <select class="form-input">
-                                        <option>lbs</option>
-                                        <option>kg</option>
-                                    </select>
-                                </div>
+                                <textarea class="form-input" rows="4" placeholder="Describe key factors AI should consider when suggesting items for this travel type..."></textarea>
+                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">Examples: baggage policies, accessibility, storage constraints, security requirements, packing flexibility</div>
                             </div>
 
                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
@@ -1649,7 +1506,77 @@
                     <div class="category-item">
                         <div class="category-header">
                             <div>
-                                <div class="category-name">Business Attire</div>
+                                <div class="category-name">📄 Important Documents</div>
+                                <div style="font-size: 12px; color: #8E8E93;">5 items • Used in 3,842 trips</div>
+                            </div>
+                            <div class="actions">
+                                <button class="action-btn action-edit" title="Edit Category">✏️</button>
+                                <button class="action-btn action-delete" title="Delete Category">🗑</button>
+                            </div>
+                        </div>
+                        <div class="items-list">
+                            <div class="item-row">
+                                <div class="item-preview">🛂</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Passport</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 100 • Access: 95 • 5"×4"×0.5" • 0.1 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="item-preview">💳</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Travel Wallet</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 98 • Access: 98 • 6"×4"×1" • 0.2 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="item-preview">✈️</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Boarding Pass</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 100 • Access: 100 • 8"×4"×0.1" • 0.01 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="item-preview">🏨</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Hotel Confirmation</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 100 • Access: 90 • 8"×4"×0.1" • 0.01 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="item-preview">🪪</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500;">Driver's License</div>
+                                    <div style="font-size: 12px; color: #8E8E93;">Vol: 100 • Access: 95 • 3"×2"×0.1" • 0.01 lbs</div>
+                                </div>
+                                <div class="actions">
+                                    <button class="action-btn action-edit" title="Edit">✏️</button>
+                                    <button class="action-btn action-delete" title="Delete">🗑</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="category-item">
+                        <div class="category-header">
+                            <div>
+                                <div class="category-name">👔 Business Attire</div>
                                 <div style="font-size: 12px; color: #8E8E93;">8 items • Used in 1,247 trips</div>
                             </div>
                             <div class="actions">
@@ -1659,7 +1586,7 @@
                         </div>
                         <div class="items-list">
                             <div class="item-row">
-                                <div class="item-preview">SVG</div>
+                                <div class="item-preview">👔</div>
                                 <div style="flex: 1;">
                                     <div style="font-weight: 500;">Business Shirt</div>
                                     <div style="font-size: 12px; color: #8E8E93;">Vol: 85 • Access: 70 • 16"×12"×1" • 0.3 lbs</div>
@@ -1670,7 +1597,7 @@
                                 </div>
                             </div>
                             <div class="item-row">
-                                <div class="item-preview">SVG</div>
+                                <div class="item-preview">👖</div>
                                 <div style="flex: 1;">
                                     <div style="font-weight: 500;">Dress Pants</div>
                                     <div style="font-size: 12px; color: #8E8E93;">Vol: 90 • Access: 60 • 14"×10"×2" • 0.8 lbs</div>
@@ -1686,7 +1613,7 @@
                     <div class="category-item">
                         <div class="category-header">
                             <div>
-                                <div class="category-name">Personal Care</div>
+                                <div class="category-name">🧴 Personal Care</div>
                                 <div style="font-size: 12px; color: #8E8E93;">12 items • Used in 2,891 trips</div>
                             </div>
                             <div class="actions">
@@ -1696,7 +1623,7 @@
                         </div>
                         <div class="items-list">
                             <div class="item-row">
-                                <div class="item-preview">SVG</div>
+                                <div class="item-preview">💼</div>
                                 <div style="flex: 1;">
                                     <div style="font-weight: 500;">Toiletry Bag</div>
                                     <div style="font-size: 12px; color: #8E8E93;">Vol: 95 • Access: 90 • 8"×6"×4" • 1.2 lbs</div>
@@ -1764,17 +1691,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Layer Count (Height)</label>
-                                <input type="number" class="form-input" placeholder="2" min="1" max="4">
-                                <div style="font-size: 12px; color: #8E8E93; margin-top: 4px;">How many layers this item occupies (1-4)</div>
-                            </div>
-
-                            <div class="form-group">
                                 <label class="form-label">Packing Options</label>
                                 <div style="background: #F8F9FA; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
                                     <div style="display: flex; gap: 12px; margin-bottom: 12px;">
                                         <input type="text" class="form-input" placeholder="Option name (e.g., Rolled)" style="flex: 1;">
-                                        <input type="number" class="form-input" placeholder="Layers" style="width: 100px;">
                                         <button class="btn-secondary" style="padding: 8px 16px;">+ Add Animation</button>
                                     </div>
                                     <div style="font-size: 12px; color: #8E8E93;">Different ways to pack this item (rolling, folding, etc.)</div>
@@ -1995,7 +1915,7 @@
                         <button class="btn-secondary" onclick="removeCompartment(${compartmentCount})" style="padding: 8px 12px; font-size: 12px; background: #FEE; color: #D32F2F; border: 1px solid #FFCDD2;">✕ Remove</button>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 12px;">
                         <div class="form-group">
                             <label class="form-label" style="font-size: 12px;">Length (in)</label>
                             <input type="number" class="form-input" placeholder="10" style="font-size: 13px;">
@@ -2012,24 +1932,9 @@
                             <label class="form-label" style="font-size: 12px;">Volume (L)</label>
                             <input type="number" class="form-input" placeholder="5" style="font-size: 13px;">
                         </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
                         <div class="form-group">
-                            <label class="form-label" style="font-size: 12px;">Layer Count</label>
-                            <select class="form-input" style="font-size: 13px;">
-                                <option value="1">1 Layer</option>
-                                <option value="2" selected>2 Layers</option>
-                                <option value="3">3 Layers</option>
-                                <option value="4">4 Layers</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" style="font-size: 12px;">Quadrants</label>
-                            <select class="form-input" style="font-size: 13px;">
-                                <option value="2" selected>2 Quadrants (Left/Right)</option>
-                                <option value="4">4 Quadrants (Grid)</option>
-                            </select>
+                            <label class="form-label" style="font-size: 12px;">% of Total</label>
+                            <input type="number" class="form-input" placeholder="15" min="1" max="100" style="font-size: 13px;">
                         </div>
                     </div>
                 </div>
