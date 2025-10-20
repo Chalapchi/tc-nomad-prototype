@@ -802,12 +802,14 @@
 <body>
     <!-- Screen Controls -->
     <div class="screen-controls">
-        <button class="screen-btn active" onclick="showScreen(0)">New Trip</button>
-        <button class="screen-btn" onclick="showScreen(1)">Activities</button>
-        <button class="screen-btn" onclick="showScreen(2)">Luggage</button>
-        <button class="screen-btn" onclick="showScreen(3)">Weather</button>
-        <button class="screen-btn" onclick="showScreen(4)">Packing</button>
-        <button class="screen-btn" onclick="showScreen(5)">Ready</button>
+        <button class="screen-btn active" onclick="showScreen(0)">Step 1: Trip Info</button>
+        <button class="screen-btn" onclick="showScreen(1)">Step 2: Activities</button>
+        <button class="screen-btn" onclick="showScreen(2)">Step 3: Luggage</button>
+        <button class="screen-btn" onclick="showScreen(3)">Step 4: Weather</button>
+        <button class="screen-btn" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Step 5: Mode</button>
+        <!-- Hidden: Packing and Ready screens -->
+        <!-- <button class="screen-btn" onclick="showScreen(4)">Packing</button> -->
+        <!-- <button class="screen-btn" onclick="showScreen(5)">Ready</button> -->
     </div>
 
     <div class="phone-container">
@@ -1027,12 +1029,12 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="showScreen(4)">Generate Packing List</button>
+                <button class="btn-primary" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Continue to Mode Selection</button>
             </div>
         </div>
 
-        <!-- Screen 5: Smart Packing List -->
-        <div class="screen">
+        <!-- Screen 5: Smart Packing List (HIDDEN) -->
+        <div class="screen" style="display: none !important;">
             <div class="header">
                 <button class="back-btn" onclick="showScreen(3)">←</button>
                 <h2 class="header-title">Smart Packing</h2>
@@ -1229,8 +1231,8 @@
             </div>
         </div>
 
-        <!-- Screen 6: Compliance & Trip Ready -->
-        <div class="screen">
+        <!-- Screen 6: Compliance & Trip Ready (HIDDEN) -->
+        <div class="screen" style="display: none !important;">
             <div class="header">
                 <button class="back-btn" onclick="showScreen(4)">←</button>
                 <h2 class="header-title">Trip Ready</h2>
