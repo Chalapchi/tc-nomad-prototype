@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TC Nomad - Main App Wireframes</title>
     <style>
+        :root {
+            /* Light theme colors */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #F2F2F7;
+            --text-primary: #1D1D1F;
+            --text-secondary: #8E8E93;
+            --border-color: #E5E5EA;
+            --accent-primary: #007AFF;
+            --accent-secondary: #00C7BE;
+            --card-shadow: rgba(0,0,0,0.1);
+            --overlay-bg: rgba(0,0,0,0.8);
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme colors */
+            --bg-primary: #000000;
+            --bg-secondary: #1C1C1E;
+            --bg-tertiary: #2C2C2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --border-color: #38383A;
+            --accent-primary: #0A84FF;
+            --accent-secondary: #30D5C8;
+            --card-shadow: rgba(0,0,0,0.3);
+            --overlay-bg: rgba(0,0,0,0.9);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,22 +41,24 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: #f8f9fa;
+            background: var(--bg-primary);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            transition: background-color 0.3s ease;
         }
 
         .phone-container {
             width: 375px;
             height: 812px;
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
             position: relative;
+            transition: background-color 0.3s ease;
         }
 
         .screen {
@@ -49,7 +79,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 10px;
-            background: rgba(0,0,0,0.8);
+            background: var(--overlay-bg);
             padding: 10px;
             border-radius: 25px;
             z-index: 1000;
@@ -66,29 +96,31 @@
         }
 
         .screen-btn.active {
-            background: #007AFF;
+            background: var(--accent-primary);
         }
 
         /* Header */
         .header {
-            background: white;
+            background: var(--bg-secondary);
             padding: 60px 24px 16px;
-            border-bottom: 1px solid #E5E5EA;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .header-title {
             font-size: 20px;
             font-weight: 600;
-            color: #1D1D1F;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
 
         .profile-avatar {
             width: 32px;
             height: 32px;
-            background: #007AFF;
+            background: var(--accent-primary);
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -96,12 +128,13 @@
             color: white;
             font-weight: 600;
             font-size: 14px;
+            transition: background-color 0.3s ease;
         }
 
         .add-btn {
             width: 32px;
             height: 32px;
-            background: #007AFF;
+            background: var(--accent-primary);
             border-radius: 16px;
             border: none;
             color: white;
@@ -110,6 +143,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background-color 0.3s ease;
         }
 
         /* Content */
@@ -117,15 +151,18 @@
             flex: 1;
             padding: 24px;
             overflow-y: auto;
+            background: var(--bg-primary);
+            transition: background-color 0.3s ease;
         }
 
         /* Bottom Navigation */
         .bottom-nav {
-            background: white;
-            border-top: 1px solid #E5E5EA;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
             padding: 8px 0 34px;
             display: flex;
             justify-content: space-around;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .nav-item {
@@ -135,12 +172,12 @@
             padding: 8px 12px;
             cursor: pointer;
             text-decoration: none;
-            color: #8E8E93;
+            color: var(--text-secondary);
             transition: color 0.2s;
         }
 
         .nav-item.active {
-            color: #007AFF;
+            color: var(--accent-primary);
         }
 
         .nav-icon {
@@ -160,15 +197,16 @@
 
         /* Cards */
         .card {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--card-shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .trip-card {
-            border-left: 4px solid #007AFF;
+            border-left: 4px solid var(--accent-primary);
         }
 
         .trip-card.upcoming {
@@ -176,7 +214,7 @@
         }
 
         .trip-card.completed {
-            border-left-color: #8E8E93;
+            border-left-color: var(--text-secondary);
         }
 
         .card-header {
@@ -189,29 +227,33 @@
         .card-title {
             font-size: 16px;
             font-weight: 600;
-            color: #1D1D1F;
+            color: var(--text-primary);
             flex: 1;
+            transition: color 0.3s ease;
         }
 
         .card-subtitle {
             font-size: 14px;
-            color: #8E8E93;
+            color: var(--text-secondary);
             margin-bottom: 8px;
+            transition: color 0.3s ease;
         }
 
         .card-details {
             font-size: 14px;
-            color: #1D1D1F;
+            color: var(--text-primary);
             line-height: 1.4;
+            transition: color 0.3s ease;
         }
 
         .status-badge {
             background: #E5F4FD;
-            color: #007AFF;
+            color: var(--accent-primary);
             padding: 4px 8px;
             border-radius: 8px;
             font-size: 12px;
             font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .status-badge.upcoming {
@@ -220,8 +262,8 @@
         }
 
         .status-badge.completed {
-            background: #F2F2F7;
-            color: #8E8E93;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
         }
 
         /* Luggage Item */
@@ -229,16 +271,17 @@
             display: flex;
             align-items: center;
             padding: 16px;
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 12px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--card-shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .luggage-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -255,13 +298,15 @@
         .luggage-name {
             font-size: 16px;
             font-weight: 600;
-            color: #1D1D1F;
+            color: var(--text-primary);
             margin-bottom: 4px;
+            transition: color 0.3s ease;
         }
 
         .luggage-specs {
             font-size: 14px;
-            color: #8E8E93;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
         }
 
         /* Settings */
@@ -272,15 +317,18 @@
         .section-title {
             font-size: 18px;
             font-weight: 600;
-            color: #1D1D1F;
+            color: var(--text-primary);
             margin-bottom: 16px;
+            transition: color 0.3s ease;
         }
 
         .settings-item {
             display: flex;
             align-items: center;
             padding: 16px 0;
-            border-bottom: 1px solid #E5E5EA;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: border-color 0.3s ease;
         }
 
         .settings-item:last-child {
@@ -290,13 +338,14 @@
         .settings-icon {
             width: 32px;
             height: 32px;
-            background: #F2F2F7;
+            background: var(--bg-tertiary);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
         .settings-text {
@@ -305,18 +354,21 @@
 
         .settings-label {
             font-size: 16px;
-            color: #1D1D1F;
+            color: var(--text-primary);
             margin-bottom: 2px;
+            transition: color 0.3s ease;
         }
 
         .settings-description {
             font-size: 14px;
-            color: #8E8E93;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
         }
 
         .settings-arrow {
-            color: #8E8E93;
+            color: var(--text-secondary);
             font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         /* Quick Actions */
@@ -328,17 +380,47 @@
         }
 
         .quick-action {
-            background: linear-gradient(135deg, #007AFF, #00C7BE);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border-radius: 12px;
             padding: 20px 16px;
             text-align: center;
             color: white;
             text-decoration: none;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background 0.3s ease;
         }
 
         .quick-action:hover {
             transform: translateY(-2px);
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 8px 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-option.active {
+            background: var(--bg-secondary);
+            color: var(--accent-primary);
+            box-shadow: 0 1px 3px var(--card-shadow);
         }
 
         .quick-action-icon {
@@ -360,25 +442,28 @@
 
         .empty-icon {
             font-size: 48px;
-            color: #8E8E93;
+            color: var(--text-secondary);
             margin-bottom: 16px;
+            transition: color 0.3s ease;
         }
 
         .empty-title {
             font-size: 18px;
             font-weight: 600;
-            color: #1D1D1F;
+            color: var(--text-primary);
             margin-bottom: 8px;
+            transition: color 0.3s ease;
         }
 
         .empty-description {
             font-size: 14px;
-            color: #8E8E93;
+            color: var(--text-secondary);
             margin-bottom: 24px;
+            transition: color 0.3s ease;
         }
 
         .btn-primary {
-            background: #007AFF;
+            background: var(--accent-primary);
             color: white;
             border: none;
             border-radius: 12px;
@@ -386,6 +471,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .stats-grid {
@@ -396,25 +482,28 @@
         }
 
         .stat-item {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 12px;
             padding: 16px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px var(--card-shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .stat-number {
             font-size: 24px;
             font-weight: 700;
-            color: #007AFF;
+            color: var(--accent-primary);
             margin-bottom: 4px;
+            transition: color 0.3s ease;
         }
 
         .stat-label {
             font-size: 12px;
-            color: #8E8E93;
+            color: var(--text-secondary);
             text-transform: uppercase;
             font-weight: 500;
+            transition: color 0.3s ease;
         }
     </style>
 </head>
@@ -521,10 +610,10 @@
 
             <div class="content">
                 <!-- Filter Tabs -->
-                <div style="display: flex; margin-bottom: 20px; background: #F2F2F7; border-radius: 8px; padding: 2px;">
-                    <button style="flex: 1; padding: 8px; background: white; border: none; border-radius: 6px; font-weight: 500; color: #007AFF;">All</button>
-                    <button style="flex: 1; padding: 8px; background: none; border: none; color: #8E8E93;">Upcoming</button>
-                    <button style="flex: 1; padding: 8px; background: none; border: none; color: #8E8E93;">Past</button>
+                <div style="display: flex; margin-bottom: 20px; background: var(--bg-tertiary); border-radius: 8px; padding: 2px;">
+                    <button style="flex: 1; padding: 8px; background: var(--bg-secondary); border: none; border-radius: 6px; font-weight: 500; color: var(--accent-primary);">All</button>
+                    <button style="flex: 1; padding: 8px; background: none; border: none; color: var(--text-secondary);">Upcoming</button>
+                    <button style="flex: 1; padding: 8px; background: none; border: none; color: var(--text-secondary);">Past</button>
                 </div>
 
                 <!-- Trip List -->
@@ -676,15 +765,15 @@
                 <div class="settings-section">
                     <div class="card" style="text-align: center;">
                         <div class="profile-avatar" style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto 16px;">JM</div>
-                        <div style="font-size: 20px; font-weight: 600; color: #1D1D1F; margin-bottom: 4px;">John Miller</div>
-                        <div style="font-size: 14px; color: #8E8E93;">john.miller@email.com</div>
+                        <div style="font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">John Miller</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">john.miller@email.com</div>
                     </div>
                 </div>
 
                 <!-- Account Info -->
                 <div class="settings-section">
                     <div class="section-title">Account Info</div>
-                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 0 16px;">
                         <div class="settings-item">
                             <div class="settings-icon">✉️</div>
                             <div class="settings-text">
@@ -732,10 +821,32 @@
                     </div>
                 </div>
 
+                <!-- Appearance -->
+                <div class="settings-section">
+                    <div class="section-title">Appearance</div>
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+                        <div style="margin-bottom: 12px;">
+                            <div class="settings-label">Theme</div>
+                            <div class="settings-description">Choose your preferred color scheme</div>
+                        </div>
+                        <div class="theme-selector">
+                            <button class="theme-option active" data-theme="light" onclick="setTheme('light')">
+                                ☀️ Light
+                            </button>
+                            <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                                🌙 Dark
+                            </button>
+                            <button class="theme-option" data-theme="system" onclick="setTheme('system')">
+                                💻 System
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Settings -->
                 <div class="settings-section">
                     <div class="section-title">Settings</div>
-                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 0 16px;">
                         <div class="settings-item">
                             <div class="settings-icon">📏</div>
                             <div class="settings-text">
@@ -750,7 +861,7 @@
                 <!-- Legal -->
                 <div class="settings-section">
                     <div class="section-title">Legal</div>
-                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 0 16px;">
                         <div class="settings-item">
                             <div class="settings-icon">🔐</div>
                             <div class="settings-text">
@@ -778,7 +889,7 @@
                 <!-- Support & Feedback -->
                 <div class="settings-section">
                     <div class="section-title">Support & Feedback</div>
-                    <div style="background: white; border-radius: 12px; padding: 0 16px;">
+                    <div style="background: var(--bg-secondary); border-radius: 12px; padding: 0 16px;">
                         <div class="settings-item">
                             <div class="settings-icon">📤</div>
                             <div class="settings-text">
@@ -804,7 +915,7 @@
                 </div>
 
                 <!-- App Version -->
-                <div style="text-align: center; margin-top: 32px; color: #8E8E93; font-size: 12px;">
+                <div style="text-align: center; margin-top: 32px; color: var(--text-secondary); font-size: 12px;">
                     TC Nomad v1.0.2
                 </div>
             </div>
@@ -862,6 +973,63 @@
             if (e.key === 'Escape') {
                 window.location.href = 'index.html';
             }
+        });
+
+        // Theme Management
+        function setTheme(theme) {
+            // Save preference to localStorage
+            localStorage.setItem('theme-preference', theme);
+
+            // Apply the theme
+            applyTheme(theme);
+
+            // Update button states
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.theme === theme) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+
+            if (theme === 'system') {
+                // Check system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    root.setAttribute('data-theme', 'dark');
+                } else {
+                    root.removeAttribute('data-theme');
+                }
+            } else if (theme === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+            } else {
+                root.removeAttribute('data-theme');
+            }
+        }
+
+        // Listen for system theme changes when in system mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const currentTheme = localStorage.getItem('theme-preference') || 'light';
+            if (currentTheme === 'system') {
+                applyTheme('system');
+            }
+        });
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme-preference') || 'light';
+            applyTheme(savedTheme);
+
+            // Update button states
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.theme === savedTheme) {
+                    btn.classList.add('active');
+                }
+            });
         });
     </script>
 
