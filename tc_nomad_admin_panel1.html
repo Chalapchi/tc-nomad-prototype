@@ -123,6 +123,34 @@
             font-size: 16px;
         }
 
+        /* Hamburger Menu Button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #1D1D1F;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 12px;
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -510,6 +538,61 @@
             font-size: 12px;
             color: #8E8E93;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.active {
+                left: 0;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+            }
+
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .screen-controls {
+                max-width: calc(100vw - 40px);
+                flex-wrap: wrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -521,6 +604,9 @@
         <button class="screen-btn" onclick="showScreen(3)">Airlines</button>
         <button class="screen-btn" onclick="showScreen(4)">Settings</button>
     </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <div class="admin-container">
         <!-- Sidebar -->
@@ -568,7 +654,10 @@
             <!-- Screen 1: Dashboard -->
             <div class="screen active">
                 <div class="header">
-                    <h1 class="header-title">Dashboard</h1>
+                    <div style="display: flex; align-items: center;">
+                        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                        <h1 class="header-title">Dashboard</h1>
+                    </div>
                     <div class="header-actions">
                         <button class="btn-secondary">Export Data</button>
                         <button class="btn-primary">Generate Report</button>
@@ -675,7 +764,10 @@
             <!-- Screen 2: Manage Users -->
             <div class="screen">
                 <div class="header">
-                    <h1 class="header-title">Manage Users</h1>
+                    <div style="display: flex; align-items: center;">
+                        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                        <h1 class="header-title">Manage Users</h1>
+                    </div>
                     <div class="header-actions">
                         <button class="btn-secondary">Export Users</button>
                         <button class="btn-primary">Add User</button>
@@ -793,7 +885,10 @@
             <!-- Screen 3: Luggage Types -->
             <div class="screen">
                 <div class="header">
-                    <h1 class="header-title">Luggage Types</h1>
+                    <div style="display: flex; align-items: center;">
+                        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                        <h1 class="header-title">Luggage Types</h1>
+                    </div>
                     <div class="header-actions">
                         <button class="btn-primary">Add Luggage Type</button>
                     </div>
@@ -958,7 +1053,10 @@
             <!-- Screen 4: Airlines Management -->
             <div class="screen">
                 <div class="header">
-                    <h1 class="header-title">Airlines Management</h1>
+                    <div style="display: flex; align-items: center;">
+                        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                        <h1 class="header-title">Airlines Management</h1>
+                    </div>
                     <div class="header-actions">
                         <button class="btn-primary">Add Airline</button>
                     </div>
@@ -1120,7 +1218,10 @@
             <!-- Screen 5: Settings -->
             <div class="screen">
                 <div class="header">
-                    <h1 class="header-title">Settings</h1>
+                    <div style="display: flex; align-items: center;">
+                        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                        <h1 class="header-title">Settings</h1>
+                    </div>
                     <div class="header-actions">
                         <button class="btn-primary">Save Changes</button>
                     </div>
@@ -1249,6 +1350,14 @@
     </div>
 
     <script>
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
         function showScreen(index) {
             // Hide all screens
             const screens = document.querySelectorAll('.screen');
@@ -1265,12 +1374,28 @@
             buttons.forEach((btn, i) => {
                 btn.classList.toggle('active', i === index);
             });
+
+            // Close sidebar on mobile when screen changes
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
         }
 
         // Add keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                window.location.href = 'index.html';
+                // Close sidebar if open on mobile
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                } else {
+                    window.location.href = 'index.html';
+                }
             }
         });
     </script>
