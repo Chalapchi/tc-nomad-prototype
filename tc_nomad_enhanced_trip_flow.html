@@ -134,6 +134,13 @@
             background: white;
         }
 
+        textarea.form-input {
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+            min-height: 120px;
+        }
+
         .date-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -806,10 +813,11 @@
         <button class="screen-btn" onclick="showScreen(1)">Step 2: Activities</button>
         <button class="screen-btn" onclick="showScreen(2)">Step 3: Luggage</button>
         <button class="screen-btn" onclick="showScreen(3)">Step 4: Weather</button>
-        <button class="screen-btn" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Step 5: Mode</button>
+        <button class="screen-btn" onclick="showScreen(4)">Step 5: Details</button>
+        <button class="screen-btn" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Step 6: Mode</button>
         <!-- Hidden: Packing and Ready screens -->
-        <!-- <button class="screen-btn" onclick="showScreen(4)">Packing</button> -->
-        <!-- <button class="screen-btn" onclick="showScreen(5)">Ready</button> -->
+        <!-- <button class="screen-btn" onclick="showScreen(5)">Packing</button> -->
+        <!-- <button class="screen-btn" onclick="showScreen(6)">Ready</button> -->
     </div>
 
     <div class="phone-container">
@@ -1030,14 +1038,57 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Continue to Mode Selection</button>
+                <button class="btn-primary" onclick="showScreen(4)">Continue</button>
             </div>
         </div>
 
-        <!-- Screen 5: Smart Packing List (HIDDEN) -->
-        <div class="screen" style="display: none !important;">
+        <!-- Screen 5: Trip Details & Suggestions -->
+        <div class="screen">
             <div class="header">
                 <button class="back-btn" onclick="showScreen(3)">←</button>
+                <h2 class="header-title">Trip Details</h2>
+                <div></div>
+            </div>
+
+            <div class="content">
+                <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Tell Us More About Your Trip</h3>
+                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">Share any additional details, preferences, or special requirements to help us personalize your packing recommendations</p>
+
+                <div class="form-group">
+                    <label class="form-label">Trip Description & Suggestions (Optional)</label>
+                    <textarea
+                        class="form-input"
+                        placeholder="Example: I'll be attending evening networking events and plan to visit museums. I prefer comfortable walking shoes and need space for souvenirs on the return trip..."
+                        style="min-height: 180px; resize: vertical; font-family: inherit; line-height: 1.5;"
+                    ></textarea>
+                    <div style="font-size: 12px; color: #8E8E93; margin-top: 8px;">
+                        💡 The more details you provide, the better we can tailor your packing list
+                    </div>
+                </div>
+
+                <div style="background: #F8F9FA; border-radius: 12px; padding: 16px; margin-bottom: 24px; border-left: 4px solid #007AFF;">
+                    <div style="font-size: 14px; font-weight: 600; color: #1D1D1F; margin-bottom: 8px;">
+                        What to include:
+                    </div>
+                    <div style="font-size: 13px; color: #8E8E93; line-height: 1.6;">
+                        • Specific events or activities not listed earlier<br>
+                        • Dress code requirements<br>
+                        • Personal preferences (e.g., minimalist packing)<br>
+                        • Health or mobility considerations<br>
+                        • Shopping or souvenirs plans<br>
+                        • Any items you definitely want/don't want
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Continue to AI Recommendations</button>
+                <button class="btn-secondary" onclick="window.open('tc-nomad-mode-selection.html', '_blank')">Skip - Use Standard Recommendations</button>
+            </div>
+        </div>
+
+        <!-- Screen 6: Smart Packing List (HIDDEN) -->
+        <div class="screen" style="display: none !important;">
+            <div class="header">
+                <button class="back-btn" onclick="showScreen(4)">←</button>
                 <h2 class="header-title">Smart Packing</h2>
                 <div></div>
             </div>
@@ -1228,14 +1279,14 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" onclick="showScreen(5)">Check Compliance</button>
+                <button class="btn-primary" onclick="showScreen(6)">Check Compliance</button>
             </div>
         </div>
 
-        <!-- Screen 6: Compliance & Trip Ready (HIDDEN) -->
+        <!-- Screen 7: Compliance & Trip Ready (HIDDEN) -->
         <div class="screen" style="display: none !important;">
             <div class="header">
-                <button class="back-btn" onclick="showScreen(4)">←</button>
+                <button class="back-btn" onclick="showScreen(5)">←</button>
                 <h2 class="header-title">Trip Ready</h2>
                 <div></div>
             </div>
