@@ -42,7 +42,7 @@ class AppTheme {
       ),
 
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         shadowColor: Colors.black.withOpacity(0.1),
@@ -177,7 +177,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppColors.primary),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
