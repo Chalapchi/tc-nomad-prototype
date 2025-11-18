@@ -2,7 +2,7 @@
 
 **Last Updated**: November 18, 2025
 **Version**: 1.0.0 (In Development)
-**Status**: Phase 4 COMPLETE - Luggage, Weather & Compliance ✅🧳☀️✈️
+**Status**: Phase 5 COMPLETE - Subscription & Monetization ✅💎🚀
 
 ---
 
@@ -270,16 +270,36 @@ Based on `tc-nomad-trip-ready.html`:
 - ✅ Integration with trip wizard
 - ✅ Airline rules summary display
 
-### Phase 5: Subscription & Monetization
+### Phase 5: Subscription & Monetization ✅ (COMPLETE)
 
-#### Paywall Screen (Pending)
+#### Paywall Screen ✅ (Complete)
 Based on `tc_nomad_paywall_screen.html`:
-- ⏳ Free vs Pro comparison
-- ⏳ Feature list with checkmarks
-- ⏳ Monthly plan ($1.99/month)
-- ⏳ Annual plan ($9.99/year - 58% savings)
-- ⏳ Usage limits display (Free: 1 trip, 3 AI generations)
-- ⏳ In-app purchase integration
+- ✅ Free vs Pro comparison (8 features)
+- ✅ Feature list with checkmarks and highlights
+- ✅ Monthly plan ($1.99/month)
+- ✅ Annual plan ($9.99/year - 58% savings badge)
+- ✅ Plan toggle with animated transitions
+- ✅ Usage limits display (Free: 1 trip, 3 AI generations)
+- ✅ Mock in-app purchase integration
+- ✅ Restore purchase functionality
+- ✅ Usage warning states when limits reached
+
+#### Subscription Service ✅ (Complete)
+- ✅ Usage tracking (trips created, AI generations used)
+- ✅ Limit enforcement (1 trip, 3 AI generations for free tier)
+- ✅ Feature availability checking
+- ✅ Pro subscription management
+- ✅ Usage info display (used/limit with percentage)
+- ✅ Upgrade messaging
+
+#### Paywall Integration ✅ (Complete)
+- ✅ Settings screen - dynamic subscription status
+- ✅ Settings screen - paywall navigation with PRO badge
+- ✅ Trip creation - usage limit checks at dashboard
+- ✅ Trip creation - usage limit checks at trips screen
+- ✅ AI generation - limit checks for initial generation
+- ✅ AI generation - limit checks for regeneration
+- ✅ Automatic usage tracking on actions
 
 ### Phase 6: Backend Integration
 
@@ -309,20 +329,20 @@ Based on `tc_nomad_paywall_screen.html`:
 
 ## 📊 Progress Summary
 
-### Overall Progress: **90%** ⬆️
+### Overall Progress: **95%** ⬆️
 
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 1: Foundation | ✅ Complete | 100% |
 | Phase 2: Trip Creation | ✅ Complete | 100% |
 | Phase 3: AI Packing | ✅ Complete | 100% |
-| Phase 4: Weather & Compliance | ✅ **Complete** | **100%** ⬆️ |
-| Phase 5: Subscription | 🚧 Pending | 0% |
+| Phase 4: Weather & Compliance | ✅ Complete | 100% |
+| Phase 5: Subscription | ✅ **Complete** | **100%** ⬆️ |
 | Phase 6: Backend Integration | 🚧 Pending | 0% |
 
 ### Feature Breakdown
 
-**Completed (22 features)**:
+**Completed (25 features)**:
 1. ✅ Project setup & dependencies
 2. ✅ Apple-inspired theme system
 3. ✅ Data models (7 models with Freezed)
@@ -343,48 +363,41 @@ Based on `tc_nomad_paywall_screen.html`:
 18. ✅ Luggage creation & editing
 19. ✅ Weather service integration ☀️
 20. ✅ Weather display widget
-21. ✅ **Airline compliance service** - NEW! ✈️
-22. ✅ **Compliance checker widget** - NEW!
+21. ✅ Airline compliance service ✈️
+22. ✅ Compliance checker widget
+23. ✅ **Paywall/subscription screen** - NEW! 💎
+24. ✅ **Subscription service & usage tracking** - NEW! 📊
+25. ✅ **Freemium limits integration** - NEW! 🚀
 
-**Pending (3 features)**:
-1. ⏳ Paywall/subscription screens
-2. ⏳ Local storage (Hive)
-3. ⏳ Riverpod state management
+**Pending (2 features)**:
+1. ⏳ Local storage (Hive)
+2. ⏳ Riverpod state management
 
 ---
 
 ## 🎯 Next Steps
 
-### Immediate Priorities (Phase 4 - Weather & Compliance)
-1. **Build luggage creation/edit screens**
-   - Luggage type selection (suitcase, backpack, duffel)
-   - Dimensions & volume input
-   - Compartment configuration
-   - Save/delete/set default
+### Backend Integration (Phase 6) - FINAL PHASE
+1. **Set up Riverpod state management**
+   - Auth providers
+   - Trip state providers
+   - Luggage state providers
+   - Packing list providers
+   - Settings providers
+   - Subscription providers
 
-2. **Implement weather API service**
-   - Mock OpenWeatherMap integration
-   - Daily forecast display (4-7 days)
-   - Weather icons & conditions
-   - Temperature unit conversion (C/F)
+2. **Implement Hive local storage**
+   - User preferences persistence
+   - Trip data caching
+   - Luggage profiles storage
+   - Offline mode support
+   - Sync conflict resolution
 
-3. **Build airline compliance checker**
-   - Baggage rules database (mock data)
-   - Size & weight compliance checks
-   - Liquid restrictions check
-   - Compliance status badges
-
-### Monetization (Phase 5)
-4. **Create paywall/subscription screen**
-   - Free vs Pro comparison
-   - Monthly ($1.99) and Annual ($9.99) plans
-   - Usage limits display
-   - In-app purchase integration
-
-### Backend Integration (Phase 6)
-5. Create mock API services
-6. Set up Hive for local storage
-7. Connect all screens with Riverpod state management
+3. **Connect all screens to state management**
+   - Replace mock data with actual state
+   - Implement data persistence
+   - Add loading and error states
+   - Test offline functionality
 
 ---
 
@@ -495,6 +508,7 @@ flutter run
 6. **Luggage Management** 🧳 - Complete luggage profile system with 5 types
 7. **Weather Integration** ☀️ - Smart weather forecasting with packing recommendations
 8. **Airline Compliance** ✈️ - Real-time baggage rule validation for 6 major airlines
+9. **Freemium Monetization** 💎 - Smart usage limits with seamless paywall integration
 
 ## 🎯 Differentiators (vs. Competitors)
 
@@ -507,44 +521,55 @@ flutter run
 - 🧳 **Smart luggage profiles** - Save and reuse luggage with compartments
 - 🌦️ **Weather-aware recommendations** - Context-based packing suggestions
 - ✈️ **Pre-flight compliance checking** - Avoid airport surprises with baggage validation
+- 💎 **Smart freemium model** - Generous free tier with seamless Pro upgrade path
 
 ---
 
-## 🎉 Latest Update - Phase 4 COMPLETE!
+## 🎉 Latest Update - Phase 5 COMPLETE!
 
-**Just Completed** (2,630+ lines of code):
+**Just Completed** (870+ lines of code):
 
-### Luggage Management System 🧳
-- ✅ Complete luggage creation and editing (5 types)
-- ✅ Dimensions, weight, and compartment configuration
-- ✅ Color selection and feature toggles
-- ✅ Visual luggage library with detailed cards
-- ✅ Dual-mode browsing and selection
-- ✅ Integration with trip creation wizard
+### Subscription & Monetization System 💎
+- ✅ Complete paywall screen with Free vs Pro comparison
+- ✅ 8-feature comparison grid with highlights
+- ✅ Plan toggle: Monthly ($1.99) vs Annual ($9.99 - 58% savings)
+- ✅ Usage limit warnings for free tier
+- ✅ Mock in-app purchase integration
+- ✅ Restore purchase functionality
+- ✅ Beautiful gradient design with animated transitions
 
-### Weather Integration ☀️
-- ✅ Mock weather service with realistic forecasts
-- ✅ 7-day weather display with high/low temperatures
-- ✅ Weather-aware packing recommendations
-- ✅ Temperature unit conversion (°C/°F)
-- ✅ Seasonal variation and precipitation tracking
-- ✅ Beautiful weather widget (full & compact modes)
+### Subscription Service 📊
+- ✅ Complete usage tracking system
+- ✅ Freemium limits: 1 trip, 3 AI generations
+- ✅ Automatic usage increment on actions
+- ✅ Feature availability checking
+- ✅ Pro subscription management
+- ✅ Usage percentage calculations
 
-### Airline Compliance Checker ✈️
-- ✅ Comprehensive baggage rules database (6 airlines)
-- ✅ Size and weight validation with near-limit warnings
-- ✅ Prohibited items detection
-- ✅ Liquid restrictions enforcement
-- ✅ Battery placement rules
-- ✅ Color-coded status indicators (green/yellow/red)
-- ✅ Detailed violation and warning cards
-- ✅ Actionable recommendations
-- ✅ Integration with trip review step
+### Paywall Integration 🚀
+- ✅ Settings screen - dynamic PRO badge display
+- ✅ Settings screen - paywall navigation
+- ✅ Dashboard - trip creation limit checks
+- ✅ Trips screen - trip creation limit checks
+- ✅ Trip wizard - AI generation limit checks
+- ✅ Packing list - regeneration limit checks
+- ✅ Seamless paywall gating across all features
 
-**TC Nomad now offers complete trip planning with intelligent compliance checking to ensure stress-free travel!** 🌦️🧳✈️✅
+**Files Added**:
+1. `lib/features/subscription/screens/paywall_screen.dart` (650+ lines)
+2. `lib/services/subscription_service.dart` (190+ lines)
+
+**Files Modified**:
+1. `lib/features/settings/screens/settings_screen.dart`
+2. `lib/features/home/screens/home_screen.dart`
+3. `lib/features/home/screens/trips_screen.dart`
+4. `lib/features/trip/screens/trip_creation_wizard_screen.dart`
+5. `lib/features/packing/screens/packing_list_screen.dart`
+
+**TC Nomad now has a complete freemium monetization system ready for launch!** 💎🚀✅
 
 ---
 
-**Ready for Phase 5!** 🚀
+**Ready for Phase 6 - Final Phase!** 🏁
 
-Phase 4 is 100% COMPLETE. Next up: Paywall/subscription screens, then backend integration with Riverpod + Hive.
+Phase 5 is 100% COMPLETE. Next up: Riverpod state management + Hive local storage to complete the MVP!
