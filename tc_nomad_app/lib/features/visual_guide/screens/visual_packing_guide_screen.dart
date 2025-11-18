@@ -3,15 +3,12 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/gradient_button.dart';
+import '../../../core/widgets/glass_card.dart';
 import '../../packing/screens/packing_list_screen.dart';
-import '../widgets/flying_emoji_animation.dart';
-import '../widgets/packing_technique_modal.dart';
-import '../widgets/volume_usage_widget.dart';
-import '../widgets/layer_quadrant_selector.dart';
 
 /// Visual Packing Guide Screen
-/// Interactive packing with compartments, layers, and quadrants
-/// Based on tc-nomad-step2b-visual-guide.html - THE UNIQUE FEATURE!
+/// Interactive packing with compartments (NO layers/quadrants)
+/// Based on tc-nomad-step2a-compartments.html wireframe
 class VisualPackingGuideScreen extends StatefulWidget {
   final Map<String, dynamic> tripData;
   final List<PackingCategory> packingList;
@@ -28,220 +25,105 @@ class VisualPackingGuideScreen extends StatefulWidget {
 
 class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   String _selectedCompartment = 'main';
-  int _currentStage = 1;
-  final Map<String, List<PackedItemPosition>> _packedItems = {};
-  final List<Widget> _flyingAnimations = [];
-  final GlobalKey _luggageKey = GlobalKey();
-
-  // Layer and quadrant selection
-  int _selectedLayer = 1;
-  int _selectedQuadrant = 1;
-
-  // Volume tracking
-  final double _totalLuggageCapacity = VolumeCalculator.getLuggageCapacity('carry-on');
-  final Map<String, double> _compartmentVolumes = {};
+  final Map<String, List<PackedItem>> _packedItems = {};
 
   final List<CompartmentInfo> _compartments = [
-    CompartmentInfo(id: 'main', name: 'Main Compartment', emoji: '📦', layers: 3),
-    CompartmentInfo(id: 'front', name: 'Front Pocket', emoji: '👝', layers: 1),
-    CompartmentInfo(id: 'laptop', name: 'Laptop Sleeve', emoji: '💻', layers: 1),
-    CompartmentInfo(id: 'side', name: 'Side Pocket', emoji: '📂', layers: 1),
+    CompartmentInfo(
+      id: 'main',
+      name: 'Main Compartment',
+      emoji: '📦',
+      capacity: 18.0,
+    ),
+    CompartmentInfo(
+      id: 'front',
+      name: 'Front Pocket',
+      emoji: '👝',
+      capacity: 2.0,
+    ),
+    CompartmentInfo(
+      id: 'laptop',
+      name: 'Laptop Sleeve',
+      emoji: '💻',
+      capacity: 1.5,
+    ),
+    CompartmentInfo(
+      id: 'side',
+      name: 'Side Pocket',
+      emoji: '📂',
+      capacity: 0.5,
+    ),
   ];
 
   @override
   void initState() {
     super.initState();
-    // Initialize packed items map and volumes
+    // Initialize packed items map
     for (var comp in _compartments) {
       _packedItems[comp.id] = [];
-      _compartmentVolumes[comp.id] = 0.0;
+    }
+    // Auto-assign items to main compartment
+    _autoAssignItems();
+  }
+
+  void _autoAssignItems() {
+    final allItems = widget.packingList.expand((cat) => cat.items).toList();
+    for (var item in allItems) {
+      _packedItems['main']!.add(PackedItem(
+        item: item,
+        packingMethod: _suggestPackingMethod(item.name),
+      ));
     }
   }
 
-  double get _currentCompartmentCapacity {
-    return VolumeCalculator.getCompartmentCapacity(
-      _selectedCompartment,
-      _totalLuggageCapacity,
-    );
-  }
-
-  double get _currentCompartmentUsage {
-    return _compartmentVolumes[_selectedCompartment] ?? 0.0;
-  }
-
-  int get _currentCompartmentLayers {
-    return _compartments
-        .firstWhere((c) => c.id == _selectedCompartment)
-        .layers;
-  }
-
-  Map<String, int> get _itemCountsByPosition {
-    final counts = <String, int>{};
-    final items = _packedItems[_selectedCompartment] ?? [];
-    for (var packedItem in items) {
-      final key = '${packedItem.layer}_${packedItem.quadrant}';
-      counts[key] = (counts[key] ?? 0) + 1;
-    }
-    return counts;
-  }
-
-  Map<int, List<String>> get _itemsByLayer {
-    final itemsByLayer = <int, List<String>>{};
-    final items = _packedItems[_selectedCompartment] ?? [];
-    for (var packedItem in items) {
-      itemsByLayer[packedItem.layer] ??= [];
-      itemsByLayer[packedItem.layer]!.add(packedItem.item.emoji);
-    }
-    return itemsByLayer;
+  String _suggestPackingMethod(String itemName) {
+    final lower = itemName.toLowerCase();
+    if (lower.contains('shirt') || lower.contains('underwear')) return 'Rolled';
+    if (lower.contains('pants') || lower.contains('dress')) return 'Folded';
+    if (lower.contains('blazer') || lower.contains('jacket')) return 'Fold carefully';
+    if (lower.contains('cable') || lower.contains('charger')) return 'Coiled';
+    return 'As is';
   }
 
   List<PackingItemModel> get _unpackedItems {
+    final packed = _packedItems.values.expand((list) => list.map((p) => p.item.id)).toSet();
     return widget.packingList
         .expand((cat) => cat.items)
-        .where((item) => !item.isPacked)
+        .where((item) => !packed.contains(item.id))
         .toList();
   }
 
-  int get _totalItemsToPack {
-    return widget.packingList.expand((cat) => cat.items).length;
-  }
-
-  int get _packedItemsCount {
-    return _packedItems.values.expand((list) => list).length;
-  }
-
-  double get _packingProgress {
-    return _totalItemsToPack > 0 ? _packedItemsCount / _totalItemsToPack : 0.0;
-  }
-
-  void _packItem(PackingItemModel item, Offset itemPosition) {
-    // Calculate volume
-    final itemVolume = VolumeCalculator.estimateItemVolume(item.name, item.quantity);
-    final currentUsage = _compartmentVolumes[_selectedCompartment] ?? 0.0;
-    final capacity = _currentCompartmentCapacity;
-
-    // Check if overpacked
-    if (currentUsage + itemVolume > capacity) {
-      _showOverpackWarning(item, itemVolume);
-      return;
-    }
-
+  void _packItem(PackingItemModel item, String compartmentId) {
     setState(() {
-      // Add item to current compartment with selected layer/quadrant
-      _packedItems[_selectedCompartment]!.add(PackedItemPosition(
+      _packedItems[compartmentId]!.add(PackedItem(
         item: item,
-        layer: _selectedLayer,
-        quadrant: _selectedQuadrant,
+        packingMethod: _suggestPackingMethod(item.name),
       ));
-      // Update volume
-      _compartmentVolumes[_selectedCompartment] = currentUsage + itemVolume;
-      // Mark as packed
-      item.isPacked = true;
     });
-
-    // Show flying animation
-    _showPackingAnimation(item, itemPosition);
   }
 
-  void _showPackingAnimation(PackingItemModel item, Offset startPosition) {
-    // Get luggage position
-    final RenderBox? luggageBox = _luggageKey.currentContext?.findRenderObject() as RenderBox?;
-    if (luggageBox == null) return;
-
-    final luggagePosition = luggageBox.localToGlobal(Offset.zero);
-    final luggageCenter = Offset(
-      luggagePosition.dx + luggageBox.size.width / 2,
-      luggagePosition.dy + luggageBox.size.height / 2,
-    );
-
-    // Create animation
-    final animation = FlyingEmojiAnimation(
-      emoji: item.emoji,
-      startPosition: startPosition,
-      endPosition: luggageCenter,
-      onComplete: () {
-        setState(() {
-          _flyingAnimations.removeAt(0);
-        });
-      },
-    );
-
+  void _moveItem(PackedItem packedItem, String fromCompartment, String toCompartment) {
     setState(() {
-      _flyingAnimations.add(animation);
+      _packedItems[fromCompartment]!.remove(packedItem);
+      _packedItems[toCompartment]!.add(packedItem);
     });
-  }
-
-  void _showOverpackWarning(PackingItemModel item, double requiredVolume) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radiusLg),
-        ),
-        title: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.warning_amber_rounded,
-                color: AppColors.warning,
-                size: 28,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text('Compartment Full'),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Not enough space in ${_compartments.firstWhere((c) => c.id == _selectedCompartment).name}.',
-              style: AppTextStyles.bodyMedium,
-            ),
-            const SizedBox(height: AppConstants.spacingMd),
-            Container(
-              padding: const EdgeInsets.all(AppConstants.spacingMd),
-              decoration: BoxDecoration(
-                color: AppColors.info.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.lightbulb_outline, color: AppColors.info, size: 20),
-                      const SizedBox(width: 8),
-                      Text('Suggestions:', style: AppTextStyles.labelLarge),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '• Try a different compartment\n• Use compression bags\n• Remove some items',
-                    style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got It'),
-          ),
-        ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Moved ${packedItem.item.name} to ${_getCompartmentName(toCompartment)}'),
+        duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  void _changePackingMethod(PackedItem packedItem, String compartmentId) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildPackingMethodModal(packedItem, compartmentId),
+    );
+  }
+
+  String _getCompartmentName(String id) {
+    return _compartments.firstWhere((c) => c.id == id).name;
   }
 
   @override
@@ -251,155 +133,298 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
         title: const Text('Visual Packing Guide'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.school_outlined),
+            icon: const Icon(Icons.help_outline),
             onPressed: () {
-              showModalBottomSheet(
+              showDialog(
                 context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => const PackingTechniqueModal(),
+                builder: (context) => _buildHelpDialog(),
               );
             },
-            tooltip: 'Packing Techniques',
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              // Stage Indicator
-              _buildStageIndicator(),
+          // Info Banner
+          _buildInfoBanner(),
 
-              // Compartment Tabs
-              _buildCompartmentTabs(),
+          // Luggage Visual
+          _buildLuggageVisual(),
 
-              // Volume Usage
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppConstants.spacingMd,
-                  vertical: AppConstants.spacingSm,
-                ),
-                child: VolumeUsageWidget(
-                  usedVolume: _currentCompartmentUsage,
-                  totalVolume: _currentCompartmentCapacity,
-                  compartmentName: _compartments
-                      .firstWhere((c) => c.id == _selectedCompartment)
-                      .name,
-                ),
-              ),
+          // Compartment Tabs
+          _buildCompartmentTabs(),
 
-              // Visual Packing Area
-              Expanded(
-                child: Row(
-                  children: [
-                    // Main packing area
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [
-                          // Luggage Visualization
-                          Expanded(
-                            flex: 2,
-                            child: _buildLuggageVisualization(),
-                          ),
-
-                          // Item Checklist
-                          Expanded(
-                            flex: 3,
-                            child: _buildItemChecklist(),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Layer & Quadrant Selector (sidebar)
-                    Container(
-                      width: 180,
-                      padding: const EdgeInsets.all(AppConstants.spacingSm),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Layer visualization
-                            LayerVisualizationWidget(
-                              totalLayers: _currentCompartmentLayers,
-                              selectedLayer: _selectedLayer,
-                              itemsByLayer: _itemsByLayer,
-                            ),
-                            const SizedBox(height: AppConstants.spacingMd),
-
-                            // Layer & Quadrant Selector
-                            LayerQuadrantSelector(
-                              selectedLayer: _selectedLayer,
-                              selectedQuadrant: _selectedQuadrant,
-                              totalLayers: _currentCompartmentLayers,
-                              itemCounts: _itemCountsByPosition,
-                              onSelect: (layer, quadrant) {
-                                setState(() {
-                                  _selectedLayer = layer;
-                                  _selectedQuadrant = quadrant;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Complete Button
-              _buildCompleteButton(),
-            ],
+          // Compartment Items
+          Expanded(
+            child: _buildCompartmentItems(),
           ),
-          // Flying animations overlay
-          ..._flyingAnimations,
+
+          // Bottom Summary
+          _buildBottomSummary(),
         ],
       ),
     );
   }
 
-  Widget _buildStageIndicator() {
+  Widget _buildInfoBanner() {
     return Container(
       padding: const EdgeInsets.all(AppConstants.spacingMd),
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Items have been optimally assigned to compartments. Tap "Move" to reassign.',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Stage $_currentStage: Foundation Items',
-                  style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
-                ),
-                Text(
-                  '$_packedItemsCount of $_totalItemsToPack packed',
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
+    );
+  }
+
+  Widget _buildLuggageVisual() {
+    return GlassCard(
+      child: Column(
+        children: [
+          Container(
+            width: 120,
+            height: 90,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.border,
+                  AppColors.border.withOpacity(0.5),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
             ),
-            const SizedBox(height: AppConstants.spacingSm),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: _packingProgress,
-                backgroundColor: Colors.white.withOpacity(0.3),
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                minHeight: 6,
+            child: const Center(
+              child: Text('🧳', style: TextStyle(fontSize: 48)),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Standard Carry-on Suitcase',
+            style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '55×40×23 cm • 22L capacity • ${_compartments.length} compartments',
+            style: AppTextStyles.caption,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompartmentTabs() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingMd),
+      child: Row(
+        children: _compartments.map((comp) {
+          final isSelected = comp.id == _selectedCompartment;
+          final itemCount = _packedItems[comp.id]?.length ?? 0;
+
+          return GestureDetector(
+            onTap: () => setState(() => _selectedCompartment = comp.id),
+            child: Container(
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : AppColors.surface,
+                borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.border,
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        comp.emoji,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        comp.name,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$itemCount items',
+                    style: AppTextStyles.caption.copyWith(
+                      color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.textTertiary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCompartmentItems() {
+    final items = _packedItems[_selectedCompartment] ?? [];
+
+    if (items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.inventory_2_outlined,
+              size: 64,
+              color: AppColors.textTertiary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No items in this compartment',
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.textTertiary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Items will appear here when assigned',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textTertiary,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppConstants.spacingMd),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final packedItem = items[index];
+        return _buildPackedItemCard(packedItem);
+      },
+    );
+  }
+
+  Widget _buildPackedItemCard(PackedItem packedItem) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            // Drag Handle
+            const Icon(Icons.drag_indicator, color: AppColors.border),
+            const SizedBox(width: 12),
+
+            // Item Icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  packedItem.item.emoji,
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            // Item Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    packedItem.item.name,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      // Packing Method Chip
+                      GestureDetector(
+                        onTap: () => _changePackingMethod(packedItem, _selectedCompartment),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                packedItem.packingMethod,
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.success,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.edit,
+                                size: 12,
+                                color: AppColors.success,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${_estimateVolume(packedItem.item.name)}L',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Move Button
+            TextButton(
+              onPressed: () => _showMoveDialog(packedItem),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                backgroundColor: AppColors.surface,
+              ),
+              child: Text(
+                'Move',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -408,292 +433,115 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
     );
   }
 
-  Widget _buildCompartmentTabs() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.spacingMd,
-        vertical: AppConstants.spacingSm,
-      ),
-      color: Colors.white,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: _compartments.map((comp) {
-            final isSelected = _selectedCompartment == comp.id;
-            final isDisabled = comp.disabled;
-
-            return Padding(
-              padding: const EdgeInsets.only(right: AppConstants.spacingSm),
-              child: GestureDetector(
-                onTap: isDisabled ? null : () {
-                  setState(() => _selectedCompartment = comp.id);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.spacingMd,
-                    vertical: AppConstants.spacingSm,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDisabled
-                        ? AppColors.background
-                        : (isSelected ? AppColors.primary : Colors.white),
-                    border: Border.all(
-                      color: isDisabled
-                          ? AppColors.textDisabled
-                          : (isSelected ? AppColors.primary : AppColors.border),
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSm),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        comp.emoji,
-                        style: TextStyle(
-                          fontSize: 16,
-                          opacity: isDisabled ? 0.5 : 1,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        comp.name,
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: isDisabled
-                              ? AppColors.textDisabled
-                              : (isSelected ? Colors.white : AppColors.textPrimary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+  void _showMoveDialog(PackedItem packedItem) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLuggageVisualization() {
-    final compartmentItems = _packedItems[_selectedCompartment] ?? [];
-
-    return Container(
-      key: _luggageKey,
-      margin: const EdgeInsets.all(AppConstants.spacingMd),
-      padding: const EdgeInsets.all(AppConstants.spacingLg),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.grey[100]!, Colors.grey[200]!],
-        ),
-        borderRadius: BorderRadius.circular(AppConstants.radiusLg),
-        border: Border.all(color: AppColors.border, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Luggage Icon with animation
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.95, end: 1.0),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            builder: (context, scale, child) {
-              return Transform.scale(
-                scale: scale,
-                child: child,
-              );
-            },
-            child: const Text(
-              '🧳',
-              style: TextStyle(fontSize: 80),
-            ),
-          ),
-          const SizedBox(height: AppConstants.spacingMd),
-
-          // Packed Items Display with grid layout
-          if (compartmentItems.isNotEmpty)
-            Expanded(
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                ),
-                itemCount: compartmentItems.length,
-                itemBuilder: (context, index) {
-                  final packed = compartmentItems[index];
-                  return TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    duration: const Duration(milliseconds: 300),
-                    builder: (context, opacity, child) {
-                      return Opacity(opacity: opacity, child: child);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.success.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.success.withOpacity(0.3)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          packed.item.emoji,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          else
+        padding: const EdgeInsets.all(AppConstants.spacingLg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Text(
-              'Tap items below to pack',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textTertiary,
-              ),
+              'Move ${packedItem.item.name}',
+              style: AppTextStyles.headlineMedium,
             ),
-        ],
+            const SizedBox(height: 16),
+            ..._compartments.where((c) => c.id != _selectedCompartment).map((comp) {
+              return ListTile(
+                leading: Text(comp.emoji, style: const TextStyle(fontSize: 24)),
+                title: Text(comp.name),
+                subtitle: Text('${_packedItems[comp.id]?.length ?? 0} items'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _moveItem(packedItem, _selectedCompartment, comp.id);
+                },
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildItemChecklist() {
-    final compartmentName = _compartments
-        .firstWhere((c) => c.id == _selectedCompartment)
-        .name;
+  Widget _buildPackingMethodModal(PackedItem packedItem, String compartmentId) {
+    final methods = ['Rolled', 'Folded', 'Fold carefully', 'Coiled', 'As is', 'Compressed'];
 
     return Container(
-      padding: const EdgeInsets.all(AppConstants.spacingMd),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.all(AppConstants.spacingLg),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Pack into $compartmentName',
-                style: AppTextStyles.headlineSmall,
-              ),
-              Text(
-                '${_unpackedItems.length} left',
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.textTertiary,
-                ),
-              ),
-            ],
+          Text(
+            'Packing Method',
+            style: AppTextStyles.headlineMedium,
           ),
-          const SizedBox(height: AppConstants.spacingMd),
-          Expanded(
-            child: _unpackedItems.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('🎉', style: TextStyle(fontSize: 48)),
-                        const SizedBox(height: AppConstants.spacingMd),
-                        Text(
-                          'All items packed!',
-                          style: AppTextStyles.headlineMedium,
-                        ),
-                        const SizedBox(height: AppConstants.spacingSm),
-                        Text(
-                          'Tap Complete Trip below',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
+          const SizedBox(height: 8),
+          Text(
+            packedItem.item.name,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: methods.map((method) {
+              final isSelected = method == packedItem.packingMethod;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    packedItem.packingMethod = method;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primary : AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : AppColors.border,
                     ),
-                  )
-                : ListView.separated(
-                    itemCount: _unpackedItems.take(8).length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: AppConstants.spacingSm),
-                    itemBuilder: (context, index) {
-                      final item = _unpackedItems[index];
-                      return GestureDetector(
-                        onTapDown: (details) {
-                          final RenderBox box = context.findRenderObject() as RenderBox;
-                          final position = box.localToGlobal(details.localPosition);
-                          _packItem(item, position);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(AppConstants.spacingMd),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(AppConstants.radiusMd),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Row(
-                            children: [
-                              // Emoji
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: AppColors.border),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    item.emoji,
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: AppConstants.spacingMd),
-                              // Item info
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(item.name, style: AppTextStyles.bodyMedium),
-                                    Text(
-                                      'Qty: ${item.quantity} • ${VolumeCalculator.estimateItemVolume(item.name, item.quantity).toStringAsFixed(1)}L',
-                                      style: AppTextStyles.caption,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // Pack icon
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  gradient: AppColors.primaryGradient,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
                   ),
+                  child: Text(
+                    method,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 16),
+          GradientButton(
+            text: 'Done',
+            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCompleteButton() {
+  Widget _buildBottomSummary() {
+    final totalItems = _packedItems.values.fold<int>(
+      0,
+      (sum, list) => sum + list.length,
+    );
+
     return Container(
       padding: const EdgeInsets.all(AppConstants.spacingLg),
       decoration: BoxDecoration(
@@ -707,44 +555,143 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
         ],
       ),
       child: SafeArea(
-        child: GradientButton(
-          text: _packingProgress >= 1.0 ? 'Complete Trip' : 'Continue Packing',
-          onPressed: () {
-            if (_packingProgress >= 1.0) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            }
-          },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'All $totalItems items assigned to compartments',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            GradientButton(
+              text: 'Complete Packing Guide',
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Widget _buildHelpDialog() {
+    return AlertDialog(
+      title: const Text('Visual Packing Guide'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('How to use this guide:'),
+          const SizedBox(height: 12),
+          _buildHelpItem('1', 'Select a compartment from the tabs'),
+          _buildHelpItem('2', 'View items assigned to that compartment'),
+          _buildHelpItem('3', 'Tap packing method chips to change how to pack'),
+          _buildHelpItem('4', 'Tap "Move" to reassign items to other compartments'),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.info.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.lightbulb_outline, color: AppColors.info, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Items are AI-assigned for optimal packing',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.info,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Got it'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHelpItem(String number, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: AppTextStyles.caption.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.bodySmall,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _estimateVolume(String itemName) {
+    final lower = itemName.toLowerCase();
+    if (lower.contains('shirt')) return 0.8;
+    if (lower.contains('pants')) return 1.2;
+    if (lower.contains('underwear')) return 0.1;
+    if (lower.contains('blazer') || lower.contains('jacket')) return 2.5;
+    if (lower.contains('toiletries')) return 0.5;
+    if (lower.contains('charger') || lower.contains('cable')) return 0.3;
+    return 0.5;
+  }
 }
 
-// Helper Classes
+// Data Models
 class CompartmentInfo {
   final String id;
   final String name;
   final String emoji;
-  final int layers;
-  final bool disabled;
+  final double capacity;
 
   CompartmentInfo({
     required this.id,
     required this.name,
     required this.emoji,
-    required this.layers,
-    this.disabled = false,
+    required this.capacity,
   });
 }
 
-class PackedItemPosition {
+class PackedItem {
   final PackingItemModel item;
-  final int layer;
-  final int quadrant;
+  String packingMethod;
 
-  PackedItemPosition({
+  PackedItem({
     required this.item,
-    required this.layer,
-    required this.quadrant,
+    required this.packingMethod,
   });
 }

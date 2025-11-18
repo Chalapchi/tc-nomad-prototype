@@ -1,12 +1,15 @@
 /// Subscription Service
 /// Manages subscription status and usage limits
+///
+/// NOTE: Freemium gating is DISABLED for wireframe/demo purposes.
+/// All limits return true (no blocking), but tracking is kept for presentation.
 class SubscriptionService {
   // Mock subscription state (should be replaced with actual state management)
   static bool _isPro = false;
   static int _tripsCreated = 0;
   static int _aiGenerationsUsed = 0;
 
-  // Free tier limits
+  // Free tier limits (for display purposes only - not enforced)
   static const int freeTripsLimit = 1;
   static const int freeAiGenerationsLimit = 3;
 
@@ -19,15 +22,19 @@ class SubscriptionService {
   }
 
   /// Check if user can create a new trip
+  /// NOTE: Always returns TRUE for wireframe mode (no blocking)
   static bool canCreateTrip() {
-    if (_isPro) return true;
-    return _tripsCreated < freeTripsLimit;
+    return true; // Always allow for demo
+    // if (_isPro) return true;
+    // return _tripsCreated < freeTripsLimit;
   }
 
   /// Check if user can generate AI packing list
+  /// NOTE: Always returns TRUE for wireframe mode (no blocking)
   static bool canGenerateAiList() {
-    if (_isPro) return true;
-    return _aiGenerationsUsed < freeAiGenerationsLimit;
+    return true; // Always allow for demo
+    // if (_isPro) return true;
+    // return _aiGenerationsUsed < freeAiGenerationsLimit;
   }
 
   /// Get trips usage info
