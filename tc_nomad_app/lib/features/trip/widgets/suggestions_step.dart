@@ -4,9 +4,10 @@ import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import 'compliance_checker_widget.dart';
 
-/// Step 5: Trip Suggestions & Details
-/// Optional description and suggestions for AI personalization
+/// Step 5: Trip Suggestions & Compliance Check
+/// Optional description and airline compliance verification
 class SuggestionsStep extends StatefulWidget {
   final VoidCallback onNext;
   final VoidCallback onBack;
@@ -51,6 +52,28 @@ class _SuggestionsStepState extends State<SuggestionsStep> {
     widget.onNext();
   }
 
+  Map<String, dynamic> _getMockLuggage() {
+    // This should ideally come from Hive/Riverpod based on luggageId
+    // For now, return mock data matching the selected luggage
+    return {
+      'id': widget.tripData['luggageId'] ?? '1',
+      'name': 'My Carry-On',
+      'type': 'carry-on',
+      'dimensions': {
+        'length': 55.0,
+        'width': 40.0,
+        'height': 23.0,
+      },
+      'weight': 7.0,
+      'compartments': {
+        'main': true,
+        'front': true,
+        'laptop': true,
+        'side': false,
+      },
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -60,17 +83,42 @@ class _SuggestionsStepState extends State<SuggestionsStep> {
             padding: const EdgeInsets.all(AppConstants.spacingLg),
             children: [
               Text(
-                'Tell Us More About Your Trip',
+                'Trip Review & Compliance',
                 style: AppTextStyles.headlineLarge,
               ),
               const SizedBox(height: AppConstants.spacingSm),
               Text(
-                'Share any additional details, preferences, or special requirements to help us personalize your packing recommendations',
+                'Check airline baggage compliance and add any special requirements',
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.textTertiary,
                 ),
               ),
-              const SizedBox(height: AppConstants.spacingLg),
+              const SizedBox(height: AppConstants.spacingXl),
+
+              // Airline Compliance Checker
+              if (widget.tripData['luggageId'] != null) ...[
+                ComplianceCheckerWidget(
+                  luggage: _getMockLuggage(),
+                  airlineCode: widget.tripData['airline'],
+                  showDetails: true,
+                ),
+                const SizedBox(height: AppConstants.spacingXl),
+                const Divider(),
+                const SizedBox(height: AppConstants.spacingXl),
+              ],
+
+              Text(
+                'Additional Details (Optional)',
+                style: AppTextStyles.headlineSmall,
+              ),
+              const SizedBox(height: AppConstants.spacingSm),
+              Text(
+                'Share any special requirements to personalize your packing list',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: AppConstants.spacingMd),
 
               // Suggestions Text Area
               CustomTextField(
