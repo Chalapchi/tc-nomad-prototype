@@ -4,7 +4,9 @@ import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/gradient_button.dart';
+import '../../../services/subscription_service.dart';
 import '../../trip/screens/trip_creation_wizard_screen.dart';
+import '../../subscription/screens/paywall_screen.dart';
 import 'trips_screen.dart';
 import 'luggage_screen.dart';
 import '../../settings/screens/settings_screen.dart';
@@ -177,7 +179,17 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: AppConstants.spacingLg),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        if (!SubscriptionService.canCreateTrip()) {
+                          // Show paywall when trip limit is reached
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const PaywallScreen(canDismiss: true),
+                            ),
+                          );
+                          return;
+                        }
+
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const TripCreationWizardScreen(),

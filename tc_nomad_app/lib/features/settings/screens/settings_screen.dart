@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../services/subscription_service.dart';
+import '../../subscription/screens/paywall_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -65,25 +73,43 @@ class SettingsScreen extends StatelessWidget {
             [
               _buildListTile(
                 icon: Icons.diamond_outlined,
-                title: 'Upgrade to Pro',
-                subtitle: 'Unlock unlimited trips & AI generations',
+                title: SubscriptionService.isPro ? 'Manage Subscription' : 'Upgrade to Pro',
+                subtitle: SubscriptionService.isPro
+                    ? 'You have full access to all features'
+                    : 'Unlock unlimited trips & AI generations',
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: SubscriptionService.isPro
+                        ? LinearGradient(
+                            colors: [AppColors.success, AppColors.success.withOpacity(0.7)],
+                          )
+                        : AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'FREE',
+                    SubscriptionService.isPro ? 'PRO' : 'FREE',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                onTap: () {},
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PaywallScreen(canDismiss: true),
+                    ),
+                  );
+                  if (result == true) {
+                    // Subscription status changed, refresh UI
+                    setState(() {});
+                  }
+                },
               ),
             ],
           ),

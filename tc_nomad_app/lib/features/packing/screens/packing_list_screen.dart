@@ -4,9 +4,11 @@ import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/gradient_button.dart';
 import '../../../core/widgets/glass_card.dart';
+import '../../../services/subscription_service.dart';
 import '../widgets/packing_category_section.dart';
 import '../widgets/add_item_modal.dart';
 import '../../visual_guide/screens/visual_packing_guide_screen.dart';
+import '../../subscription/screens/paywall_screen.dart';
 
 /// Smart Packing List Screen
 /// AI-generated packing list with categories
@@ -43,6 +45,24 @@ class _PackingListScreenState extends State<PackingListScreen> {
     _categories = _getMockPackingList();
 
     setState(() => _isGenerating = false);
+  }
+
+  Future<void> _handleRegenerate() async {
+    if (!SubscriptionService.canGenerateAiList()) {
+      // Show paywall when AI generation limit is reached
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const PaywallScreen(canDismiss: true),
+        ),
+      );
+      return;
+    }
+
+    // Track AI generation usage
+    SubscriptionService.incrementAiGenerations();
+
+    // Regenerate the packing list
+    await _generatePackingList();
   }
 
   List<PackingCategory> _getMockPackingList() {
@@ -211,7 +231,7 @@ class _PackingListScreenState extends State<PackingListScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _generatePackingList,
+            onPressed: _handleRegenerate,
             tooltip: 'Regenerate',
           ),
         ],

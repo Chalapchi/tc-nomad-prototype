@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../services/subscription_service.dart';
 import '../widgets/trip_info_step.dart';
 import '../widgets/activities_step.dart';
 import '../widgets/luggage_step.dart';
 import '../widgets/weather_step.dart';
 import '../widgets/suggestions_step.dart';
 import '../../packing/screens/packing_list_screen.dart';
+import '../../subscription/screens/paywall_screen.dart';
 
 /// Trip Creation Wizard - 5 Steps
 /// Complete flow for creating a new trip
@@ -118,7 +120,24 @@ class _TripCreationWizardScreenState extends State<TripCreationWizardScreen> {
             child: const Text('View Later'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              if (!SubscriptionService.canGenerateAiList()) {
+                // Show paywall when AI generation limit is reached
+                Navigator.of(context).pop(); // Close dialog first
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const PaywallScreen(canDismiss: true),
+                  ),
+                );
+                return;
+              }
+
+              // Track trip creation
+              SubscriptionService.incrementTrips();
+
+              // Track AI generation usage
+              SubscriptionService.incrementAiGenerations();
+
               Navigator.of(context).pop(); // Close dialog
               Navigator.of(context).pop(); // Close wizard
               // Navigate to packing list

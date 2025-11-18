@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../services/subscription_service.dart';
+import '../../trip/screens/trip_creation_wizard_screen.dart';
+import '../../subscription/screens/paywall_screen.dart';
 
 class TripsScreen extends StatelessWidget {
   const TripsScreen({super.key});
@@ -43,7 +46,23 @@ class TripsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () async {
+          if (!SubscriptionService.canCreateTrip()) {
+            // Show paywall when trip limit is reached
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const PaywallScreen(canDismiss: true),
+              ),
+            );
+            return;
+          }
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const TripCreationWizardScreen(),
+            ),
+          );
+        },
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add),
         label: const Text('New Trip'),
