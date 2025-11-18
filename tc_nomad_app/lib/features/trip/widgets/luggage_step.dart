@@ -3,6 +3,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/gradient_button.dart';
+import '../../luggage/screens/luggage_list_screen.dart';
+import '../../luggage/screens/luggage_creation_screen.dart';
 
 /// Step 3: Luggage Selection
 /// Select from saved luggage profiles or create new
@@ -69,14 +71,69 @@ class _LuggageStepState extends State<LuggageStep> {
     widget.onNext();
   }
 
-  void _handleAddLuggage() {
-    // TODO: Navigate to luggage creation screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Luggage creation will be implemented in next phase'),
-        backgroundColor: AppColors.info,
+  void _handleAddLuggage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LuggageCreationScreen(),
       ),
     );
+
+    if (result != null) {
+      // Luggage was created, add to list and select it
+      setState(() {
+        _mockLuggage.add({
+          'id': result['id'],
+          'name': result['name'],
+          'emoji': _getEmojiForType(result['type']),
+          'specs': _getSpecsString(result),
+          'isDefault': result['isDefault'],
+        });
+        _selectedLuggageId = result['id'];
+      });
+    }
+  }
+
+  void _handleBrowseLuggage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LuggageListScreen(isSelectionMode: true),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedLuggageId = result['id'];
+      });
+    }
+  }
+
+  String _getEmojiForType(String type) {
+    switch (type) {
+      case 'carry-on':
+        return '🧳';
+      case 'checked':
+        return '💼';
+      case 'backpack':
+        return '🎒';
+      case 'duffel':
+        return '👜';
+      case 'personal':
+        return '👝';
+      default:
+        return '🧳';
+    }
+  }
+
+  String _getSpecsString(Map<String, dynamic> luggage) {
+    final dims = luggage['dimensions'];
+    final capacity = _calculateCapacity(dims['length'], dims['width'], dims['height']);
+    return '${dims['length']}×${dims['width']}×${dims['height']} cm • ${capacity}L capacity';
+  }
+
+  double _calculateCapacity(double length, double width, double height) {
+    return (length * width * height) / 1000; // Convert cm³ to liters
   }
 
   @override
@@ -225,6 +282,36 @@ class _LuggageStepState extends State<LuggageStep> {
                         'Add New Luggage',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppConstants.spacingMd),
+
+              // Browse All Luggage Button
+              GestureDetector(
+                onTap: _handleBrowseLuggage,
+                child: Container(
+                  padding: const EdgeInsets.all(AppConstants.spacingMd),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.luggage,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: AppConstants.spacingSm),
+                      Text(
+                        'Browse All Luggage',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
