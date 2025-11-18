@@ -7,6 +7,7 @@ import '../widgets/activities_step.dart';
 import '../widgets/luggage_step.dart';
 import '../widgets/weather_step.dart';
 import '../widgets/suggestions_step.dart';
+import '../../packing/screens/packing_list_screen.dart';
 
 /// Trip Creation Wizard - 5 Steps
 /// Complete flow for creating a new trip
@@ -118,13 +119,12 @@ class _TripCreationWizardScreenState extends State<TripCreationWizardScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-              // TODO: Navigate to packing list generation
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Packing list generation will be implemented in next phase'),
-                  backgroundColor: AppColors.info,
+              Navigator.of(context).pop(); // Close dialog
+              Navigator.of(context).pop(); // Close wizard
+              // Navigate to packing list
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => PackingListScreen(tripData: _tripData),
                 ),
               );
             },
