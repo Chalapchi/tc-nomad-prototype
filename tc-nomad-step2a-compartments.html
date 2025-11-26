@@ -407,142 +407,330 @@
 
             <!-- Luggage Tabs (if multiple luggage) -->
             <div class="luggage-tabs">
-                <div class="luggage-tab active">
+                <div class="luggage-tab active" onclick="switchLuggage('carryon')">
                     <div class="luggage-tab-name">🧳 Carry-on</div>
-                    <div class="luggage-tab-info">22L • 25 items</div>
+                    <div class="luggage-tab-info">58L • 25 items</div>
                 </div>
-                <div class="luggage-tab">
+                <div class="luggage-tab" onclick="switchLuggage('backpack')">
                     <div class="luggage-tab-name">🎒 Backpack</div>
-                    <div class="luggage-tab-info">15L • 7 items</div>
+                    <div class="luggage-tab-info">20L • 7 items</div>
+                </div>
+                <div class="luggage-tab" onclick="switchLuggage('briefcase')">
+                    <div class="luggage-tab-name">💼 Briefcase</div>
+                    <div class="luggage-tab-info">12L • 3 items</div>
                 </div>
             </div>
             
-            <!-- Luggage Visual -->
-            <div class="luggage-visual">
-                <div class="luggage-image">🧳</div>
-                <div class="luggage-name">Standard Carry-on Suitcase</div>
-                <div class="luggage-specs">55×40×23 cm • 22L capacity • 2 compartments</div>
+            <!-- Luggage Content Containers -->
+            <div id="luggage-carryon" class="luggage-content" style="display: block;">
+                <!-- Luggage Visual -->
+                <div class="luggage-visual">
+                    <div class="luggage-image">🧳</div>
+                    <div class="luggage-name">Black Carry-On Suitcase</div>
+                    <div class="luggage-specs">24" × 16" × 10" • 58L capacity • 3 compartments</div>
+                </div>
+
+                <!-- Tip Box -->
+                <div class="tip-box">
+                    <div class="tip-header">
+                        <span class="tip-icon">💡</span>
+                        <span class="tip-title">Packing Tip</span>
+                    </div>
+                    <div class="tip-text">
+                        Items are assigned based on access needs and volume. Frequently needed items go in easy-access pockets.
+                    </div>
+                </div>
+
+                <!-- Main Compartment -->
+                <div class="compartments-section">
+                    <div class="section-header">
+                        <span class="section-title">Compartments</span>
+                        <span class="item-count">25 items assigned</span>
+                    </div>
+
+                    <!-- Main Compartment Card -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">📦</span>
+                                <span>Main Compartment</span>
+                                <span class="ai-badge">AI</span>
+                            </div>
+                            <span class="compartment-meta">18 items • 45L</span>
+                        </div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">👔</div>
+                                <div class="item-info">
+                                    <div class="item-name">Dress Shirts (2)</div>
+                                    <div class="item-details">Folded • ~1.6L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">👖</div>
+                                <div class="item-info">
+                                    <div class="item-name">Dress Pants (2)</div>
+                                    <div class="item-details">Rolled • ~2.4L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">🧥</div>
+                                <div class="item-info">
+                                    <div class="item-name">Blazer (1)</div>
+                                    <div class="item-details">Fold carefully • ~2.5L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Front Pocket -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">👝</span>
+                                <span>Front Zippered Pocket</span>
+                                <span class="ai-badge">AI</span>
+                            </div>
+                            <span class="compartment-meta">5 items • 10L</span>
+                        </div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">🧴</div>
+                                <div class="item-info">
+                                    <div class="item-name">Toiletries Kit</div>
+                                    <div class="item-details">Travel size • ~0.5L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">💻</div>
+                                <div class="item-info">
+                                    <div class="item-name">Laptop Charger</div>
+                                    <div class="item-details">Coiled • ~0.3L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Internal Divider Pocket -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">📂</span>
+                                <span>Internal Divider Pocket</span>
+                                <span class="ai-badge">AI</span>
+                            </div>
+                            <span class="compartment-meta">2 items • 3L</span>
+                        </div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">🩲</div>
+                                <div class="item-info">
+                                    <div class="item-name">Underwear (6)</div>
+                                    <div class="item-details">Rolled • ~0.6L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Tip Box -->
-            <div class="tip-box">
-                <div class="tip-header">
-                    <span class="tip-icon">💡</span>
-                    <span class="tip-title">Packing Tip</span>
+
+            <!-- Backpack Content -->
+            <div id="luggage-backpack" class="luggage-content" style="display: none;">
+                <!-- Luggage Visual -->
+                <div class="luggage-visual">
+                    <div class="luggage-image">🎒</div>
+                    <div class="luggage-name">Personal Backpack</div>
+                    <div class="luggage-specs">18" × 13" × 8" • 20L capacity • 2 compartments</div>
                 </div>
-                <div class="tip-text">
-                    Items are assigned based on access needs and volume. Frequently needed items go in easy-access pockets.
+
+                <!-- Tip Box -->
+                <div class="tip-box">
+                    <div class="tip-header">
+                        <span class="tip-icon">💡</span>
+                        <span class="tip-title">Packing Tip</span>
+                    </div>
+                    <div class="tip-text">
+                        This backpack is perfect for quick-access items and electronics during travel.
+                    </div>
+                </div>
+
+                <!-- Compartments -->
+                <div class="compartments-section">
+                    <div class="section-header">
+                        <span class="section-title">Compartments</span>
+                        <span class="item-count">7 items assigned</span>
+                    </div>
+
+                    <!-- Main Compartment -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">📦</span>
+                                <span>Main Compartment</span>
+                                <span class="ai-badge">AI</span>
+                            </div>
+                            <span class="compartment-meta">5 items • 12L</span>
+                        </div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">💻</div>
+                                <div class="item-info">
+                                    <div class="item-name">Laptop (15")</div>
+                                    <div class="item-details">Padded sleeve • ~2L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">📱</div>
+                                <div class="item-info">
+                                    <div class="item-name">Tablet & Accessories</div>
+                                    <div class="item-details">Protective case • ~1L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">📚</div>
+                                <div class="item-info">
+                                    <div class="item-name">Work Documents</div>
+                                    <div class="item-details">Folder • ~0.5L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Front Pocket -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">👝</span>
+                                <span>Quick Access Pocket</span>
+                                <span class="ai-badge">AI</span>
+                            </div>
+                            <span class="compartment-meta">2 items • 1L</span>
+                        </div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">🎧</div>
+                                <div class="item-info">
+                                    <div class="item-name">Headphones</div>
+                                    <div class="item-details">Wireless • ~0.3L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">🔑</div>
+                                <div class="item-info">
+                                    <div class="item-name">Travel Essentials</div>
+                                    <div class="item-details">Keys, wallet, passport • ~0.2L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Main Compartment -->
-            <div class="compartments-section">
-                <div class="section-header">
-                    <span class="section-title">Compartments</span>
-                    <span class="item-count">25 items assigned</span>
+
+            <!-- Briefcase Content -->
+            <div id="luggage-briefcase" class="luggage-content" style="display: none;">
+                <!-- Luggage Visual -->
+                <div class="luggage-visual">
+                    <div class="luggage-image">💼</div>
+                    <div class="luggage-name">Leather Briefcase</div>
+                    <div class="luggage-specs">17" × 12" × 6" • 12L capacity • 1 compartment</div>
                 </div>
-                
-                <!-- Main Compartment Card -->
-                <div class="compartment-card">
-                    <div class="compartment-header">
-                        <div class="compartment-name">
-                            <span class="compartment-icon">📦</span>
-                            <span>Main Compartment</span>
-                            <span class="ai-badge">AI</span>
-                        </div>
-                        <span class="compartment-meta">18 items • 16.5L</span>
+
+                <!-- Tip Box -->
+                <div class="tip-box">
+                    <div class="tip-header">
+                        <span class="tip-icon">💡</span>
+                        <span class="tip-title">Packing Tip</span>
                     </div>
-                    <div class="compartment-items">
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">👔</div>
-                            <div class="item-info">
-                                <div class="item-name">Dress Shirts (2)</div>
-                                <div class="item-details">Folded • ~1.6L</div>
-                            </div>
-                            <button class="move-btn">Move</button>
-                        </div>
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">👖</div>
-                            <div class="item-info">
-                                <div class="item-name">Dress Pants (2)</div>
-                                <div class="item-details">Rolled • ~2.4L</div>
-                            </div>
-                            <button class="move-btn">Move</button>
-                        </div>
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">🧥</div>
-                            <div class="item-info">
-                                <div class="item-name">Blazer (1)</div>
-                                <div class="item-details">Fold carefully • ~2.5L</div>
-                            </div>
-                            <button class="move-btn">Move</button>
-                        </div>
-                        <div class="add-item-zone">
-                            + Drop items here or tap to add
-                        </div>
+                    <div class="tip-text">
+                        Perfect for business meetings - keep important documents and electronics organized.
                     </div>
                 </div>
-                
-                <!-- Front Pocket -->
-                <div class="compartment-card">
-                    <div class="compartment-header">
-                        <div class="compartment-name">
-                            <span class="compartment-icon">👝</span>
-                            <span>Front Zippered Pocket</span>
-                            <span class="ai-badge">AI</span>
-                        </div>
-                        <span class="compartment-meta">5 items • 1.2L</span>
+
+                <!-- Compartments -->
+                <div class="compartments-section">
+                    <div class="section-header">
+                        <span class="section-title">Compartments</span>
+                        <span class="item-count">3 items assigned</span>
                     </div>
-                    <div class="compartment-items">
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">🧴</div>
-                            <div class="item-info">
-                                <div class="item-name">Toiletries Kit</div>
-                                <div class="item-details">Travel size • ~0.5L</div>
+
+                    <!-- Main Compartment -->
+                    <div class="compartment-card">
+                        <div class="compartment-header">
+                            <div class="compartment-name">
+                                <span class="compartment-icon">📦</span>
+                                <span>Main Compartment</span>
+                                <span class="ai-badge">AI</span>
                             </div>
-                            <button class="move-btn">Move</button>
+                            <span class="compartment-meta">3 items • 8L</span>
                         </div>
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">💻</div>
-                            <div class="item-info">
-                                <div class="item-name">Laptop Charger</div>
-                                <div class="item-details">Coiled • ~0.3L</div>
+                        <div class="compartment-items">
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">📄</div>
+                                <div class="item-info">
+                                    <div class="item-name">Business Presentation</div>
+                                    <div class="item-details">Printed materials • ~0.5L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
                             </div>
-                            <button class="move-btn">Move</button>
-                        </div>
-                        <div class="add-item-zone">
-                            + Drop items here or tap to add
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Internal Divider Pocket -->
-                <div class="compartment-card">
-                    <div class="compartment-header">
-                        <div class="compartment-name">
-                            <span class="compartment-icon">📂</span>
-                            <span>Internal Divider Pocket</span>
-                            <span class="ai-badge">AI</span>
-                        </div>
-                        <span class="compartment-meta">2 items • 0.8L</span>
-                    </div>
-                    <div class="compartment-items">
-                        <div class="compartment-item">
-                            <span class="drag-handle">☰</span>
-                            <div class="item-icon">🩲</div>
-                            <div class="item-info">
-                                <div class="item-name">Underwear (6)</div>
-                                <div class="item-details">Rolled • ~0.6L</div>
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">✒️</div>
+                                <div class="item-info">
+                                    <div class="item-name">Pens & Notebook</div>
+                                    <div class="item-details">Writing supplies • ~0.3L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
                             </div>
-                            <button class="move-btn">Move</button>
-                        </div>
-                        <div class="add-item-zone">
-                            + Drop items here or tap to add
+                            <div class="compartment-item">
+                                <span class="drag-handle">☰</span>
+                                <div class="item-icon">📇</div>
+                                <div class="item-info">
+                                    <div class="item-name">Business Cards</div>
+                                    <div class="item-details">Card holder • ~0.1L</div>
+                                </div>
+                                <button class="move-btn">Move</button>
+                            </div>
+                            <div class="add-item-zone">
+                                + Drop items here or tap to add
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -572,6 +760,26 @@
     </div>
 
     <script>
+        // Switch between different luggage tabs
+        function switchLuggage(luggageType) {
+            // Hide all luggage content
+            document.querySelectorAll('.luggage-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show selected luggage content
+            const selectedContent = document.getElementById('luggage-' + luggageType);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+
+            // Update tab active states
+            document.querySelectorAll('.luggage-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
         // Add keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {

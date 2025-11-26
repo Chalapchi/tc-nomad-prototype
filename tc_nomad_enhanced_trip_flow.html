@@ -957,27 +957,42 @@
 
             <div class="content">
                 <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Choose Your Luggage</h3>
-                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">Select luggage for this trip</p>
+                <p style="font-size: 14px; color: #8E8E93; margin-bottom: 24px;">Select one or more luggage items for this trip</p>
 
-                <div class="luggage-item selected" onclick="selectLuggage(this)">
+                <div class="luggage-item selected" onclick="toggleLuggage(this)">
                     <div class="luggage-icon">🧳</div>
                     <div class="luggage-info">
                         <div class="luggage-name">Black Carry-On</div>
                         <div class="luggage-specs">24" × 16" × 10" • 58L capacity</div>
                     </div>
+                    <div style="width: 24px; height: 24px; border: 2px solid #007AFF; border-radius: 6px; background: #007AFF; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
                 </div>
 
-                <div class="luggage-item" onclick="selectLuggage(this)">
-                    <div class="luggage-icon">💜</div>
+                <div class="luggage-item selected" onclick="toggleLuggage(this)">
+                    <div class="luggage-icon">🎒</div>
                     <div class="luggage-info">
                         <div class="luggage-name">Personal Backpack</div>
                         <div class="luggage-specs">18" × 13" × 8" • 20L capacity</div>
                     </div>
+                    <div style="width: 24px; height: 24px; border: 2px solid #007AFF; border-radius: 6px; background: #007AFF; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">✓</div>
+                </div>
+
+                <div class="luggage-item" onclick="toggleLuggage(this)">
+                    <div class="luggage-icon">💼</div>
+                    <div class="luggage-info">
+                        <div class="luggage-name">Leather Briefcase</div>
+                        <div class="luggage-specs">17" × 12" × 6" • 12L capacity</div>
+                    </div>
+                    <div style="width: 24px; height: 24px; border: 2px solid #C7C7CC; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;"></div>
                 </div>
 
                 <div class="luggage-item add-luggage-btn" onclick="addNewLuggage()">
                     <span style="font-size: 20px;">+</span>
                     <span>Add New Luggage</span>
+                </div>
+
+                <div style="background: #F0F9FF; border: 2px solid #007AFF; border-radius: 12px; padding: 12px; margin: 20px 0; font-size: 13px; color: #007AFF;">
+                    <strong>2 luggage items selected</strong> • Combined capacity: 78L
                 </div>
 
                 <button class="btn-primary" onclick="showScreen(3)">Continue</button>
@@ -1385,11 +1400,44 @@
             element.classList.toggle('selected');
         }
 
-        function selectLuggage(element) {
-            document.querySelectorAll('.luggage-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            element.classList.add('selected');
+        function toggleLuggage(element) {
+            // Don't toggle if it's the add button
+            if (element.classList.contains('add-luggage-btn')) return;
+
+            element.classList.toggle('selected');
+
+            // Update the checkbox
+            const checkbox = element.querySelector('div:last-child');
+            if (element.classList.contains('selected')) {
+                checkbox.style.background = '#007AFF';
+                checkbox.style.borderColor = '#007AFF';
+                checkbox.textContent = '✓';
+            } else {
+                checkbox.style.background = 'transparent';
+                checkbox.style.borderColor = '#C7C7CC';
+                checkbox.textContent = '';
+            }
+
+            // Update the selected count
+            updateSelectedLuggageCount();
+        }
+
+        function updateSelectedLuggageCount() {
+            const selected = document.querySelectorAll('.luggage-item.selected:not(.add-luggage-btn)').length;
+            const summaryDiv = document.querySelector('.screen.active .content > div[style*="F0F9FF"]');
+
+            if (summaryDiv) {
+                let totalCapacity = 0;
+                document.querySelectorAll('.luggage-item.selected:not(.add-luggage-btn)').forEach(item => {
+                    const specs = item.querySelector('.luggage-specs').textContent;
+                    const capacityMatch = specs.match(/(\d+)L/);
+                    if (capacityMatch) {
+                        totalCapacity += parseInt(capacityMatch[1]);
+                    }
+                });
+
+                summaryDiv.innerHTML = `<strong>${selected} luggage item${selected !== 1 ? 's' : ''} selected</strong> • Combined capacity: ${totalCapacity}L`;
+            }
         }
 
         function addNewLuggage() {

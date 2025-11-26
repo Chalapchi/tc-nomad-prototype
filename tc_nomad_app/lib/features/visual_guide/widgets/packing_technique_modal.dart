@@ -54,7 +54,7 @@ class _PackingTechniqueModalState extends State<PackingTechniqueModal>
         'Stack neatly in compartment',
       ],
       icon: Icons.view_agenda,
-      color: AppColors.secondary,
+      color: AppColors.categoryToiletries,
     ),
     PackingTechnique(
       name: 'Bundling',
@@ -73,7 +73,7 @@ class _PackingTechniqueModalState extends State<PackingTechniqueModal>
         'Secure the bundle gently',
       ],
       icon: Icons.inventory_2,
-      color: AppColors.accent,
+      color: AppColors.categoryElectronics,
     ),
   ];
 

@@ -25,7 +25,7 @@ class LuggageStep extends StatefulWidget {
 }
 
 class _LuggageStepState extends State<LuggageStep> {
-  String? _selectedLuggageId;
+  List<String> _selectedLuggageIds = [];
 
   // Mock luggage data (replace with actual data from provider)
   final List<Map<String, dynamic>> _mockLuggage = [
@@ -35,6 +35,8 @@ class _LuggageStepState extends State<LuggageStep> {
       'emoji': '🧳',
       'specs': '24" × 16" × 10" • 58L capacity',
       'isDefault': true,
+      'type': 'carry-on',
+      'dimensions': {'length': 55.0, 'width': 40.0, 'height': 23.0},
     },
     {
       'id': '2',
@@ -42,32 +44,51 @@ class _LuggageStepState extends State<LuggageStep> {
       'emoji': '🎒',
       'specs': '18" × 13" × 8" • 20L capacity',
       'isDefault': false,
+      'type': 'backpack',
+      'dimensions': {'length': 45.0, 'width': 32.0, 'height': 20.0},
+    },
+    {
+      'id': '3',
+      'name': 'Leather Briefcase',
+      'emoji': '💼',
+      'specs': '17" × 12" × 6" • 12L capacity',
+      'isDefault': false,
+      'type': 'briefcase',
+      'dimensions': {'length': 43.0, 'width': 30.0, 'height': 15.0},
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    _selectedLuggageId = widget.tripData['luggageId'];
+    if (widget.tripData['luggageIds'] != null) {
+      _selectedLuggageIds = List<String>.from(widget.tripData['luggageIds']);
+    }
 
-    // Auto-select first luggage if none selected
-    if (_selectedLuggageId == null && _mockLuggage.isNotEmpty) {
-      _selectedLuggageId = _mockLuggage.first['id'] as String;
+    // Auto-select first two luggages if none selected (carry-on and backpack)
+    if (_selectedLuggageIds.isEmpty && _mockLuggage.length >= 2) {
+      _selectedLuggageIds.add(_mockLuggage[0]['id'] as String);
+      _selectedLuggageIds.add(_mockLuggage[1]['id'] as String);
     }
   }
 
   void _handleNext() {
-    if (_selectedLuggageId == null) {
+    if (_selectedLuggageIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select luggage or create a new one'),
+          content: Text('Please select at least one luggage'),
           backgroundColor: AppColors.error,
         ),
       );
       return;
     }
 
-    widget.tripData['luggageId'] = _selectedLuggageId;
+    widget.tripData['luggageIds'] = _selectedLuggageIds;
+    // Also pass the full luggage objects for the next screens to use
+    widget.tripData['selectedLuggages'] = _mockLuggage
+        .where((l) => _selectedLuggageIds.contains(l['id']))
+        .toList();
+        
     widget.onNext();
   }
 
@@ -88,8 +109,12 @@ class _LuggageStepState extends State<LuggageStep> {
           'emoji': _getEmojiForType(result['type']),
           'specs': _getSpecsString(result),
           'isDefault': result['isDefault'],
+          'type': result['type'],
+          'dimensions': result['dimensions'],
         });
-        _selectedLuggageId = result['id'];
+        if (!_selectedLuggageIds.contains(result['id'])) {
+          _selectedLuggageIds.add(result['id']);
+        }
       });
     }
   }
@@ -104,9 +129,22 @@ class _LuggageStepState extends State<LuggageStep> {
 
     if (result != null) {
       setState(() {
-        _selectedLuggageId = result['id'];
+        final id = result['id'];
+        if (!_selectedLuggageIds.contains(id)) {
+          _selectedLuggageIds.add(id);
+        }
       });
     }
+  }
+
+  void _toggleSelection(String id) {
+    setState(() {
+      if (_selectedLuggageIds.contains(id)) {
+        _selectedLuggageIds.remove(id);
+      } else {
+        _selectedLuggageIds.add(id);
+      }
+    });
   }
 
   String _getEmojiForType(String type) {
@@ -114,9 +152,11 @@ class _LuggageStepState extends State<LuggageStep> {
       case 'carry-on':
         return '🧳';
       case 'checked':
-        return '💼';
+        return '🧳';
       case 'backpack':
         return '🎒';
+      case 'briefcase':
+        return '💼';
       case 'duffel':
         return '👜';
       case 'personal':
@@ -129,7 +169,7 @@ class _LuggageStepState extends State<LuggageStep> {
   String _getSpecsString(Map<String, dynamic> luggage) {
     final dims = luggage['dimensions'];
     final capacity = _calculateCapacity(dims['length'], dims['width'], dims['height']);
-    return '${dims['length']}×${dims['width']}×${dims['height']} cm • ${capacity}L capacity';
+    return '${dims['length']}×${dims['width']}×${dims['height']} cm • ${capacity.toStringAsFixed(1)}L capacity';
   }
 
   double _calculateCapacity(double length, double width, double height) {
@@ -150,7 +190,7 @@ class _LuggageStepState extends State<LuggageStep> {
               ),
               const SizedBox(height: AppConstants.spacingSm),
               Text(
-                'Select luggage for this trip',
+                'Select one or more bags for this trip',
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -160,12 +200,12 @@ class _LuggageStepState extends State<LuggageStep> {
               // Luggage List
               ..._mockLuggage.map((luggage) {
                 final id = luggage['id'] as String;
-                final isSelected = _selectedLuggageId == id;
+                final isSelected = _selectedLuggageIds.contains(id);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: AppConstants.spacingMd),
                   child: GestureDetector(
-                    onTap: () => setState(() => _selectedLuggageId = id),
+                    onTap: () => _toggleSelection(id),
                     child: Container(
                       padding: const EdgeInsets.all(AppConstants.spacingMd),
                       decoration: BoxDecoration(
@@ -244,12 +284,25 @@ class _LuggageStepState extends State<LuggageStep> {
                           ),
 
                           // Selection Indicator
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle,
-                              color: AppColors.primary,
-                              size: 24,
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isSelected ? AppColors.primary : Colors.transparent,
+                              border: Border.all(
+                                color: isSelected ? AppColors.primary : AppColors.border,
+                                width: 2,
+                              ),
                             ),
+                            child: isSelected
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16,
+                                  )
+                                : null,
+                          ),
                         ],
                       ),
                     ),

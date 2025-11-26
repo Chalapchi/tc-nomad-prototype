@@ -260,7 +260,6 @@ class _WeatherDisplayWidgetState extends State<WeatherDisplayWidget> {
     final dateFormat = DateFormat('EEE\nMMM d');
 
     return GlassCard(
-      width: 110,
       child: Container(
         padding: const EdgeInsets.all(AppConstants.spacingMd),
         decoration: BoxDecoration(

@@ -24,54 +24,127 @@ class VisualPackingGuideScreen extends StatefulWidget {
 }
 
 class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
+  String _selectedLuggageId = '1'; // Default to carry-on
   String _selectedCompartment = 'main';
-  final Map<String, List<PackedItem>> _packedItems = {};
+  final Map<String, Map<String, List<PackedItem>>> _packedItems = {}; // luggageId -> compartmentId -> items
 
-  final List<CompartmentInfo> _compartments = [
-    CompartmentInfo(
-      id: 'main',
-      name: 'Main Compartment',
-      emoji: '📦',
-      capacity: 18.0,
-    ),
-    CompartmentInfo(
-      id: 'front',
-      name: 'Front Pocket',
-      emoji: '👝',
-      capacity: 2.0,
-    ),
-    CompartmentInfo(
-      id: 'laptop',
-      name: 'Laptop Sleeve',
-      emoji: '💻',
-      capacity: 1.5,
-    ),
-    CompartmentInfo(
-      id: 'side',
-      name: 'Side Pocket',
-      emoji: '📂',
-      capacity: 0.5,
-    ),
-  ];
+  // Define luggage-specific compartments
+  final Map<String, List<CompartmentInfo>> _luggageCompartments = {
+    '1': [ // Carry-on
+      CompartmentInfo(
+        id: 'main',
+        name: 'Main Compartment',
+        emoji: '📦',
+        capacity: 45.0,
+      ),
+      CompartmentInfo(
+        id: 'front',
+        name: 'Front Zippered Pocket',
+        emoji: '👝',
+        capacity: 10.0,
+      ),
+      CompartmentInfo(
+        id: 'divider',
+        name: 'Internal Divider Pocket',
+        emoji: '📂',
+        capacity: 3.0,
+      ),
+    ],
+    '2': [ // Backpack
+      CompartmentInfo(
+        id: 'main',
+        name: 'Main Compartment',
+        emoji: '📦',
+        capacity: 12.0,
+      ),
+      CompartmentInfo(
+        id: 'quick',
+        name: 'Quick Access Pocket',
+        emoji: '👝',
+        capacity: 1.0,
+      ),
+    ],
+    '3': [ // Briefcase
+      CompartmentInfo(
+        id: 'main',
+        name: 'Main Compartment',
+        emoji: '📦',
+        capacity: 8.0,
+      ),
+    ],
+  };
+
+  // Get current luggage info from tripData
+  List<Map<String, dynamic>> get _selectedLuggages {
+    return (widget.tripData['selectedLuggages'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  List<CompartmentInfo> get _currentCompartments {
+    return _luggageCompartments[_selectedLuggageId] ?? [];
+  }
 
   @override
   void initState() {
     super.initState();
-    // Initialize packed items map
-    for (var comp in _compartments) {
-      _packedItems[comp.id] = [];
+    // Initialize packed items map for all luggages and compartments
+    for (var luggageId in _luggageCompartments.keys) {
+      _packedItems[luggageId] = {};
+      for (var comp in _luggageCompartments[luggageId]!) {
+        _packedItems[luggageId]![comp.id] = [];
+      }
     }
-    // Auto-assign items to main compartment
+    // Auto-assign items to appropriate luggages
     _autoAssignItems();
   }
 
   void _autoAssignItems() {
     final allItems = widget.packingList.expand((cat) => cat.items).toList();
+
     for (var item in allItems) {
-      _packedItems['main']!.add(PackedItem(
-        item: item,
-        packingMethod: _suggestPackingMethod(item.name),
-      ));
+      final itemName = item.name.toLowerCase();
+      String targetLuggage = '1'; // Default to carry-on
+      String targetCompartment = 'main';
+
+      // Smart assignment based on item type
+      if (itemName.contains('laptop') || itemName.contains('tablet') ||
+          itemName.contains('document') || itemName.contains('headphone')) {
+        // Electronics and documents go to backpack
+        targetLuggage = '2';
+        targetCompartment = itemName.contains('headphone') || itemName.contains('key') ? 'quick' : 'main';
+      } else if (itemName.contains('presentation') || itemName.contains('business card') ||
+                 itemName.contains('pen') || itemName.contains('notebook')) {
+        // Business items go to briefcase
+        targetLuggage = '3';
+        targetCompartment = 'main';
+      } else if (itemName.contains('shirt') || itemName.contains('pants') ||
+                 itemName.contains('blazer') || itemName.contains('dress')) {
+        // Clothing goes to carry-on main compartment
+        targetLuggage = '1';
+        targetCompartment = 'main';
+      } else if (itemName.contains('toiletries') || itemName.contains('charger')) {
+        // Toiletries and chargers to carry-on front pocket
+        targetLuggage = '1';
+        targetCompartment = 'front';
+      } else if (itemName.contains('underwear') || itemName.contains('sock')) {
+        // Undergarments to carry-on divider pocket
+        targetLuggage = '1';
+        targetCompartment = 'divider';
+      }
+
+      // Only add if the luggage has that compartment
+      if (_packedItems.containsKey(targetLuggage) &&
+          _packedItems[targetLuggage]!.containsKey(targetCompartment)) {
+        _packedItems[targetLuggage]![targetCompartment]!.add(PackedItem(
+          item: item,
+          packingMethod: _suggestPackingMethod(item.name),
+        ));
+      } else {
+        // Fallback to carry-on main if compartment doesn't exist
+        _packedItems['1']!['main']!.add(PackedItem(
+          item: item,
+          packingMethod: _suggestPackingMethod(item.name),
+        ));
+      }
     }
   }
 
@@ -85,7 +158,10 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   }
 
   List<PackingItemModel> get _unpackedItems {
-    final packed = _packedItems.values.expand((list) => list.map((p) => p.item.id)).toSet();
+    final packed = _packedItems.values
+        .expand((compartments) => compartments.values)
+        .expand((list) => list.map((p) => p.item.id))
+        .toSet();
     return widget.packingList
         .expand((cat) => cat.items)
         .where((item) => !packed.contains(item.id))
@@ -94,7 +170,7 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
 
   void _packItem(PackingItemModel item, String compartmentId) {
     setState(() {
-      _packedItems[compartmentId]!.add(PackedItem(
+      _packedItems[_selectedLuggageId]![compartmentId]!.add(PackedItem(
         item: item,
         packingMethod: _suggestPackingMethod(item.name),
       ));
@@ -103,8 +179,8 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
 
   void _moveItem(PackedItem packedItem, String fromCompartment, String toCompartment) {
     setState(() {
-      _packedItems[fromCompartment]!.remove(packedItem);
-      _packedItems[toCompartment]!.add(packedItem);
+      _packedItems[_selectedLuggageId]![fromCompartment]!.remove(packedItem);
+      _packedItems[_selectedLuggageId]![toCompartment]!.add(packedItem);
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -123,7 +199,14 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   }
 
   String _getCompartmentName(String id) {
-    return _compartments.firstWhere((c) => c.id == id).name;
+    return _currentCompartments.firstWhere((c) => c.id == id).name;
+  }
+
+  Map<String, dynamic>? _getCurrentLuggageData() {
+    return _selectedLuggages.firstWhere(
+      (luggage) => luggage['id'] == _selectedLuggageId,
+      orElse: () => _selectedLuggages.isNotEmpty ? _selectedLuggages[0] : {},
+    );
   }
 
   @override
@@ -148,6 +231,9 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
           // Info Banner
           _buildInfoBanner(),
 
+          // Luggage Tabs (show if multiple luggages selected)
+          if (_selectedLuggages.length > 1) _buildLuggageTabs(),
+
           // Luggage Visual
           _buildLuggageVisual(),
 
@@ -162,6 +248,71 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
           // Bottom Summary
           _buildBottomSummary(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLuggageTabs() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingMd, vertical: AppConstants.spacingSm),
+      color: AppColors.surface,
+      child: Row(
+        children: _selectedLuggages.map((luggage) {
+          final luggageId = luggage['id'] as String;
+          final isSelected = luggageId == _selectedLuggageId;
+          final totalItems = _packedItems[luggageId]?.values.fold<int>(0, (sum, list) => sum + list.length) ?? 0;
+
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedLuggageId = luggageId;
+                  _selectedCompartment = 'main'; // Reset to main compartment
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : Colors.white,
+                  borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.border,
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      luggage['emoji'] as String,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      luggage['name'] as String,
+                      style: AppTextStyles.caption.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isSelected ? Colors.white : AppColors.textPrimary,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$totalItems items',
+                      style: AppTextStyles.caption.copyWith(
+                        fontSize: 11,
+                        color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -190,6 +341,12 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   }
 
   Widget _buildLuggageVisual() {
+    final currentLuggage = _getCurrentLuggageData();
+    final luggageName = currentLuggage?['name'] as String? ?? 'Luggage';
+    final luggageEmoji = currentLuggage?['emoji'] as String? ?? '🧳';
+    final luggageSpecs = currentLuggage?['specs'] as String? ?? '';
+    final compartmentCount = _currentCompartments.length;
+
     return GlassCard(
       child: Column(
         children: [
@@ -205,18 +362,18 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
               ),
               borderRadius: BorderRadius.circular(AppConstants.radiusMd),
             ),
-            child: const Center(
-              child: Text('🧳', style: TextStyle(fontSize: 48)),
+            child: Center(
+              child: Text(luggageEmoji, style: const TextStyle(fontSize: 48)),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Standard Carry-on Suitcase',
+            luggageName,
             style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
-            '55×40×23 cm • 22L capacity • ${_compartments.length} compartments',
+            '$luggageSpecs • $compartmentCount compartments',
             style: AppTextStyles.caption,
           ),
         ],
@@ -229,9 +386,9 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: AppConstants.spacingMd),
       child: Row(
-        children: _compartments.map((comp) {
+        children: _currentCompartments.map((comp) {
           final isSelected = comp.id == _selectedCompartment;
-          final itemCount = _packedItems[comp.id]?.length ?? 0;
+          final itemCount = _packedItems[_selectedLuggageId]?[comp.id]?.length ?? 0;
 
           return GestureDetector(
             onTap: () => setState(() => _selectedCompartment = comp.id),
@@ -284,7 +441,7 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   }
 
   Widget _buildCompartmentItems() {
-    final items = _packedItems[_selectedCompartment] ?? [];
+    final items = _packedItems[_selectedLuggageId]?[_selectedCompartment] ?? [];
 
     if (items.isEmpty) {
       return Center(
@@ -452,11 +609,11 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
               style: AppTextStyles.headlineMedium,
             ),
             const SizedBox(height: 16),
-            ..._compartments.where((c) => c.id != _selectedCompartment).map((comp) {
+            ..._currentCompartments.where((c) => c.id != _selectedCompartment).map((comp) {
               return ListTile(
                 leading: Text(comp.emoji, style: const TextStyle(fontSize: 24)),
                 title: Text(comp.name),
-                subtitle: Text('${_packedItems[comp.id]?.length ?? 0} items'),
+                subtitle: Text('${_packedItems[_selectedLuggageId]?[comp.id]?.length ?? 0} items'),
                 onTap: () {
                   Navigator.pop(context);
                   _moveItem(packedItem, _selectedCompartment, comp.id);
@@ -537,10 +694,9 @@ class _VisualPackingGuideScreenState extends State<VisualPackingGuideScreen> {
   }
 
   Widget _buildBottomSummary() {
-    final totalItems = _packedItems.values.fold<int>(
-      0,
-      (sum, list) => sum + list.length,
-    );
+    final totalItems = _packedItems.values
+        .expand((compartments) => compartments.values)
+        .fold<int>(0, (sum, list) => sum + list.length);
 
     return Container(
       padding: const EdgeInsets.all(AppConstants.spacingLg),

@@ -292,7 +292,6 @@ class _LuggageCreationScreenState extends State<LuggageCreationScreen> {
               _updateDefaults(type.id);
             },
             child: GlassCard(
-              width: 110,
               child: Container(
                 padding: const EdgeInsets.all(AppConstants.spacingMd),
                 decoration: BoxDecoration(

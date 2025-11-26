@@ -548,7 +548,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       text: _isLoading
           ? 'Processing...'
           : 'Subscribe ${_isAnnual ? 'for \$9.99/year' : 'for \$1.99/month'}',
-      onPressed: _isLoading ? null : _handleSubscribe,
+      onPressed: _isLoading ? () {} : _handleSubscribe,
       icon: _isLoading ? null : Icons.stars,
     );
   }
