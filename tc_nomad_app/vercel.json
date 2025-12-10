@@ -1,7 +1,5 @@
 {
-  "buildCommand": "flutter build web --release",
   "outputDirectory": "build/web",
-  "devCommand": "flutter run -d web-server --web-hostname=0.0.0.0 --web-port=3000",
   "framework": null,
   "rewrites": [
     {
